@@ -1,0 +1,25 @@
+using UnityEngine;
+
+// [RequireComponent(typeof(InWaterManager))]
+
+public class FeedManager : MonoBehaviour
+{
+
+    // private InWaterManager inWaterManager;（仮）
+
+    [SerializeField] private GameObject model; // 餌の3Dモデル（Blenderで作成）
+
+    private Vector3 FeedPosition; // 餌オブジェクトの位置
+
+    // 着水時にInWaterManagerから「釣り竿をどれだけ強く振ったか」のような数値を返してもらう想定
+    // その情報から餌の位置FeedPosition（3次元ベクトル）を計算する
+
+    private void Update()
+    {
+       　transform.position = FeedPosition; // オブジェクトの座標の変更
+    }
+
+    // 餌の座標のゲッター
+    public Vector3 GetFeedPosition() => FeedPosition;
+
+}

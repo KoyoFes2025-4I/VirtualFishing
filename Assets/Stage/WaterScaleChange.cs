@@ -9,29 +9,27 @@ public class WaterScaleChange : MonoBehaviour
     const float PLANE_SIZE = 10f;
     [SerializeField]private float cameraY = 1000f;
 
+    [SerializeField] private GameObject camera1;
+    [SerializeField] private GameObject camera2;
+    [SerializeField] private GameObject water;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //カメラ2つを取得する
-        cam1obj = GameObject.Find("Camera1"); //カメラの名前をこれにしないとダメ
-        cam2obj = GameObject.Find("Camera2"); //上に同じ
-
-        //水を取得する
-        waterFloor = GameObject.Find("WaterFloor");
     }
 
     // Update is called once per frame
     void Update()
     {
-        WaterFloorScaleChange(cam1obj, cam2obj, waterFloor, cameraY);
+        WaterFloorScaleChange(camera1, camera2, water, cameraY);
     }
 
-    void WaterFloorScaleChange(GameObject camera1, GameObject camera2, GameObject water ,  float camY)
+    void WaterFloorScaleChange(GameObject camera1, GameObject camera2, GameObject water,  float camY)
     {
         Camera cam1 = camera1.GetComponent<Camera>();
         Camera cam2 = camera2.GetComponent<Camera>();
 
-        float height = cam1.orthographicSize * 2f;
+        float height = cam1.orthographicSize * 2.0f;
         float width = height * cam1.aspect;
 
         float scaleX = (width * 2) / PLANE_SIZE;

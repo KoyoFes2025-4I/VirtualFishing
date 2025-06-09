@@ -3,15 +3,15 @@ using UnityEngine;
 public class Fish1 : ThingsToFish
 {
 
-    // オブジェクトのフィールドはinspectorから設定する
-    // 何も書かなくても親クラスで定義したOnCollisionEnter、Awake、Updateなどはそのまま実行される
+    // フィールドはinspectorから設定
+    // 親クラスで定義したOnCollisionEnter、Awake、Updateなどは自動で実行される
 
     protected override void MovementConfig()
     {
 
         base.MovementConfig(); // 親クラスに書かれている処理
 
-        // 何かこのオブジェクトで固有の処理を書きたい場合はオーバーライドできる
+        // 何かこのオブジェクトで固有の処理を書きたい場合はオーバーライド
 
     }
 
@@ -20,7 +20,7 @@ public class Fish1 : ThingsToFish
 
         base.WinFishing();
 
-        // オーバーライド可能
+        // オーバーライド
 
     }
 
@@ -29,7 +29,7 @@ public class Fish1 : ThingsToFish
 
         base.LoseFishing();
 
-        // オーバーライド可能
+        // オーバーライド
 
     }
 

@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(FishAnimations))]
+[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(BattleManager))]
 [RequireComponent(typeof(PointManager))]
 // [RequireComponent(typeof(InWaterManager))]
@@ -16,7 +16,7 @@ public abstract class ThingsToFish : MonoBehaviour
     // ゲッターを介してisInWaterフラグで状態を取得する想定
     // 着水時に餌オブジェクトを移動させるための情報も返してもらう→FeedManagerの方で参照
 
-    private FishAnimations fishAnimations;
+    private Animator animator;
     private BattleManager battleManager;
     private PointManager pointManager;
     // private InWaterManager inWaterManager;（仮）
@@ -25,13 +25,16 @@ public abstract class ThingsToFish : MonoBehaviour
     [SerializeField] private GameObject model; // UV展開済みの3Dモデル（Blenderで作成）
     [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ
     [SerializeField] private string objectName; // オブジェクト名
-    [SerializeField] private int strength; //体力パラメータ
-    [SerializeField] private int power; //力パラメータ
-    [SerializeField] private int weight; //重量（移動速度）パラメータ
-    [SerializeField] private int point; //釣った時の得点
-    [SerializeField] private string creater; //製作者（ID）
+    [SerializeField] private int strength; // 体力パラメータ
+    [SerializeField] private int power; // 力パラメータ
+    [SerializeField] private int weight; // 重量（移動速度）パラメータ
+    [SerializeField] private int point; // 釣った時の得点
+    [SerializeField] private string creater; // 製作者（ID）
+    [SerializeField] private string AnimController; // 適用するAnimation Controllerの名前（Resources/Animations配下）
 
-    // strengthとpowerの読み取り用
+    private string AnimPath => "Animations/" + AnimController;// Resources以下のパスを作成
+
+    // strengthとpowerのゲッター（バトル処理で使う）
     public int Strength => strength;
     public int Power => power;
 
@@ -44,11 +47,18 @@ public abstract class ThingsToFish : MonoBehaviour
     public bool wasSuccessFishing { get; private set; } = false; // 釣り上げに成功したフラグ
     public bool wasFinishFishing { get; private set; } = false; // 釣りバトル終了フラグ
 
-    // 各フラグのセッター用のメソッド（外部ファイルで呼び出す）
+    // 各フラグのセッター（バトル処理で使う）
     public void SetTrueInBattle() => isInBattle = true;
     public void SetFalseInBattle() => isInBattle = false;
     public void SetSuccessFishing() => wasSuccessFishing = true;
     public void SetFinishFishing() => wasFinishFishing= true;
+
+    // 各フラグのゲッター（Animation Controllerで使う）
+    public bool IsInWater => isInWater;
+    public bool WasCaught => wasCaught;
+    public bool IsInBattle => isInBattle;
+    public bool WasSuccessFishing => wasSuccessFishing;
+    public bool WasFinishFishing => wasFinishFishing;
 
     // 状態リセット用メソッド
     public void ResetCatchState()
@@ -79,15 +89,11 @@ public abstract class ThingsToFish : MonoBehaviour
 
         // 壁に当たったら進行方向を変えるようにする（ステージ班と連携）
 
-        fishAnimations.PlayMoveAnimation(); // 魚の泳ぎアニメーションの再生
-
     }
 
     // バトルに勝った時に呼ばれる処理
     protected virtual void WinFishing()
     {
-
-        fishAnimations.PlayWinAnimation(); // 成功時のアニメーションの再生
 
         pointManager.AddPoint(point); // 釣り上げた魚の得点を加算
         ResetCatchState(); // フラグの状態のリセット
@@ -103,8 +109,6 @@ public abstract class ThingsToFish : MonoBehaviour
     protected virtual void LoseFishing()
     {
 
-        fishAnimations.PlayLoseAnimation(); // 失敗時のアニメーションの再生
-
         ResetCatchState(); // フラグの状態のリセット
 
         // 負けた時の後の魚オブジェクトに関する処理を書く
@@ -119,17 +123,11 @@ public abstract class ThingsToFish : MonoBehaviour
         if (isInWater && wasCaught)
         {
 
-            // バトル中に毎フレーム呼ばれる
-            if (isInBattle)
-            {
-                fishAnimations.PlayCaughtAnimation(); // バトル中の魚が引っかかっているアニメーションの再生
-            }
-
             // バトルが始まる時
             if (!isInBattle && !hasStartedBattle)
             {
                 hasStartedBattle = true; // 2度目は呼ばれないようにする
-                battleManager.DoBattle(); // バトル処理の開始（中でコルーチンが存在）
+                battleManager.DoBattle(); // バトル処理の開始
             }
 
             // バトル処理が終了した時
@@ -157,10 +155,56 @@ public abstract class ThingsToFish : MonoBehaviour
     // 依存コンポーネントの初期化処理
     protected virtual void Awake()
     {
-        fishAnimations = GetComponent<FishAnimations>();
+        
         battleManager = GetComponent<BattleManager>();
+
+        // 継承した場合に全ての子クラスでも自動でコンポーネントを取得させる
+        if (battleManager == null)
+        {
+            battleManager = gameObject.AddComponent<BattleManager>();
+        }
+
         pointManager = GetComponent<PointManager>();
+
+        if (pointManager == null)
+        {
+            pointManager = gameObject.AddComponent<PointManager>();
+        }
+
         // inWaterManager = GetComponent<InWaterManager>();
+
+        //if (inWaterManager == null)
+        {
+            //inWaterManager = gameObject.AddComponent<InWaterManager>();
+        }
+
+        animator = GetComponent<Animator>();
+
+        if (animator == null)
+        {
+            Debug.LogError($"{gameObject.name} にAnimatorコンポーネントがありません");
+            return;
+        }
+
+        if (animator.runtimeAnimatorController == null)
+        {
+
+            // Assets/Resources/Animations/FishAnimationLogic.controllerを読み込む
+            RuntimeAnimatorController controller = Resources.Load<RuntimeAnimatorController>(AnimPath);
+
+            // 各オブジェクトのアニメーション遷移はAnimator Controllerで制御する
+            if (controller != null)
+            {
+                animator.runtimeAnimatorController = controller;　// 指定したAnimator Controllerを自動アタッチ
+            }
+
+            else
+            {
+                Debug.LogWarning(AnimPath + "は見つかりませんでした");
+            }
+
+        }
+
     }
 
     protected virtual void Start()
@@ -192,7 +236,7 @@ public abstract class ThingsToFish : MonoBehaviour
 
         // isInWater = inWaterManger.GetIsInWater(); // 着水フラグの状態を取得
 
-        currentPosition = transform.position; //オブジェクトの3次元座標の取得
+        currentPosition = transform.position; // オブジェクトの3次元座標の取得
 
         if (!wasCaught)
         {

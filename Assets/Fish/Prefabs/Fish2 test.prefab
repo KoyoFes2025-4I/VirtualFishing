@@ -96,13 +96,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 0}
   objectTexture: {fileID: 0}
-  objectName: 
-  strength: 0
-  power: 0
-  weight: 0
-  point: 0
-  creater: 
-  AnimController: 
+  objectName: Fish2
+  strength: 200
+  power: 20
+  weight: 20
+  point: 10
+  creater: B
+  AnimController: FishAnimation2
 --- !u!54 &3205699548618854254
 Rigidbody:
   m_ObjectHideFlags: 0

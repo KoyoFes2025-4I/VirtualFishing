@@ -74,13 +74,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 0}
   objectTexture: {fileID: 0}
-  objectName: 
-  strength: 0
-  power: 0
-  weight: 0
-  point: 0
-  creater: 
-  AnimController: 
+  objectName: Fish1
+  strength: 100
+  power: 10
+  weight: 10
+  point: 5
+  creater: A
+  AnimController: FishAnimation1
 --- !u!95 &4063659773020864609
 Animator:
   serializedVersion: 7
@@ -91,7 +91,7 @@ Animator:
   m_GameObject: {fileID: 644355701191009966}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2c996b21f0d02c441ab1b6774a1e899f, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

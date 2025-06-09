@@ -80,14 +80,15 @@ public abstract class ThingsToFish : MonoBehaviour
         }
     }
 
-    // 魚の泳ぎの動きのアルゴリズムとアニメーション処理
+    // 魚の泳ぎの動きのアルゴリズム
     protected virtual void MovementConfig()
     {
 
         // 重量のパラメータで移動速度を決めて魚を移動させる
-        transform.Translate(Vector3.forward * Time.deltaTime * weight);
+        transform.Translate(Vector3.forward * Time.deltaTime / weight);
 
         // 壁に当たったら進行方向を変えるようにする（ステージ班と連携）
+        // 泳ぐアニメーションはゲームが始まったら自動で再生される（Animation Controller）
 
     }
 
@@ -95,13 +96,17 @@ public abstract class ThingsToFish : MonoBehaviour
     protected virtual void WinFishing()
     {
 
+        animator.SetBool("win", true);// winパラメータをtrueにしてアニメーション遷移
+
         pointManager.AddPoint(point); // 釣り上げた魚の得点を加算
         ResetCatchState(); // フラグの状態のリセット
 
         // 釣り上げた魚のモデル、名前、得点などの画面上への表示プロセスを書きたい
         // 必要なデータはデータベースへ格納するようにする
 
-        Destroy(gameObject); // 釣り上げが成功したらそのオブジェクトは消される
+        animator.SetBool("toExit", true);// toExitパラメータをtrueにしてアニメーション遷移
+
+        Destroy(gameObject); // オブジェクトの消去
 
     }
 
@@ -109,9 +114,15 @@ public abstract class ThingsToFish : MonoBehaviour
     protected virtual void LoseFishing()
     {
 
+        animator.SetBool("lose", true);// loseパラメータをtrueにしてアニメーション遷移
+
         ResetCatchState(); // フラグの状態のリセット
 
         // 負けた時の後の魚オブジェクトに関する処理を書く
+
+        animator.SetBool("toExit", true);// toExitパラメータをtrueにしてアニメーション遷移
+
+        Destroy(gameObject); // オブジェクトの消去
 
     }
    
@@ -122,6 +133,8 @@ public abstract class ThingsToFish : MonoBehaviour
         // 着水中に餌オブジェクトと接触した時は次のアニメーションに移行
         if (isInWater && wasCaught)
         {
+
+            animator.SetBool("wasCaught", true);// wasCaughtパラメータをtrueにしてアニメーション遷移
 
             // バトルが始まる時
             if (!isInBattle && !hasStartedBattle)

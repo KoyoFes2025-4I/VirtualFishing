@@ -279,6 +279,7 @@ MonoBehaviour:
   Topic: /fish/ctrl/imu
   TimeStep: 0
   EnsureThreadSafety: 0
+  rosConnector: {fileID: 0}
 --- !u!114 &28432075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,6 +295,7 @@ MonoBehaviour:
   Topic: /fish/ctrl/in
   TimeStep: 0
   EnsureThreadSafety: 0
+  rosConnector: {fileID: 0}
 --- !u!114 &28432076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,6 +309,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Topic: /fish/ctrl/out
+  publicationId: 
+  rosConnector: {fileID: 0}
 --- !u!114 &28432077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -319,7 +323,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1ccd77ec86781240a95ed13f4fc1c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imuSubscriber: {fileID: 0}
+  rotationSubscriber: {fileID: 0}
+  strengthPublisher: {fileID: 0}
   rod: {fileID: 1794460721}
+  baseRotationY: 0
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,6 +461,7 @@ GameObject:
   - component: {fileID: 1794460724}
   - component: {fileID: 1794460723}
   - component: {fileID: 1794460722}
+  - component: {fileID: 1794460726}
   m_Layer: 0
   m_Name: Rod
   m_TagString: Untagged
@@ -549,6 +558,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1794460726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794460721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433e430e7fac1f541b701fed5583e504, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

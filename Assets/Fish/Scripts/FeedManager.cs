@@ -5,7 +5,7 @@ using UnityEngine;
 public class FeedManager : MonoBehaviour
 {
 
-    // private InWaterManager inWaterManager;（仮）
+    private InWaterManager inWaterManager;
 
     [SerializeField] private GameObject model; // 餌の3Dモデル（Blenderで作成）
 

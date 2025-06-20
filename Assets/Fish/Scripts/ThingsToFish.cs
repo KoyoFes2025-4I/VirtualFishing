@@ -5,25 +5,20 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(BattleManager))]
 [RequireComponent(typeof(PointManager))]
-// [RequireComponent(typeof(InWaterManager))]
+[RequireComponent(typeof(InWaterManager))]
 
 // 「釣るもの」の共通の処理やフィールドを書いた親クラス（抽象クラス）
 
 public abstract class ThingsToFish : MonoBehaviour
 {
 
-    // コントローラー班に着水判定を行うプログラムは作ってもらう
-    // ゲッターを介してisInWaterフラグで状態を取得する想定
-    // 着水時に餌オブジェクトを移動させるための情報も返してもらう→FeedManagerの方で参照
-
     private Animator animator;
     private BattleManager battleManager;
     private PointManager pointManager;
-    // private InWaterManager inWaterManager;（仮）
+    private InWaterManager inWaterManager;
 
-    // Inspectorから値のセットが可能なシリアライズフィールド
-    [SerializeField] private GameObject model; // UV展開済みの3Dモデル（Blenderで作成）
-    [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ
+    [SerializeField] private GameObject model; // 3Dモデル
+    //[SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ
     [SerializeField] private string objectName; // オブジェクト名
     [SerializeField] private int strength; // 体力パラメータ
     [SerializeField] private int power; // 力パラメータ
@@ -31,6 +26,10 @@ public abstract class ThingsToFish : MonoBehaviour
     [SerializeField] private int point; // 釣った時の得点
     [SerializeField] private string creater; // 製作者（ID）
     [SerializeField] private string AnimController; // 適用するAnimation Controllerの名前（Resources/Animations配下）
+
+    private float timer = 0f;
+    public float reverseInterval = 5.0f; // 方向反転のインターバル
+    private int direction = 1;
 
     private string AnimPath => "Animations/" + AnimController;// Resources以下のパスを作成
 
@@ -47,11 +46,12 @@ public abstract class ThingsToFish : MonoBehaviour
     public bool wasSuccessFishing { get; private set; } = false; // 釣り上げに成功したフラグ
     public bool wasFinishFishing { get; private set; } = false; // 釣りバトル終了フラグ
 
-    // 各フラグのセッター（バトル処理で使う）
+    // 各フラグのセッター
     public void SetTrueInBattle() => isInBattle = true;
     public void SetFalseInBattle() => isInBattle = false;
     public void SetSuccessFishing() => wasSuccessFishing = true;
     public void SetFinishFishing() => wasFinishFishing= true;
+    public void SetIsInWater() => isInWater = true;
 
     // 各フラグのゲッター（Animation Controllerで使う）
     public bool IsInWater => isInWater;
@@ -85,10 +85,17 @@ public abstract class ThingsToFish : MonoBehaviour
     {
 
         // 重量のパラメータで移動速度を決めて魚を移動させる
-        transform.Translate(Vector3.forward * Time.deltaTime / weight);
+        transform.Translate(Vector3.forward * direction * Time.deltaTime / weight);
 
-        // 壁に当たったら進行方向を変えるようにする（ステージ班と連携）
-        // 泳ぐアニメーションはゲームが始まったら自動で再生される（Animation Controller）
+        // タイマー更新
+        timer += Time.deltaTime;
+
+        // 一定時間経過で方向反転
+        if (timer >= reverseInterval)
+        {
+            direction *= -1; // 方向反転
+            timer = 0f;      // タイマーリセット
+        }
 
     }
 
@@ -184,11 +191,11 @@ public abstract class ThingsToFish : MonoBehaviour
             pointManager = gameObject.AddComponent<PointManager>();
         }
 
-        // inWaterManager = GetComponent<InWaterManager>();
+        inWaterManager = GetComponent<InWaterManager>();
 
-        //if (inWaterManager == null)
+        if (inWaterManager == null)
         {
-            //inWaterManager = gameObject.AddComponent<InWaterManager>();
+            inWaterManager = gameObject.AddComponent<InWaterManager>();
         }
 
         animator = GetComponent<Animator>();
@@ -222,32 +229,30 @@ public abstract class ThingsToFish : MonoBehaviour
 
     protected virtual void Start()
     {
-        ApplyTextureToModel();
+        //ApplyTextureToModel();
     }
 
     // UV展開済みの3Dモデルに設定した2Dテクスチャを張り付ける処理
-    private void ApplyTextureToModel()
-    {
+    //private void ApplyTextureToModel()
+    //{
 
         // シェーダーを使って新しいマテリアル（3Dモデルの見た目）を作成
-        Material newMaterial = new Material(Shader.Find("Standard"));
+        //Material newMaterial = new Material(Shader.Find("Standard"));
 
         // マテリアルへテクスチャを割り当て
-        newMaterial.mainTexture = objectTexture;
+        //newMaterial.mainTexture = objectTexture;
 
         // 設定した3Dモデル（model）からMeshRendererコンポーネントを取得
-        MeshRenderer meshRenderer = model.GetComponent<MeshRenderer>();
+        //MeshRenderer meshRenderer = model.GetComponent<MeshRenderer>();
 
         // modelのmeshRendererのマテリアルを新しく作ったマテリアルに差し替える
-        meshRenderer.material = newMaterial;
+        //meshRenderer.material = newMaterial;
 
-    }
+    //}
 
 
     protected virtual void Update()
     {
-
-        // isInWater = inWaterManger.GetIsInWater(); // 着水フラグの状態を取得
 
         currentPosition = transform.position; // オブジェクトの3次元座標の取得
 

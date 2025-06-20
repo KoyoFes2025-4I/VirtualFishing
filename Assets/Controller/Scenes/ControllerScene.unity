@@ -221,10 +221,10 @@ GameObject:
   m_Component:
   - component: {fileID: 28432072}
   - component: {fileID: 28432071}
-  - component: {fileID: 28432074}
-  - component: {fileID: 28432075}
   - component: {fileID: 28432076}
-  - component: {fileID: 28432077}
+  - component: {fileID: 28432075}
+  - component: {fileID: 28432074}
+  - component: {fileID: 28432073}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -264,6 +264,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &28432073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 28432070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff6293344c7249b4884bc237e10572bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  imuSubscriber: {fileID: 0}
+  rotationSubscriber: {fileID: 0}
+  strengthPublisher: {fileID: 0}
+  rod: {fileID: 0}
+  baseRotationY: 0
 --- !u!114 &28432074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,13 +290,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 28432070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae276d01a78516c4b8d22cdba6f387e9, type: 3}
+  m_Script: {fileID: 11500000, guid: e279cf0ad271c4d4fa56b5beb6bb7f66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: /fish/ctrl/imu
-  TimeStep: 0
-  EnsureThreadSafety: 0
-  rosConnector: {fileID: 0}
+  Topic: 
 --- !u!114 &28432075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,13 +303,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 28432070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43f77f0a10d49ed4997cd270d1bcde02, type: 3}
+  m_Script: {fileID: 11500000, guid: dcd71af08310bf14e9e100d8f5a62d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: /fish/ctrl/in
+  Topic: 
   TimeStep: 0
   EnsureThreadSafety: 0
-  rosConnector: {fileID: 0}
 --- !u!114 &28432076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,29 +318,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 28432070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0182f6f700552034dac30640ce01a2b9, type: 3}
+  m_Script: {fileID: 11500000, guid: 24b30599fe023234fb2363fe22b6b427, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: /fish/ctrl/out
-  publicationId: 
-  rosConnector: {fileID: 0}
---- !u!114 &28432077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 28432070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1ccd77ec86781240a95ed13f4fc1c7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  imuSubscriber: {fileID: 0}
-  rotationSubscriber: {fileID: 0}
-  strengthPublisher: {fileID: 0}
-  rod: {fileID: 1794460721}
-  baseRotationY: 0
+  Topic: 
+  TimeStep: 0
+  EnsureThreadSafety: 0
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,6 +566,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 433e430e7fac1f541b701fed5583e504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imuSubscriber: {fileID: 0}
+  rotationSubscriber: {fileID: 0}
+  strengthPublisher: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -5,11 +5,14 @@ using UnityEngine;
 
 public class ROSTest : MonoBehaviour
 {
-    private IMUSubscriber imuSubscriber;
-    private RotationSubscriber rotationSubscriber;
-    private StrengthPublisher strengthPublisher;
     private Dictionary<string, Imu> imus;
     private Dictionary<string, float> rotations;
+    [SerializeField]
+    private IMUSubscriber imuSubscriber;
+    [SerializeField]
+    private RotationSubscriber rotationSubscriber;
+    [SerializeField]
+    private StrengthPublisher strengthPublisher;
     [SerializeField]
     GameObject rod;
     [SerializeField]

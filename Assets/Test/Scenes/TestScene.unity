@@ -320,6 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rod: {fileID: 1794460721}
+  baseRotationY: 0
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0

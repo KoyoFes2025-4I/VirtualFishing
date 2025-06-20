@@ -32,7 +32,7 @@ public class ROSTest : MonoBehaviour
             Quaternion zRotation = Quaternion.AngleAxis(90f, Vector3.forward);
             Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
             rod.transform.rotation = yRotation * zRotation * new Quaternion((float)imus["katsu"].orientation.x, (float)-imus["katsu"].orientation.y, (float)imus["katsu"].orientation.z, (float)imus["katsu"].orientation.w);
-        } 
+        }
         catch
         {
             Debug.Log("none");

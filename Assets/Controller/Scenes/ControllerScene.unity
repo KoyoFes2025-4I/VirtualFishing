@@ -351,8 +351,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Rod: {fileID: 1794460721}
-  numOfRods: 3
-  spawnArea: {x: 0, y: 0, z: 0}
+  rodsData:
+  - position: {x: 10, y: 0, z: 0}
+    id: 0
+  - position: {x: 0, y: 0, z: 0}
+    id: 1
+  - position: {x: -10, y: 0, z: 0}
+    id: 2
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +498,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1794460722
 BoxCollider:
   m_ObjectHideFlags: 0

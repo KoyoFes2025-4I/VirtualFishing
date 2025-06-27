@@ -10,7 +10,7 @@ public class RodsController : MonoBehaviour
     private GameObject Rod;
     [SerializeField]
     private List<RodData> rodsData;
-    private List<GameObject> rodInstances; //�������ꂽrod�̔z��
+    private List<GameObject> rodInstances = new List<GameObject>(); //�������ꂽrod�̔z��
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -19,7 +19,8 @@ public class RodsController : MonoBehaviour
         {
             GameObject instance = Instantiate(Rod, rodsData[i].position, Quaternion.identity);
             instance.GetComponent<RodScript>().SetId(rodsData[i].id);
-            rodInstances[i] = instance;
+            instance.SetActive(true);
+            rodInstances.Add(instance);
         }
     }
 

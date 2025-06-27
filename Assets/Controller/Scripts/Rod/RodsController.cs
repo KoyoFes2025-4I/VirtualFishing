@@ -10,6 +10,8 @@ public class RodsController : MonoBehaviour
     private GameObject Rod;
     [SerializeField]
     private List<RodData> rodsData;
+    [SerializeField]
+    private float baseRotationY;
     private List<GameObject> rodInstances = new List<GameObject>(); //�������ꂽrod�̔z��
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,6 +21,7 @@ public class RodsController : MonoBehaviour
         {
             GameObject instance = Instantiate(Rod, rodsData[i].position, Quaternion.identity, transform);
             instance.GetComponent<RodScript>().SetId(rodsData[i].id);
+            instance.GetComponent<RodScript>().SetBaseRotationY(baseRotationY);
             instance.name = $"Rod(id:{rodsData[i].id})";
             instance.SetActive(true);
             rodInstances.Add(instance);

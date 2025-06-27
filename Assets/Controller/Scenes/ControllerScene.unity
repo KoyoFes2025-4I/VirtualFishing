@@ -359,6 +359,7 @@ MonoBehaviour:
     id: 1
   - position: {x: -10, y: 0, z: 0}
     id: 2
+  baseRotationY: 100
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,7 +605,6 @@ MonoBehaviour:
   imuSubscriber: {fileID: 28432076}
   rotationSubscriber: {fileID: 28432075}
   strengthPublisher: {fileID: 28432074}
-  baseRotationY: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -13,8 +13,7 @@ public class RodScript : MonoBehaviour
     private RotationSubscriber rotationSubscriber;
     [SerializeField]
     private StrengthPublisher strengthPublisher;
-    [SerializeField]
-    float baseRotationY;
+    private float baseRotationY;
     private string id = "";
     private float CheckFeedSpeed;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -27,6 +26,11 @@ public class RodScript : MonoBehaviour
     public void SetId(string id)
     {
         this.id = id;
+    }
+
+    public void SetBaseRotationY(float y)
+    {
+        baseRotationY = y;
     }
 
     void Checkfeed()

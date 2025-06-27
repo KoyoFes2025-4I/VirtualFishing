@@ -224,7 +224,6 @@ GameObject:
   - component: {fileID: 28432076}
   - component: {fileID: 28432075}
   - component: {fileID: 28432074}
-  - component: {fileID: 28432073}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -248,7 +247,7 @@ MonoBehaviour:
   SecondsTimeout: 10
   Serializer: 0
   protocol: 0
-  RosBridgeServerUrl: ws://172.30.130.183:9090
+  RosBridgeServerUrl: ws://10.22.242.44:9090
 --- !u!4 &28432072
 Transform:
   m_ObjectHideFlags: 0
@@ -264,23 +263,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &28432073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 28432070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff6293344c7249b4884bc237e10572bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  imuSubscriber: {fileID: 0}
-  rotationSubscriber: {fileID: 0}
-  strengthPublisher: {fileID: 0}
-  rod: {fileID: 0}
-  baseRotationY: 0
 --- !u!114 &28432074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,7 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e279cf0ad271c4d4fa56b5beb6bb7f66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: 
+  Topic: /fish/ctrl/in
 --- !u!114 &28432075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,7 +288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcd71af08310bf14e9e100d8f5a62d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: 
+  Topic: /fish/ctrl/out
   TimeStep: 0
   EnsureThreadSafety: 0
 --- !u!114 &28432076
@@ -321,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24b30599fe023234fb2363fe22b6b427, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: 
+  Topic: /fish/ctrl/imu
   TimeStep: 0
   EnsureThreadSafety: 0
 --- !u!1 &888813011
@@ -566,9 +548,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 433e430e7fac1f541b701fed5583e504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imuSubscriber: {fileID: 0}
-  rotationSubscriber: {fileID: 0}
-  strengthPublisher: {fileID: 0}
+  imuSubscriber: {fileID: 28432076}
+  rotationSubscriber: {fileID: 28432075}
+  strengthPublisher: {fileID: 28432074}
+  baseRotationY: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

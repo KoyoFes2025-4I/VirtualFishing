@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using RosSharp;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
@@ -15,8 +16,12 @@ public class RodScript : MonoBehaviour
     private StrengthPublisher strengthPublisher;
     [SerializeField]
     float baseRotationY;
+    [SerializeField]
+    private GameObject ball;
     private string id = "";
-    private float CheckFeedSpeed;
+    private float maxMagunitude;
+    private DateTime rodTime;
+    private bool isThrowing;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -33,6 +38,26 @@ public class RodScript : MonoBehaviour
     {
         Vector3 accel = new Vector3((float)imus[id].linear_acceleration.x, (float)imus[id].linear_acceleration.y, (float)imus[id].linear_acceleration.z);
         Debug.Log(accel.magnitude);
+        if(accel.magnitude > 5)
+        {
+            if(!isThrowing){
+                rodTime = DateTime.Now;
+                isThrowing = true;
+            }
+            if (maxMagunitude < accel.magnitude)
+            {
+                maxMagunitude = accel.magnitude;
+            }
+        }
+        if ((((DateTime.Now - rodTime).TotalSeconds > 1) && (isThrowing)))
+        {
+            isThrowing = false;
+            Vector3 bite = transform.up;
+            bite.y = 0;
+            bite = bite.normalized * -maxMagunitude;
+            ball.SetActive(true);
+            ball.GetComponent<Rigidbody>().linearVelocity = bite;
+        }
     }
 
     // Update is called once per frame

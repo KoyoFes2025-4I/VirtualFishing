@@ -306,6 +306,53 @@ MonoBehaviour:
   Topic: /fish/ctrl/imu
   TimeStep: 0
   EnsureThreadSafety: 0
+--- !u!1 &734045461
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 734045462}
+  - component: {fileID: 734045463}
+  m_Layer: 0
+  m_Name: RodsController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &734045462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734045461}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.3480358, y: 1.2268829, z: -0.30931932}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &734045463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734045461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994882ff60c15c84c9acf34259f83b44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rod: {fileID: 1794460721}
+  numOfRods: 3
+  spawnArea: {x: 0, y: 0, z: 0}
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0
@@ -560,3 +607,4 @@ SceneRoots:
   - {fileID: 888813013}
   - {fileID: 28432072}
   - {fileID: 1794460725}
+  - {fileID: 734045462}

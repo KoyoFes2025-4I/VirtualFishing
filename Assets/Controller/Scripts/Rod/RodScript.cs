@@ -24,7 +24,7 @@ public class RodScript : MonoBehaviour
         rotations = rotationSubscriber.GetRotations();
     }
 
-    void SetId(string id)
+    public void SetId(string id)
     {
         this.id = id;
     }

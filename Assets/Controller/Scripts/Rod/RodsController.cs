@@ -17,8 +17,9 @@ public class RodsController : MonoBehaviour
 
         for (int i = 0; i < rodsData.Count; i++)
         {
-            GameObject instance = Instantiate(Rod, rodsData[i].position, Quaternion.identity);
+            GameObject instance = Instantiate(Rod, rodsData[i].position, Quaternion.identity, transform);
             instance.GetComponent<RodScript>().SetId(rodsData[i].id);
+            instance.name = $"Rod(id:{rodsData[i].id})";
             instance.SetActive(true);
             rodInstances.Add(instance);
         }

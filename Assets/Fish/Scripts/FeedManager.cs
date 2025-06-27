@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// [RequireComponent(typeof(InWaterManager))]
+[RequireComponent(typeof(InWaterManager))]
 
 public class FeedManager : MonoBehaviour
 {
@@ -13,6 +13,11 @@ public class FeedManager : MonoBehaviour
 
     // 着水時にInWaterManagerから「釣り竿をどれだけ強く振ったか」のような数値を返してもらう想定
     // その情報から餌の位置FeedPosition（3次元ベクトル）を計算して設定する
+
+    private void Start()
+    {
+        inWaterManager = GetComponent<InWaterManager>();
+    }
 
     private void Update()
     {

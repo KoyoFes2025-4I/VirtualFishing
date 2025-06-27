@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(ThingsToFish))]
-// [RequireComponent(typeof(FishBattle))]
+[RequireComponent(typeof(FishBattle))]
 
 public class BattleManager : MonoBehaviour
 {

@@ -17,8 +17,8 @@ public abstract class ThingsToFish : MonoBehaviour
     private PointManager pointManager;
     private InWaterManager inWaterManager;
 
-    [SerializeField] private GameObject model; // 3Dモデル
-    //[SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ
+    //[SerializeField] private GameObject model; // 3Dモデル
+    //[SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（UV展開が必要）
     [SerializeField] private string objectName; // オブジェクト名
     [SerializeField] private int strength; // 体力パラメータ
     [SerializeField] private int power; // 力パラメータ
@@ -26,10 +26,6 @@ public abstract class ThingsToFish : MonoBehaviour
     [SerializeField] private int point; // 釣った時の得点
     [SerializeField] private string creater; // 製作者（ID）
     [SerializeField] private string AnimController; // 適用するAnimation Controllerの名前（Resources/Animations配下）
-
-    private float timer = 0f;
-    public float reverseInterval = 5.0f; // 方向反転のインターバル
-    private int direction = 1;
 
     private string AnimPath => "Animations/" + AnimController;// Resources以下のパスを作成
 
@@ -77,15 +73,21 @@ public abstract class ThingsToFish : MonoBehaviour
         if (collision.gameObject.CompareTag("Feed") && isInWater && !isInBattle)
         {
             wasCaught = true;
+            Debug.Log("魚が釣り上げられました。");
         }
     }
+
+    private float timer = 0f;
+    public float reverseInterval = 5.0f; // 方向反転のインターバル
+    private int direction = 1;
+
 
     // 魚の泳ぎの動きのアルゴリズム
     protected virtual void MovementConfig()
     {
 
-        // 重量のパラメータで移動速度を決めて魚を移動させる
-        transform.Translate(Vector3.forward * direction * Time.deltaTime / weight);
+        // 重量のパラメータで移動速度を決めて魚を移動させる(ローカル軸に合わせておく)
+        transform.Translate(Vector3.right * direction * Time.deltaTime / weight, Space.Self);
 
         // タイマー更新
         timer += Time.deltaTime;
@@ -94,7 +96,7 @@ public abstract class ThingsToFish : MonoBehaviour
         if (timer >= reverseInterval)
         {
             direction *= -1; // 方向反転
-            timer = 0f;      // タイマーリセット
+            timer = 0f; // タイマーリセット
         }
 
     }
@@ -108,8 +110,9 @@ public abstract class ThingsToFish : MonoBehaviour
         pointManager.AddPoint(point); // 釣り上げた魚の得点を加算
         ResetCatchState(); // フラグの状態のリセット
 
-        // 釣り上げた魚のモデル、名前、得点などの画面上への表示プロセスを書きたい
-        // 必要なデータはデータベースへ格納するようにする
+        Debug.Log($"{creater}作成「{objectName}」を獲得。ポイントは{point}点。");
+        
+        // 必要なデータはデータベースへ格納するようにしたい
 
         animator.SetBool("toExit", true);// toExitパラメータをtrueにしてアニメーション遷移
 
@@ -165,6 +168,8 @@ public abstract class ThingsToFish : MonoBehaviour
                 {
                     LoseFishing();
                 }
+
+                Debug.Log($"現在の合計点数は{pointManager.GetSumPoint()}点です。");
 
             }
 

@@ -40,17 +40,17 @@ public class WaterScaleChange : MonoBehaviour
         float height = camSize * 2.0f;
         float width = height * cam1.aspect;
 
-        float scaleX = (width * 2) / PLANE_SIZE;
-        float scaleZ = height / PLANE_SIZE;
+        float scaleX = width / PLANE_SIZE;
+        float scaleZ = (height * 2) / PLANE_SIZE;
 
         //êÖÇÃëÂÇ´Ç≥ÇïœÇ¶ÇƒÉJÉÅÉâÇ‡ÇªÇÍÇ…çáÇÌÇπÇƒìÆÇ©Ç∑
         water.transform.localScale = new Vector3(scaleX, 1f, scaleZ);
-        camera1.transform.position = new Vector3(-width / 2, camY, 0f);
-        camera2.transform.position = new Vector3(width / 2, camY, 0f);
+        camera1.transform.position = new Vector3(0, camY, height / 2);
+        camera2.transform.position = new Vector3(0, camY, -height / 2);
         cam1.orthographicSize = camSize;
         cam2.orthographicSize = camSize;
 
-        StageWallSet(width*2, height, wall0, wall1, wall2, wall3);
+        StageWallSet(width, height*2, wall0, wall1, wall2, wall3);
     }
 
     void StageWallSet(float x, float z, GameObject w0, GameObject w1, GameObject w2, GameObject w3)

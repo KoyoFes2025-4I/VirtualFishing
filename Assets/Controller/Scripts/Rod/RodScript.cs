@@ -15,9 +15,8 @@ public class RodScript : MonoBehaviour
     [SerializeField]
     private StrengthPublisher strengthPublisher;
     [SerializeField]
-    float baseRotationY;
-    [SerializeField]
     private GameObject ball;
+    private float baseRotationY;
     private string id = "";
     private float maxMagunitude;
     private DateTime rodTime;
@@ -29,9 +28,14 @@ public class RodScript : MonoBehaviour
         rotations = rotationSubscriber.GetRotations();
     }
 
-    void SetId(string id)
+    public void SetId(string id)
     {
         this.id = id;
+    }
+
+    public void SetBaseRotationY(float y)
+    {
+        baseRotationY = y;
     }
 
     void Checkfeed()

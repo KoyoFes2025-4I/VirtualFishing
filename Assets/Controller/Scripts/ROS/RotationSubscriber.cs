@@ -39,7 +39,8 @@ public class RotationSubscriber : UnitySubscriber<String>
     /// </summary>
     private void CheckTimeout()
     {
-        foreach (string key in rotations.Keys)
+        Dictionary<string, float> tmp = new Dictionary<string, float>(rotations);
+        foreach (string key in tmp.Keys)
         {
             if (DateTime.Now >= timestamp[key].AddSeconds(5))
             {

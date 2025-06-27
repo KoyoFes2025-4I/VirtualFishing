@@ -3,6 +3,7 @@ using UnityEngine;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 /// <summary>
 /// IMUの入力を取得するためのクラス
@@ -32,7 +33,8 @@ public class IMUSubscriber : UnitySubscriber<Imu>
     /// </summary>
     private void CheckTimeout()
     {
-        foreach (string key in imus.Keys)
+        Dictionary<string, Imu> tmp = new Dictionary<string, Imu>(imus);
+        foreach (string key in tmp.Keys)
         {
             if (DateTime.Now >= timestamp[key].AddSeconds(5))
             {

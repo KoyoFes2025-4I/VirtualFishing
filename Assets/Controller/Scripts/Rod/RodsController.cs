@@ -1,22 +1,30 @@
+using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RodsController : MonoBehaviour
 {
-    //Rods‚ğD&D
-    public GameObject Rod;
-    public int numOfRods = 3;
-    public Vector3 spawnArea = new Vector3(0, 0, 0);
-    private GameObject[] rodInstances; //¶¬‚³‚ê‚½rod‚Ì”z—ñ
+    //Rodsï¿½ï¿½D&D
+    [SerializeField]
+    private GameObject Rod;
+    [SerializeField]
+    private List<RodData> rodsData;
+    [SerializeField]
+    private float baseRotationY;
+    private List<GameObject> rodInstances = new List<GameObject>(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½rodï¿½Ì”zï¿½ï¿½
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        rodInstances = new GameObject[numOfRods];
 
-        for (int i = 0; i < numOfRods; i++)
+        for (int i = 0; i < rodsData.Count; i++)
         {
-            Vector3 RodPosition = new Vector3(2 * i, 0, 0);
-            GameObject instance = Instantiate(Rod, RodPosition, Quaternion.identity);
-            rodInstances[i] = instance;
+            GameObject instance = Instantiate(Rod, rodsData[i].position, Quaternion.identity, transform);
+            instance.GetComponent<RodScript>().SetId(rodsData[i].id);
+            instance.GetComponent<RodScript>().SetBaseRotationY(baseRotationY);
+            instance.name = $"Rod(id:{rodsData[i].id})";
+            instance.SetActive(true);
+            rodInstances.Add(instance);
         }
     }
 

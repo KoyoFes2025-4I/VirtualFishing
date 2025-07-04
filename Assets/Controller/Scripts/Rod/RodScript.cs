@@ -18,9 +18,11 @@ public class RodScript : MonoBehaviour
     private GameObject ball;
     private float baseRotationY;
     private string id = "";
-    private float maxMagunitude;
+    private float maxMagnitude = -1;
     private DateTime rodTime;
     private bool isThrowing;
+    private float thresholdMagnitude = 5;
+    private float throwingTime = 1;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -41,26 +43,26 @@ public class RodScript : MonoBehaviour
     void CheckFeed()
     {
         Vector3 accel = new Vector3((float)imus[id].linear_acceleration.x, (float)imus[id].linear_acceleration.y, (float)imus[id].linear_acceleration.z);
-        Debug.Log(accel.magnitude);
-        if(accel.magnitude > 5)
+        if(accel.magnitude > thresholdMagnitude)
         {
             if(!isThrowing){
                 rodTime = DateTime.Now;
                 isThrowing = true;
             }
-            if (maxMagunitude < accel.magnitude)
+            if (maxMagnitude < accel.magnitude)
             {
-                maxMagunitude = accel.magnitude;
+                maxMagnitude = accel.magnitude;
             }
         }
-        if (((DateTime.Now - rodTime).TotalSeconds > 1) && isThrowing)
+        if (((DateTime.Now - rodTime).TotalSeconds > throwingTime) && isThrowing)
         {
             isThrowing = false;
             Vector3 bite = transform.up;
             bite.y = 0;
-            bite = bite.normalized * -maxMagunitude;
+            bite = bite.normalized * -maxMagnitude;
             ball.SetActive(true);
             ball.GetComponent<Rigidbody>().linearVelocity = bite;
+            maxMagnitude = -1;
         }
     }
 
@@ -74,9 +76,9 @@ public class RodScript : MonoBehaviour
             transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
             CheckFeed();
         }
-        catch
+        catch(Exception e)
         {
-            Debug.Log("none");
+            Debug.Log(e);
         }
     }
 }

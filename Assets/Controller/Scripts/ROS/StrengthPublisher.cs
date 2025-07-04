@@ -1,3 +1,4 @@
+using System.Threading;
 using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 
@@ -9,7 +10,7 @@ public class StrengthPublisher : UnityPublisher<String>
 {
     protected override void Start()
     {
-        base.Start();
+        if (GetComponent<RosConnector>().IsConnected.WaitOne(1000)) base.Start();
     }
 
     /// <summary>

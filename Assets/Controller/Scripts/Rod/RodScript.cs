@@ -38,7 +38,7 @@ public class RodScript : MonoBehaviour
         baseRotationY = y;
     }
 
-    void Checkfeed()
+    void CheckFeed()
     {
         Vector3 accel = new Vector3((float)imus[id].linear_acceleration.x, (float)imus[id].linear_acceleration.y, (float)imus[id].linear_acceleration.z);
         Debug.Log(accel.magnitude);
@@ -53,7 +53,7 @@ public class RodScript : MonoBehaviour
                 maxMagunitude = accel.magnitude;
             }
         }
-        if ((((DateTime.Now - rodTime).TotalSeconds > 1) && (isThrowing)))
+        if (((DateTime.Now - rodTime).TotalSeconds > 1) && isThrowing)
         {
             isThrowing = false;
             Vector3 bite = transform.up;
@@ -72,7 +72,7 @@ public class RodScript : MonoBehaviour
             Quaternion zRotation = Quaternion.AngleAxis(90f, Vector3.forward);
             Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
             transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
-            Checkfeed();
+            CheckFeed();
         }
         catch
         {

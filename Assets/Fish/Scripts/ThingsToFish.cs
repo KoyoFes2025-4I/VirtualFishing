@@ -1,3 +1,4 @@
+ï»¿using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -6,8 +7,9 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(BattleManager))]
 [RequireComponent(typeof(PointManager))]
 [RequireComponent(typeof(InWaterManager))]
+[RequireComponent(typeof(Rigidbody))]
 
-// u’Ş‚é‚à‚Ìv‚Ì‹¤’Ê‚Ìˆ—‚âƒtƒB[ƒ‹ƒh‚ğ‘‚¢‚½eƒNƒ‰ƒXi’ŠÛƒNƒ‰ƒXj
+// ã€Œé‡£ã‚‹ã‚‚ã®ã€ã®å…±é€šã®å‡¦ç†ã‚„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’æ›¸ã„ãŸè¦ªã‚¯ãƒ©ã‚¹ï¼ˆæŠ½è±¡ã‚¯ãƒ©ã‚¹ï¼‰
 
 public abstract class ThingsToFish : MonoBehaviour
 {
@@ -16,47 +18,51 @@ public abstract class ThingsToFish : MonoBehaviour
     private BattleManager battleManager;
     private PointManager pointManager;
     private InWaterManager inWaterManager;
+    private Rigidbody rb;
 
-    //[SerializeField] private GameObject model; // 3Dƒ‚ƒfƒ‹
-    //[SerializeField] private Texture2D objectTexture; // ƒ‚ƒfƒ‹‚É’£‚è•t‚¯‚é2DƒeƒNƒXƒ`ƒƒiUV“WŠJ‚ª•K—vj
-    [SerializeField] private string objectName; // ƒIƒuƒWƒFƒNƒg–¼
-    [SerializeField] private int strength; // ‘Ì—Íƒpƒ‰ƒ[ƒ^
-    [SerializeField] private int power; // —Íƒpƒ‰ƒ[ƒ^
-    [SerializeField] private int weight; // d—ÊiˆÚ“®‘¬“xjƒpƒ‰ƒ[ƒ^
-    [SerializeField] private int point; // ’Ş‚Á‚½‚Ì“¾“_
-    [SerializeField] private string creater; // »ìÒiIDj
-    [SerializeField] private string AnimController; // “K—p‚·‚éAnimation Controller‚Ì–¼‘OiResources/Animations”z‰ºj
+    //[SerializeField] private GameObject model; // 3Dãƒ¢ãƒ‡ãƒ«
+    //[SerializeField] private Texture2D objectTexture; // ãƒ¢ãƒ‡ãƒ«ã«å¼µã‚Šä»˜ã‘ã‚‹2Dãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼ˆUVå±•é–‹ãŒå¿…è¦ï¼‰
+    [SerializeField] private string objectName; // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå
+    [SerializeField] private int strength; // ä½“åŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+    [SerializeField] private int power; // åŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+    [SerializeField] private int weight; // é‡é‡ï¼ˆç§»å‹•é€Ÿåº¦ï¼‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+    [SerializeField] private int point; // é‡£ã£ãŸæ™‚ã®å¾—ç‚¹
+    [SerializeField] private string creater; // è£½ä½œè€…ï¼ˆIDï¼‰
+    [SerializeField] private string AnimController; // é©ç”¨ã™ã‚‹Animation Controllerã®åå‰ï¼ˆResources/Animationsé…ä¸‹ï¼‰
 
-    private string AnimPath => "Animations/" + AnimController;// ResourcesˆÈ‰º‚ÌƒpƒX‚ğì¬
+    private float speed; // é­šã®ç§»å‹•é€Ÿåº¦
+    private Vector3 directionVector; // å£ã«å½“ãŸã£ãŸæ™‚ã®é­šã®åè»¢æ–¹å‘ï¼ˆãƒ©ãƒ³ãƒ€ãƒ ï¼‰
 
-    // strength‚Æpower‚ÌƒQƒbƒ^[iƒoƒgƒ‹ˆ—‚Åg‚¤j
+    private string AnimPath => "Animations/" + AnimController;// Resourcesä»¥ä¸‹ã®ãƒ‘ã‚¹ã‚’ä½œæˆ
+
+    // strengthã¨powerã®ã‚²ãƒƒã‚¿ãƒ¼ï¼ˆãƒãƒˆãƒ«å‡¦ç†ã§ä½¿ã†ï¼‰
     public int Strength => strength;
     public int Power => power;
 
-    public Vector3 currentPosition { get; private set; } //ƒIƒuƒWƒFƒNƒg‚ÌŒ»İ‚Ì3ŸŒ³À•W
+    public Vector3 currentPosition { get; private set; } //ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¾åœ¨ã®3æ¬¡å…ƒåº§æ¨™
 
-    public bool isInWater { get; private set; } = false; // ’Ş‚èŠÆ‚Ì’……ƒtƒ‰ƒO
-    public bool wasCaught { get; private set; } = false; // ‰aƒIƒuƒWƒFƒNƒg‚Æ‚ÌÚGƒtƒ‰ƒO
-    public bool hasStartedBattle { get; private set; } = false; // ƒoƒgƒ‹ŠJn‚Ìƒtƒ‰ƒO
-    public bool isInBattle { get; private set; } = false; // ‹›‚ğ’Ş‚è‚ ‚°‚éƒoƒgƒ‹’†‚Å‚ ‚éƒtƒ‰ƒO
-    public bool wasSuccessFishing { get; private set; } = false; // ’Ş‚èã‚°‚É¬Œ÷‚µ‚½ƒtƒ‰ƒO
-    public bool wasFinishFishing { get; private set; } = false; // ’Ş‚èƒoƒgƒ‹I—¹ƒtƒ‰ƒO
+    public bool isInWater { get; private set; } = false; // é‡£ã‚Šç«¿ã®ç€æ°´ãƒ•ãƒ©ã‚°
+    public bool wasCaught { get; private set; } = false; // é¤Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã®æ¥è§¦ãƒ•ãƒ©ã‚°
+    public bool hasStartedBattle { get; private set; } = false; // ãƒãƒˆãƒ«é–‹å§‹ã®ãƒ•ãƒ©ã‚°
+    public bool isInBattle { get; private set; } = false; // é­šã‚’é‡£ã‚Šã‚ã’ã‚‹ãƒãƒˆãƒ«ä¸­ã§ã‚ã‚‹ãƒ•ãƒ©ã‚°
+    public bool wasSuccessFishing { get; private set; } = false; // é‡£ã‚Šä¸Šã’ã«æˆåŠŸã—ãŸãƒ•ãƒ©ã‚°
+    public bool wasFinishFishing { get; private set; } = false; // é‡£ã‚Šãƒãƒˆãƒ«çµ‚äº†ãƒ•ãƒ©ã‚°
 
-    // Šeƒtƒ‰ƒO‚ÌƒZƒbƒ^[
+    // å„ãƒ•ãƒ©ã‚°ã®ã‚»ãƒƒã‚¿ãƒ¼
     public void SetTrueInBattle() => isInBattle = true;
     public void SetFalseInBattle() => isInBattle = false;
     public void SetSuccessFishing() => wasSuccessFishing = true;
     public void SetFinishFishing() => wasFinishFishing= true;
     public void SetIsInWater() => isInWater = true;
 
-    // Šeƒtƒ‰ƒO‚ÌƒQƒbƒ^[iAnimation Controller‚Åg‚¤j
+    // å„ãƒ•ãƒ©ã‚°ã®ã‚²ãƒƒã‚¿ãƒ¼ï¼ˆAnimation Controllerã§ä½¿ã†ï¼‰
     public bool IsInWater => isInWater;
     public bool WasCaught => wasCaught;
     public bool IsInBattle => isInBattle;
     public bool WasSuccessFishing => wasSuccessFishing;
     public bool WasFinishFishing => wasFinishFishing;
 
-    // ó‘ÔƒŠƒZƒbƒg—pƒƒ\ƒbƒh
+    // çŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆç”¨ãƒ¡ã‚½ãƒƒãƒ‰
     public void ResetCatchState()
     {
         isInWater = false;
@@ -66,110 +72,109 @@ public abstract class ThingsToFish : MonoBehaviour
         wasFinishFishing = false;
     }
 
-    // ‰aƒIƒuƒWƒFƒNƒgiƒ^ƒO–¼: Feedj‚ÆÚG‚µ‚½‚Ìˆ—
+    // ç‰¹å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã®æ¥è§¦æ™‚å‡¦ç†
     public void OnCollisionEnter(Collision collision)
     {
-        // ƒoƒgƒ‹’†‚Í‚±‚ÌÚG”»’è‚Í“®ì‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+
+        // é­šãŒFeedã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å½“ãŸã£ãŸã‚‰wasCaughtã‚’Trueã«ã™ã‚‹
+        // ãƒãƒˆãƒ«ä¸­ã¯ã“ã®æ¥è§¦åˆ¤å®šã¯å‹•ä½œã—ãªã„ã‚ˆã†ã«ã™ã‚‹
         if (collision.gameObject.CompareTag("Feed") && isInWater && !isInBattle)
         {
             wasCaught = true;
-            Debug.Log("‹›‚ª’Ş‚èã‚°‚ç‚ê‚Ü‚µ‚½B");
+            Debug.Log("é­šãŒé‡£ã‚Šä¸Šã’ã‚‰ã‚Œã¾ã—ãŸã€‚");
         }
-    }
 
-    private float timer = 0f;
-    public float reverseInterval = 5.0f; // •ûŒü”½“]‚ÌƒCƒ“ƒ^[ƒoƒ‹
-    private int direction = 1;
-
-
-    // ‹›‚Ì‰j‚¬‚Ì“®‚«‚ÌƒAƒ‹ƒSƒŠƒYƒ€
-    protected virtual void MovementConfig()
-    {
-
-        // d—Ê‚Ìƒpƒ‰ƒ[ƒ^‚ÅˆÚ“®‘¬“x‚ğŒˆ‚ß‚Ä‹›‚ğˆÚ“®‚³‚¹‚é(ƒ[ƒJƒ‹²‚É‡‚í‚¹‚Ä‚¨‚­)
-        transform.Translate(Vector3.right * direction * Time.deltaTime / weight, Space.Self);
-
-        // ƒ^ƒCƒ}[XV
-        timer += Time.deltaTime;
-
-        // ˆê’èŠÔŒo‰ß‚Å•ûŒü”½“]
-        if (timer >= reverseInterval)
+        // é­šãŒWallã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å½“ãŸã£ãŸã‚‰é€²è¡Œæ–¹å‘ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«å¤‰ãˆã‚‹ï¼ˆå£ã‹ã‚‰é£›ã³å‡ºãªã„ã‚ˆã†ã«åå°„ã™ã‚‹ï¼‰
+        if (collision.gameObject.CompareTag("Wall"))
         {
-            direction *= -1; // •ûŒü”½“]
-            timer = 0f; // ƒ^ƒCƒ}[ƒŠƒZƒbƒg
+            // å£ã®æ³•ç·šã‚’å–å¾—
+            Vector3 normal = collision.contacts[0].normal;
+
+            // ç¾åœ¨ã®é€²è¡Œæ–¹å‘ã‚’å£æ³•ç·šã§åå°„
+            directionVector = Vector3.Reflect(directionVector, normal);
+
+            // å°‘ã—ãƒ©ãƒ³ãƒ€ãƒ ãªæºã‚‰ãã‚’åŠ ãˆã‚‹ï¼ˆXZå¹³é¢ã®ã¿ï¼‰
+            directionVector += new Vector3(
+                Random.Range(-0.2f, 0.2f),
+                0f,
+                Random.Range(-0.2f, 0.2f)
+            );
+
+            directionVector = directionVector.normalized;
+            Debug.Log("å£ã«å½“ãŸã‚Šã¾ã—ãŸã€‚");
         }
 
     }
 
-    // ƒoƒgƒ‹‚ÉŸ‚Á‚½‚ÉŒÄ‚Î‚ê‚éˆ—
+    // ãƒãƒˆãƒ«ã«å‹ã£ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹å‡¦ç†
     protected virtual void WinFishing()
     {
 
-        animator.SetBool("win", true);// winƒpƒ‰ƒ[ƒ^‚ğtrue‚É‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‘JˆÚ
+        animator.SetBool("win", true);// winãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’trueã«ã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é·ç§»
 
-        pointManager.AddPoint(point); // ’Ş‚èã‚°‚½‹›‚Ì“¾“_‚ğ‰ÁZ
-        ResetCatchState(); // ƒtƒ‰ƒO‚Ìó‘Ô‚ÌƒŠƒZƒbƒg
+        pointManager.AddPoint(point); // é‡£ã‚Šä¸Šã’ãŸé­šã®å¾—ç‚¹ã‚’åŠ ç®—
+        ResetCatchState(); // ãƒ•ãƒ©ã‚°ã®çŠ¶æ…‹ã®ãƒªã‚»ãƒƒãƒˆ
 
-        Debug.Log($"{creater}ì¬u{objectName}v‚ğŠl“¾Bƒ|ƒCƒ“ƒg‚Í{point}“_B");
+        Debug.Log($"{creater}ä½œæˆã€Œ{objectName}ã€ã‚’ç²å¾—ã€‚ãƒã‚¤ãƒ³ãƒˆã¯{point}ç‚¹ã€‚");
         
-        // •K—v‚Èƒf[ƒ^‚Íƒf[ƒ^ƒx[ƒX‚ÖŠi”[‚·‚é‚æ‚¤‚É‚µ‚½‚¢
+        // å¿…è¦ãªãƒ‡ãƒ¼ã‚¿ã¯ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã¸æ ¼ç´ã™ã‚‹ã‚ˆã†ã«ã—ãŸã„
 
-        animator.SetBool("toExit", true);// toExitƒpƒ‰ƒ[ƒ^‚ğtrue‚É‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‘JˆÚ
+        animator.SetBool("toExit", true);// toExitãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’trueã«ã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é·ç§»
 
-        Destroy(gameObject); // ƒIƒuƒWƒFƒNƒg‚ÌÁ‹
+        Destroy(gameObject); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ¶ˆå»
 
     }
 
-    // ƒoƒgƒ‹‚É•‰‚¯‚½‚ÉŒÄ‚Î‚ê‚éˆ—
+    // ãƒãƒˆãƒ«ã«è² ã‘ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹å‡¦ç†
     protected virtual void LoseFishing()
     {
 
-        animator.SetBool("lose", true);// loseƒpƒ‰ƒ[ƒ^‚ğtrue‚É‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‘JˆÚ
+        animator.SetBool("lose", true);// loseãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’trueã«ã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é·ç§»
 
-        ResetCatchState(); // ƒtƒ‰ƒO‚Ìó‘Ô‚ÌƒŠƒZƒbƒg
+        ResetCatchState(); // ãƒ•ãƒ©ã‚°ã®çŠ¶æ…‹ã®ãƒªã‚»ãƒƒãƒˆ
 
-        // •‰‚¯‚½‚ÌŒã‚Ì‹›ƒIƒuƒWƒFƒNƒg‚ÉŠÖ‚·‚éˆ—‚ğ‘‚­
+        // è² ã‘ãŸæ™‚ã®å¾Œã®é­šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«é–¢ã™ã‚‹å‡¦ç†ã‚’æ›¸ã
 
-        animator.SetBool("toExit", true);// toExitƒpƒ‰ƒ[ƒ^‚ğtrue‚É‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‘JˆÚ
+        animator.SetBool("toExit", true);// toExitãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’trueã«ã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é·ç§»
 
-        Destroy(gameObject); // ƒIƒuƒWƒFƒNƒg‚ÌÁ‹
+        Destroy(gameObject); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ¶ˆå»
 
     }
    
-    // ‹›‚ª•ß‚Ü‚Á‚Ä‚©‚ç‚Ìˆ—
+    // é­šãŒæ•ã¾ã£ã¦ã‹ã‚‰ã®å‡¦ç†
     protected virtual void HandleFishing()
     {
 
-        // ’……’†‚É‰aƒIƒuƒWƒFƒNƒg‚ÆÚG‚µ‚½‚ÍŸ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ÉˆÚs
+        // ç€æ°´ä¸­ã«é¤Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨æ¥è§¦ã—ãŸæ™‚ã¯æ¬¡ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã«ç§»è¡Œ
         if (isInWater && wasCaught)
         {
 
-            animator.SetBool("wasCaught", true);// wasCaughtƒpƒ‰ƒ[ƒ^‚ğtrue‚É‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‘JˆÚ
+            animator.SetBool("wasCaught", true);// wasCaughtãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’trueã«ã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é·ç§»
 
-            // ƒoƒgƒ‹‚ªn‚Ü‚é
+            // ãƒãƒˆãƒ«ãŒå§‹ã¾ã‚‹æ™‚
             if (!isInBattle && !hasStartedBattle)
             {
-                hasStartedBattle = true; // 2“x–Ú‚ÍŒÄ‚Î‚ê‚È‚¢‚æ‚¤‚É‚·‚é
-                battleManager.DoBattle(); // ƒoƒgƒ‹ˆ—‚ÌŠJn
+                hasStartedBattle = true; // 2åº¦ç›®ã¯å‘¼ã°ã‚Œãªã„ã‚ˆã†ã«ã™ã‚‹
+                battleManager.DoBattle(); // ãƒãƒˆãƒ«å‡¦ç†ã®é–‹å§‹
             }
 
-            // ƒoƒgƒ‹ˆ—‚ªI—¹‚µ‚½
+            // ãƒãƒˆãƒ«å‡¦ç†ãŒçµ‚äº†ã—ãŸæ™‚
             if (wasFinishFishing)
             {
 
-                // ‹›‚Ì’Ş‚èã‚°‚É¬Œ÷‚µ‚Ä‚¢‚½
+                // é­šã®é‡£ã‚Šä¸Šã’ã«æˆåŠŸã—ã¦ã„ãŸæ™‚
                 if (wasSuccessFishing)
                 {
                     WinFishing();
                 }
 
-                // ‹›‚Ì’Ş‚èã‚°‚É¸”s‚µ‚Ä‚¢‚½
+                // é­šã®é‡£ã‚Šä¸Šã’ã«å¤±æ•—ã—ã¦ã„ãŸæ™‚
                 else
                 {
                     LoseFishing();
                 }
 
-                Debug.Log($"Œ»İ‚Ì‡Œv“_”‚Í{pointManager.GetSumPoint()}“_‚Å‚·B");
+                Debug.Log($"ç¾åœ¨ã®åˆè¨ˆç‚¹æ•°ã¯{pointManager.GetSumPoint()}ç‚¹ã§ã™ã€‚");
 
             }
 
@@ -177,13 +182,22 @@ public abstract class ThingsToFish : MonoBehaviour
 
     }
 
-    // ˆË‘¶ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì‰Šú‰»ˆ—
+    // ä¾å­˜ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®åˆæœŸåŒ–å‡¦ç†
     protected virtual void Awake()
     {
-        
+
+        speed = 30000 / weight; // weightã®å€¤ã‚’ä½¿ã£ã¦ç§»å‹•é€Ÿåº¦ã‚’æ±ºå®š
+
+        // -1.0 ã€œ 1.0 ã®ç¯„å›²ã§é­šã®å‹•ãæ–¹å‘ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«æ±ºã‚ã‚‹
+        directionVector = new Vector3(
+            Random.Range(-1f, 1f),
+            0f, // Yè»¸æ–¹å‘ã«ã¯å‹•ã‹ã•ãªã„ï¼ˆæ°´å¹³ã ã‘ï¼‰
+            Random.Range(-1f, 1f)
+        ).normalized;
+
         battleManager = GetComponent<BattleManager>();
 
-        // Œp³‚µ‚½ê‡‚É‘S‚Ä‚ÌqƒNƒ‰ƒX‚Å‚à©“®‚ÅƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾‚³‚¹‚é
+        // ç¶™æ‰¿ã—ãŸå ´åˆã«å…¨ã¦ã®å­ã‚¯ãƒ©ã‚¹ã§ã‚‚è‡ªå‹•ã§ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—ã•ã›ã‚‹
         if (battleManager == null)
         {
             battleManager = gameObject.AddComponent<BattleManager>();
@@ -207,28 +221,37 @@ public abstract class ThingsToFish : MonoBehaviour
 
         if (animator == null)
         {
-            Debug.LogError($"{gameObject.name} ‚ÉAnimatorƒRƒ“ƒ|[ƒlƒ“ƒg‚ª‚ ‚è‚Ü‚¹‚ñ");
+            Debug.LogError($"{gameObject.name} ã«Animatorã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒã‚ã‚Šã¾ã›ã‚“");
             return;
         }
 
         if (animator.runtimeAnimatorController == null)
         {
 
-            // Assets/Resources/Animations/FishAnimationLogic.controller‚ğ“Ç‚İ‚Ş
+            // Assets/Resources/Animations/FishAnimationLogic.controllerã‚’èª­ã¿è¾¼ã‚€
             RuntimeAnimatorController controller = Resources.Load<RuntimeAnimatorController>(AnimPath);
 
-            // ŠeƒIƒuƒWƒFƒNƒg‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‘JˆÚ‚ÍAnimator Controller‚Å§Œä‚·‚é
+            // å„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é·ç§»ã¯Animator Controllerã§åˆ¶å¾¡ã™ã‚‹
             if (controller != null)
             {
-                animator.runtimeAnimatorController = controller;@// w’è‚µ‚½Animator Controller‚ğ©“®ƒAƒ^ƒbƒ`
+                animator.runtimeAnimatorController = controller;ã€€// æŒ‡å®šã—ãŸAnimator Controllerã‚’è‡ªå‹•ã‚¢ã‚¿ãƒƒãƒ
             }
 
             else
             {
-                Debug.LogWarning(AnimPath + "‚ÍŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½");
+                Debug.LogWarning(AnimPath + "ã¯è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ");
             }
 
         }
+
+        rb = GetComponent<Rigidbody>();
+
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+
+        rb.useGravity = false; // é‡åŠ›ã‚’ç„¡åŠ¹åŒ–
 
     }
 
@@ -237,20 +260,20 @@ public abstract class ThingsToFish : MonoBehaviour
         //ApplyTextureToModel();
     }
 
-    // UV“WŠJÏ‚İ‚Ì3Dƒ‚ƒfƒ‹‚Éİ’è‚µ‚½2DƒeƒNƒXƒ`ƒƒ‚ğ’£‚è•t‚¯‚éˆ—
+    // UVå±•é–‹æ¸ˆã¿ã®3Dãƒ¢ãƒ‡ãƒ«ã«è¨­å®šã—ãŸ2Dãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¼µã‚Šä»˜ã‘ã‚‹å‡¦ç†
     //private void ApplyTextureToModel()
     //{
 
-        // ƒVƒF[ƒ_[‚ğg‚Á‚ÄV‚µ‚¢ƒ}ƒeƒŠƒAƒ‹i3Dƒ‚ƒfƒ‹‚ÌŒ©‚½–Új‚ğì¬
+        // ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦æ–°ã—ã„ãƒãƒ†ãƒªã‚¢ãƒ«ï¼ˆ3Dãƒ¢ãƒ‡ãƒ«ã®è¦‹ãŸç›®ï¼‰ã‚’ä½œæˆ
         //Material newMaterial = new Material(Shader.Find("Standard"));
 
-        // ƒ}ƒeƒŠƒAƒ‹‚ÖƒeƒNƒXƒ`ƒƒ‚ğŠ„‚è“–‚Ä
+        // ãƒãƒ†ãƒªã‚¢ãƒ«ã¸ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å‰²ã‚Šå½“ã¦
         //newMaterial.mainTexture = objectTexture;
 
-        // İ’è‚µ‚½3Dƒ‚ƒfƒ‹imodelj‚©‚çMeshRendererƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+        // è¨­å®šã—ãŸ3Dãƒ¢ãƒ‡ãƒ«ï¼ˆmodelï¼‰ã‹ã‚‰MeshRendererã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
         //MeshRenderer meshRenderer = model.GetComponent<MeshRenderer>();
 
-        // model‚ÌmeshRenderer‚Ìƒ}ƒeƒŠƒAƒ‹‚ğV‚µ‚­ì‚Á‚½ƒ}ƒeƒŠƒAƒ‹‚É·‚µ‘Ö‚¦‚é
+        // modelã®meshRendererã®ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’æ–°ã—ãä½œã£ãŸãƒãƒ†ãƒªã‚¢ãƒ«ã«å·®ã—æ›¿ãˆã‚‹
         //meshRenderer.material = newMaterial;
 
     //}
@@ -259,11 +282,12 @@ public abstract class ThingsToFish : MonoBehaviour
     protected virtual void Update()
     {
 
-        currentPosition = transform.position; // ƒIƒuƒWƒFƒNƒg‚Ì3ŸŒ³À•W‚Ìæ“¾
+        currentPosition = transform.position; // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®3æ¬¡å…ƒåº§æ¨™ã®å–å¾—
 
         if (!wasCaught)
-        {
-            MovementConfig(); // –ˆƒtƒŒ[ƒ€ƒIƒuƒWƒFƒNƒg‚ÌˆÊ’u‚ğ“®‚©‚µ‚È‚ª‚çƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+        {   
+           rb.MovePosition(transform.position + directionVector * speed * Time.deltaTime); ; // æ¯ãƒ•ãƒ¬ãƒ¼ãƒ é­šã‚’ç§»å‹•ã•ã›ã‚‹
+           transform.right = -directionVector; // é€²è¡Œæ–¹å‘ã«å‘ãã‚’åˆã‚ã›ã‚‹ï¼ˆé€²è¡Œæ–¹å‘ã«åˆã‚ã›ã¦å›è»¢ï¼‰
         }
 
         HandleFishing();

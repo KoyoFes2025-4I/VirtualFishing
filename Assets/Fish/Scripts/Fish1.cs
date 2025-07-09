@@ -6,15 +6,6 @@ public class Fish1 : ThingsToFish
     // フィールドはinspectorから設定
     // 親クラスで定義したOnCollisionEnter、Awake、Updateなどは自動で実行される
 
-    protected override void MovementConfig()
-    {
-
-        base.MovementConfig(); // 親クラスに書かれている処理
-
-        // 何かこのオブジェクトで固有の処理を書きたい場合はオーバーライド
-
-    }
-
     protected override void WinFishing()
     {
 
@@ -31,6 +22,13 @@ public class Fish1 : ThingsToFish
 
         // オーバーライド
 
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        // オーバーライド
     }
 
 }

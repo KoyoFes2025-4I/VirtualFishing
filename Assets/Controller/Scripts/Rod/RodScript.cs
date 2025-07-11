@@ -16,6 +16,8 @@ public class RodScript : MonoBehaviour
     [SerializeField]
     private StrengthPublisher strengthPublisher;
     [SerializeField]
+    private GameObject rod;
+    [SerializeField]
     private GameObject bite;
     private float baseRotationY = 0;
     private string id = "";
@@ -58,7 +60,7 @@ public class RodScript : MonoBehaviour
         {
             Quaternion zRotation = Quaternion.AngleAxis(90f, Vector3.forward);
             Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
-            transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
+            rod.transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
         } catch (Exception) {}
     }
 
@@ -93,7 +95,7 @@ public class RodScript : MonoBehaviour
                 {
                     bite.SetActive(false);
                     bite.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-                    bite.transform.position = transform.position + new Vector3(0, 10, 0);
+                    bite.transform.position = transform.position + new Vector3(0, 5, 0);
                     isThrown = false;
                 }
             }

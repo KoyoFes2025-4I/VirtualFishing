@@ -336,7 +336,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1794460725}
+  - {fileID: 853548395}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &734045463
@@ -356,6 +356,56 @@ MonoBehaviour:
   - position: {x: 0, y: 0, z: 0}
     id: 
   baseRotationY: 0
+--- !u!1 &853548394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 853548395}
+  - component: {fileID: 853548396}
+  m_Layer: 0
+  m_Name: RodTmp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &853548395
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853548394}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1794460725}
+  - {fileID: 1580793247}
+  m_Father: {fileID: 734045462}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &853548396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853548394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433e430e7fac1f541b701fed5583e504, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  imuSubscriber: {fileID: 28432076}
+  rotationSubscriber: {fileID: 28432075}
+  strengthPublisher: {fileID: 28432074}
+  bite: {fileID: 1580793242}
 --- !u!1 &888813011
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,12 +541,12 @@ GameObject:
   - component: {fileID: 1580793244}
   - component: {fileID: 1580793243}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Bite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!54 &1580793243
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -606,12 +656,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1580793242}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 853548395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1794460721
 GameObject:
@@ -627,12 +677,12 @@ GameObject:
   - component: {fileID: 1794460722}
   - component: {fileID: 1794460726}
   m_Layer: 0
-  m_Name: RodTmp
+  m_Name: Rod
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1794460722
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -720,7 +770,7 @@ Transform:
   m_LocalScale: {x: 1, y: 4, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 734045462}
+  m_Father: {fileID: 853548395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1794460726
 MonoBehaviour:
@@ -737,7 +787,7 @@ MonoBehaviour:
   imuSubscriber: {fileID: 28432076}
   rotationSubscriber: {fileID: 28432075}
   strengthPublisher: {fileID: 28432074}
-  ball: {fileID: 1580793242}
+  bite: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -745,5 +795,4 @@ SceneRoots:
   - {fileID: 6161985}
   - {fileID: 888813013}
   - {fileID: 28432072}
-  - {fileID: 1580793247}
   - {fileID: 734045462}

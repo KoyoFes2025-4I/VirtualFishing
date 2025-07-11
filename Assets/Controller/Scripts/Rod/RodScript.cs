@@ -83,9 +83,9 @@ public class RodScript : MonoBehaviour
                 if (!isThrown)
                 {
                     isThrowing = false;
-                    Vector3 biteVelocity = transform.up;
+                    Vector3 biteVelocity = rod.transform.up;
                     biteVelocity.y = 0;
-                    biteVelocity = biteVelocity.normalized * -maxMagnitude;
+                    biteVelocity = biteVelocity.normalized * - (maxMagnitude - thresholdMagnitude);
                     bite.SetActive(true);
                     bite.GetComponent<Rigidbody>().linearVelocity = biteVelocity;
                     maxMagnitude = -1;
@@ -96,11 +96,13 @@ public class RodScript : MonoBehaviour
                     bite.SetActive(false);
                     bite.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
                     bite.transform.position = transform.position + new Vector3(0, 5, 0);
+                    maxMagnitude = -1;
                     isThrown = false;
+                    isThrowing = false;
                 }
             }
         }
-        catch (Exception) { }
+        catch (Exception) {}
     }
 
     // Update is called once per frame

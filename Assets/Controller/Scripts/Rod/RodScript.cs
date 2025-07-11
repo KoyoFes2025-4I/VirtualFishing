@@ -23,8 +23,10 @@ public class RodScript : MonoBehaviour
     private string id = "";
     private float maxMagnitude = -1;
     private DateTime rodTime = DateTime.Now;
+    private float coolTime = 6;
     private bool isThrowing = false;
     private bool isThrown = false;
+    private bool coolDown = false;
     private float thresholdMagnitude = 5;
     private float throwingTime = 1;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -54,6 +56,11 @@ public class RodScript : MonoBehaviour
         throwingTime = time;
     }
 
+    void ClearCoolDown()
+    {
+        coolDown = false;
+    }
+
     void SetOrientation()
     {
         try
@@ -69,7 +76,7 @@ public class RodScript : MonoBehaviour
         try
         {
             Vector3 accel = new Vector3((float)imus[id].linear_acceleration.x, (float)imus[id].linear_acceleration.y, (float)imus[id].linear_acceleration.z);
-            if (accel.magnitude > thresholdMagnitude)
+            if (accel.magnitude > thresholdMagnitude && !coolDown)
             {
                 if (!isThrowing)
                 {
@@ -78,7 +85,7 @@ public class RodScript : MonoBehaviour
                 }
                 maxMagnitude = Math.Max(maxMagnitude, accel.magnitude);
             }
-            if (((DateTime.Now - rodTime).TotalSeconds > throwingTime) && isThrowing)
+            if (((DateTime.Now - rodTime).TotalSeconds > throwingTime) && isThrowing && !coolDown)
             {
                 if (!isThrown)
                 {
@@ -100,6 +107,8 @@ public class RodScript : MonoBehaviour
                     isThrown = false;
                     isThrowing = false;
                 }
+                coolDown = true;
+                Invoke("ClearCoolDown", coolTime);
             }
         }
         catch (Exception) {}

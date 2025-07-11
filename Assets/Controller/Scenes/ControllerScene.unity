@@ -541,6 +541,7 @@ GameObject:
   - component: {fileID: 1580793245}
   - component: {fileID: 1580793248}
   - component: {fileID: 1580793243}
+  - component: {fileID: 1580793249}
   m_Layer: 0
   m_Name: Bite
   m_TagString: Untagged
@@ -664,6 +665,21 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1580793249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580793242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2a263680a3ce4aab7e3c79bdefae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterLevel: 0
+  buoyancyForce: 20
+  radius: 0.5
 --- !u!1 &1794460721
 GameObject:
   m_ObjectHideFlags: 0

@@ -84,8 +84,8 @@ public abstract class ThingsToFish : MonoBehaviour
             Debug.Log("魚が釣り上げられました。");
         }
 
-        // 魚がWallオブジェクトに当たったら進行方向をランダムに変える（壁から飛び出ないように反射する）
-        if (collision.gameObject.CompareTag("Wall"))
+        // 魚オブジェクトが壁か他の魚に当たったら進行方向をランダムに変える（突き抜けないように反射する）
+        else
         {
             // 壁の法線を取得
             Vector3 normal = collision.contacts[0].normal;
@@ -101,7 +101,6 @@ public abstract class ThingsToFish : MonoBehaviour
             );
 
             directionVector = directionVector.normalized;
-            Debug.Log("壁に当たりました。");
         }
 
     }
@@ -186,7 +185,7 @@ public abstract class ThingsToFish : MonoBehaviour
     protected virtual void Awake()
     {
 
-        speed = 30000 / weight; // weightの値を使って移動速度を決定
+        speed = 1000000 / weight; // weightの値を使って移動速度を決定
 
         // -1.0 〜 1.0 の範囲で魚の動く方向をランダムに決める
         directionVector = new Vector3(
@@ -251,7 +250,11 @@ public abstract class ThingsToFish : MonoBehaviour
             rb = gameObject.AddComponent<Rigidbody>();
         }
 
+        rb.linearDamping = 1.0f; // 水中の抵抗感
         rb.useGravity = false; // 重力を無効化
+        rb.constraints = RigidbodyConstraints.FreezePositionY; // Y軸方向の動きを固定
+        rb.constraints = RigidbodyConstraints.FreezePositionY; // Y軸方向の回転を固定
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous; // Detectionをcoutinuousにする
 
     }
 
@@ -278,22 +281,29 @@ public abstract class ThingsToFish : MonoBehaviour
 
     //}
 
+    // 物理演算をする魚の移動のUpdate処理
+    protected virtual void FixedUpdate()
+    {
+        if (!wasCaught)
+        {
+            // 毎フレーム魚を移動させる
+            rb.AddForce(directionVector * speed * Time.fixedDeltaTime, ForceMode.Acceleration);
+            // 進行方向に向きを合わせる（進行方向に合わせて回転）
+            transform.right = -directionVector;
+        }
+        else
+        {
+            // 魚が捕まったら移動しないようにする
+            rb.linearVelocity = Vector3.zero;
+        }
+    }
 
+    // 物理演算以外のUpdate処理
     protected virtual void Update()
     {
-
         currentPosition = transform.position; // オブジェクトの3次元座標の取得
-
-        if (!wasCaught)
-        {   
-           rb.MovePosition(transform.position + directionVector * speed * Time.deltaTime); ; // 毎フレーム魚を移動させる
-           transform.right = -directionVector; // 進行方向に向きを合わせる（進行方向に合わせて回転）
-        }
-
-        HandleFishing();
+        HandleFishing(); // 魚が捕まってからの処理
 
     }
 
 }
-    
-    

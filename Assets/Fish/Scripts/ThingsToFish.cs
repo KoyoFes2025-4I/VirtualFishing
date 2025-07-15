@@ -21,7 +21,7 @@ public abstract class ThingsToFish : MonoBehaviour
     private Rigidbody rb;
 
     //[SerializeField] private GameObject model; // 3Dモデル
-    //[SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（UV展開が必要）
+    [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（UV展開が必要）
     [SerializeField] private string objectName; // オブジェクト名
     [SerializeField] private int strength; // 体力パラメータ
     [SerializeField] private int power; // 力パラメータ
@@ -260,26 +260,54 @@ public abstract class ThingsToFish : MonoBehaviour
 
     protected virtual void Start()
     {
-        //ApplyTextureToModel();
+        ApplyTextureToModel();
     }
 
     // UV展開済みの3Dモデルに設定した2Dテクスチャを張り付ける処理
-    //private void ApplyTextureToModel()
-    //{
+    private void ApplyTextureToModel()
+    {
+        // Standardシェーダーを取得
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
 
-        // シェーダーを使って新しいマテリアル（3Dモデルの見た目）を作成
-        //Material newMaterial = new Material(Shader.Find("Standard"));
+        if (shader == null)
+        {
+            Debug.LogError("URPのLitシェーダーが見つかりません。");
+            return;
+        }
 
-        // マテリアルへテクスチャを割り当て
-        //newMaterial.mainTexture = objectTexture;
+        // シェーダーを使って新しいマテリアルを作成
+        Material newMaterial = new Material(shader);
 
-        // 設定した3Dモデル（model）からMeshRendererコンポーネントを取得
-        //MeshRenderer meshRenderer = model.GetComponent<MeshRenderer>();
+        if (objectTexture == null)
+        {
+            Debug.LogError("objectTexture が設定されていません。");
+            return;
+        }
 
-        // modelのmeshRendererのマテリアルを新しく作ったマテリアルに差し替える
-        //meshRenderer.material = newMaterial;
+        // マテリアルへ2Dテクスチャ（画像ファイル）を割り当て
+        newMaterial.SetTexture("_BaseMap", objectTexture);
 
-    //}
+        // SkinnedMeshRendererコンポーネントを取得
+        SkinnedMeshRenderer meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+
+        if (meshRenderer != null)
+        {
+
+            // modelのmeshRendererのマテリアルを新しく作ったマテリアルに差し替える
+            meshRenderer.material = newMaterial;
+
+            // Shadow Atlasに配慮して影設定をOFFにする
+            meshRenderer.receiveShadows = false;
+            meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+
+        }
+
+        else
+        {
+            Debug.LogError("MeshRenderer が見つかりませんでした。");
+        }
+
+    }
 
     // 物理演算をする魚の移動のUpdate処理
     protected virtual void FixedUpdate()

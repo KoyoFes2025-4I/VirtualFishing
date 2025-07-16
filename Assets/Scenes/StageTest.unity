@@ -510,9 +510,9 @@ MonoBehaviour:
   prefab_position1: {x: 0, y: 0, z: 0}
   prefab_position2: {x: 100, y: 0, z: 0}
   prefab_position3: {x: -100, y: 0, z: 0}
-  prefab1: {fileID: 8006257576287114053, guid: 3ca8c1b49cdf7c14e9682dc88704827e, type: 3}
-  prefab2: {fileID: 7773119288404305052, guid: 460b6fac04d3db148b621e6aa86be0b0, type: 3}
-  prefab3: {fileID: 2888491081535101197, guid: 6762ac81b74e6ef46bc6e0c75f8c2cc2, type: 3}
+  prefab1: {fileID: 8830100892759145792, guid: 572f33eedc1a09a45a7adf5a4d2ab28b, type: 3}
+  prefab2: {fileID: 7812102029089772236, guid: d0233b5f70a3e3245a02e35a05f65b42, type: 3}
+  prefab3: {fileID: 491256993820096663, guid: 0314eeaa83279ed48b19a4484ef0a6a8, type: 3}
 --- !u!1 &881159003
 GameObject:
   m_ObjectHideFlags: 0
@@ -1271,7 +1271,7 @@ Transform:
   m_GameObject: {fileID: 1928734164}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 300, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1340,6 +1340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 006fb05cac1a3fb42bddd51e84c43fd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FeedPosition: {x: 300, y: 0, z: 300}
 --- !u!114 &1928734174
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -370,7 +370,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 546276080}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &546276083
 Camera:
   m_ObjectHideFlags: 0
@@ -583,7 +583,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 881159003}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &881159006
 Camera:
   m_ObjectHideFlags: 0

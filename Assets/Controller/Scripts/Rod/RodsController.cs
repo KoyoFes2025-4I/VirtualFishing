@@ -12,8 +12,8 @@ public class RodsController : MonoBehaviour
     private List<RodData> rodsData;
     [SerializeField]
     private float baseRotationY;
-    private List<GameObject> rodInstances = new List<GameObject>(); //�������ꂽrod�̔z��
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private List<GameObject> rodInstances = new List<GameObject>();
+    
     void Start()
     {
 

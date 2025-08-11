@@ -19,6 +19,8 @@ public class RodScript : MonoBehaviour
     private GameObject rod;
     [SerializeField]
     private GameObject bite;
+    [SerializeField]
+    private float power = 0.3f;
     private float baseRotationY = 0;
     private string id = "";
     private float maxMagnitude = -1;
@@ -92,7 +94,7 @@ public class RodScript : MonoBehaviour
                     isThrowing = false;
                     Vector3 biteVelocity = rod.transform.up;
                     biteVelocity.y = 0;
-                    biteVelocity = biteVelocity.normalized * - (maxMagnitude - thresholdMagnitude);
+                    biteVelocity = biteVelocity.normalized * - (maxMagnitude - thresholdMagnitude) * power;
                     bite.SetActive(true);
                     bite.GetComponent<Rigidbody>().linearVelocity = biteVelocity;
                     maxMagnitude = -1;

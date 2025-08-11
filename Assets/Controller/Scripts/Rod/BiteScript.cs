@@ -6,6 +6,7 @@ public class BiteScript : MonoBehaviour
     public float buoyancyForce = 10f;     // 浮力の強さ（調整してください）
     public float radius = 0.5f;           // 球の半径
     public float dragFactor = 2f;
+    public bool isAbleEat { get; private set; } = false;
 
     private Rigidbody rb;
     void Start()
@@ -24,10 +25,11 @@ public class BiteScript : MonoBehaviour
             float submergedPortion = Mathf.Clamp01((waterLevel - bottom) / (2f * radius));
             float force = buoyancyForce * submergedPortion;
             rb.AddForce(Vector3.up * force, ForceMode.Force);
-            
-            rb.AddForce(-rb.linearVelocity * dragFactor * submergedPortion);
 
+            rb.AddForce(-rb.linearVelocity * dragFactor * submergedPortion);
         }
+
+        isAbleEat = rb.linearVelocity.magnitude <= 0.1;
     }
 
     // Update is called once per frame

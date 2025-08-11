@@ -14,10 +14,11 @@ using UnityEngine.Rendering;
 public abstract class ThingsToFish : MonoBehaviour
 {
     public enum MoveState {SWIM, TURN, IDLE};
-    public MoveState moveState = MoveState.IDLE;
+    private MoveState moveState = MoveState.IDLE;
     private Animator animator;
     private Rigidbody rb;
 
+    [SerializeField] private RodsController rodsController;
     [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（画像ファイル）
     [SerializeField] private string objectName; // オブジェクト名
     [SerializeField] private string creater; // 製作者（ID）
@@ -25,6 +26,7 @@ public abstract class ThingsToFish : MonoBehaviour
     [SerializeField] private int power; // 力パラメータ
     [SerializeField] private int weight; // 重量パラメータ（移動速度の設定）
     [SerializeField] private int point; // 得点
+    [SerializeField] private float searchDistance = 10f;
 
     private float speed; // 魚の移動速度
     public Vector3 destination;
@@ -67,6 +69,7 @@ public abstract class ThingsToFish : MonoBehaviour
     void Awake()
     {
         speed = 1000 / weight; // weightの値を使って移動速度を決定
+        destination = transform.position;
         SetNewRandomDestination();
         rb = GetComponent<Rigidbody>();
     }
@@ -158,6 +161,17 @@ public abstract class ThingsToFish : MonoBehaviour
                     SetNewRandomDestination();
                     waitTime = -1;
                 }
+
+                foreach (BiteScript bite in rodsController.bites)
+                {
+                    if (bite.isAbleEat && (bite.transform.position - transform.position).magnitude <= searchDistance)
+                    {
+                        SetDestination(bite.transform.position.x, bite.transform.position.z);
+                        moveState = MoveState.TURN;
+                        waitTime = -1;
+                        break;
+                    }
+                }
                 break;
         }
     }
@@ -166,6 +180,12 @@ public abstract class ThingsToFish : MonoBehaviour
     {
         destination.x = transform.position.x + UnityEngine.Random.Range(10f, 15f) * (UnityEngine.Random.Range(-1f, 1f) > 0 ? 1 : -1);
         destination.z = transform.position.z + UnityEngine.Random.Range(10f, 15f) * (UnityEngine.Random.Range(-1f, 1f) > 0 ? 1 : -1);
+    }
+
+    public void SetDestination(float x, float z)
+    {
+        destination.x = x;
+        destination.z = z;
     }
 
     // 物理演算以外のUpdate処理

@@ -51,12 +51,12 @@ public class WaterScaleChange : MonoBehaviour
     void StageWallSet(float x, float z, GameObject w0, GameObject w1, GameObject w2, GameObject w3)
     {
         w0.transform.position = new Vector3(-x / 2, 0f, 0f);
-        w0.transform.localScale = new Vector3(wallThickness, 5f, z);
+        w0.transform.localScale = new Vector3(wallThickness, 100f, z);
         w1.transform.position = new Vector3(x / 2, 0f, 0f);
-        w1.transform.localScale = new Vector3(wallThickness, 5f, z);
+        w1.transform.localScale = new Vector3(wallThickness, 100f, z);
         w2.transform.position = new Vector3(0f, 0f, z / 2);
-        w2.transform.localScale = new Vector3(x, 5f, wallThickness);
+        w2.transform.localScale = new Vector3(x, 100f, wallThickness);
         w3.transform.position = new Vector3(0f, 0f, -z / 2);
-        w3.transform.localScale = new Vector3(x, 5f, wallThickness);
+        w3.transform.localScale = new Vector3(x, 100f, wallThickness);
     }
 }

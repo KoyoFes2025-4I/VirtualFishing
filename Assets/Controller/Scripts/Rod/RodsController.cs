@@ -13,7 +13,8 @@ public class RodsController : MonoBehaviour
     [SerializeField]
     private float baseRotationY;
     private List<GameObject> rodInstances = new List<GameObject>();
-    
+    public List<BiteScript> bites { get; private set; } = new List<BiteScript>();
+
     void Start()
     {
 
@@ -25,6 +26,8 @@ public class RodsController : MonoBehaviour
             instance.name = $"Rod(id:{rodsData[i].id})";
             instance.SetActive(true);
             rodInstances.Add(instance);
+
+            bites.Add(instance.transform.GetChild(1).GetComponent<BiteScript>());
         }
     }
 

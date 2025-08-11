@@ -29,7 +29,7 @@ public class BiteScript : MonoBehaviour
             rb.AddForce(-rb.linearVelocity * dragFactor * submergedPortion);
         }
 
-        isAbleEat = rb.linearVelocity.magnitude <= 0.1;
+        isAbleEat = rb.linearVelocity.magnitude <= 0.1 && gameObject.activeSelf;
     }
 
     // Update is called once per frame

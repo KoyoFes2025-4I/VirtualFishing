@@ -13,7 +13,7 @@ using UnityEngine.Rendering;
 
 public abstract class ThingsToFish : MonoBehaviour
 {
-    public enum MoveState {SWIM, TURN, IDLE, BATTLE};
+    public enum MoveState {SWIM, TURN, IDLE, BATTLE, NONE, SHOW};
     private MoveState moveState = MoveState.IDLE;
     private Animator animator;
     private Rigidbody rb;
@@ -178,6 +178,9 @@ public abstract class ThingsToFish : MonoBehaviour
                 rb.MovePosition(transform.position + bite.transform.position - transform.TransformPoint(Vector3.right * -2.5f));
                 rb.AddForce(-transform.forward * speed * Time.fixedDeltaTime * 2f, ForceMode.Acceleration);
                 break;
+
+            case MoveState.SHOW:
+                break;
         }
     }
 
@@ -206,21 +209,16 @@ public abstract class ThingsToFish : MonoBehaviour
     // 魚が負けた時に呼ばれる処理
     public virtual void Lose()
     {
-        Debug.Log("勝ちました");
-        Debug.Log($"{creator}作成「{objectName}」を獲得。ポイントは{point}点。");
-
         // 必要なデータはデータベースへ格納するようにしたい
 
-        animator.SetBool("wasCaught", false);// toExitパラメータをtrueにしてアニメーション遷移
         gameObject.SetActive(false);
+        moveState = MoveState.SHOW;
     }
 
     // 魚が勝った時に呼ばれる処理
     public virtual void Win()
     {
-        Debug.Log("負けました");
-
-        animator.SetBool("wasCaught", false);// toExitパラメータをtrueにしてアニメーション遷移
+        animator.SetBool("wasCaught", false);
         moveState = MoveState.IDLE;
     }
 

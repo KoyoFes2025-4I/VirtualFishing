@@ -91,7 +91,11 @@ public class RodScript : MonoBehaviour
             Quaternion zRotation = Quaternion.AngleAxis(90f, Vector3.forward);
             Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
             rod.transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
-        } catch (Exception) {}
+        }
+        catch (KeyNotFoundException)
+        {
+            uiScript.SetIDItalic();
+        }
     }
 
     void CheckFeed()
@@ -178,6 +182,11 @@ public class RodScript : MonoBehaviour
 
                     thing.Lose();
                     strengthPublisher.PublishStrength(id, 0);
+
+                    coolDown = true;
+                    uiScript.SetVisibleCTText(true);
+                    Invoke("ClearCoolDown", coolTime);
+                    uiScript.ShowReward(thing);
                 }
                 else if (rodStrength <= 0)
                 {
@@ -192,6 +201,11 @@ public class RodScript : MonoBehaviour
 
                     thing.Win();
                     strengthPublisher.PublishStrength(id, 0);
+
+                    coolDown = true;
+                    uiScript.SetVisibleCTText(true);
+                    Invoke("ClearCoolDown", coolTime);
+                    uiScript.ShowSimpleMessage("逃げられた...", 5);
                 }
             }
         } catch (KeyNotFoundException) {}

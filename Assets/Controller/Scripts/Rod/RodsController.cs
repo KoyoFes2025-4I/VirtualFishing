@@ -27,7 +27,7 @@ public class RodsController : MonoBehaviour
             instance.SetActive(true);
             rodInstances.Add(instance);
 
-            bites.Add(instance.transform.GetChild(1).GetComponent<BiteScript>());
+            bites.Add(instance.transform.GetChild(2).GetComponent<BiteScript>());
         }
     }
 

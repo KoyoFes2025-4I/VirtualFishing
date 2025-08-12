@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Numerics;
 using RosSharp;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using Unity.VisualScripting;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
 
 public class RodScript : MonoBehaviour
 {
@@ -28,6 +31,10 @@ public class RodScript : MonoBehaviour
     private float maxRodStrength = 100f;
     [SerializeField]
     private GameObject UI;
+    [SerializeField]
+    private LineRenderer line;
+    [SerializeField]
+    private GameObject tip;
     private UIScript uiScript;
     private float baseRotationY = 0;
     private string id = "";
@@ -198,5 +205,13 @@ public class RodScript : MonoBehaviour
 
         if (transform.position.x <= 0) UI.transform.eulerAngles = new Vector3(90, 90, 0);
         else UI.transform.eulerAngles = new Vector3(90, -90, 0);
+
+        line.positionCount = 1;
+        if (bite.activeSelf)
+        {
+            line.positionCount = 2;
+            line.SetPosition(1, bite.transform.position);
+        }
+        line.SetPosition(0, tip.transform.position);
     }
 }

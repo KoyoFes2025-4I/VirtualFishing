@@ -35,6 +35,8 @@ public class RodScript : MonoBehaviour
     private LineRenderer line;
     [SerializeField]
     private GameObject tip;
+    [SerializeField]
+    private BiteScript biteScript;
     private UIScript uiScript;
     private float baseRotationY = 0;
     private string id = "";
@@ -47,13 +49,14 @@ public class RodScript : MonoBehaviour
     private float thresholdMagnitude = 5;
     private float throwingTime = 1;
     private bool isBattle = false;
-    private BiteScript biteScript;
+
+    public BiteScript GetBiteScript => biteScript;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         imus = imuSubscriber.GetImus();
         rotations = rotationSubscriber.GetRotations();
-        biteScript = bite.GetComponent<BiteScript>();
         uiScript = UI.GetComponent<UIScript>();
         uiScript.SetID(id);
     }

@@ -55,6 +55,7 @@ public class UIScript : MonoBehaviour
         rewardThing = thing;
         thing.transform.position = this.thing.transform.position;
         thing.transform.eulerAngles = new Vector3(90, -90, 0);
+        thing.transform.localScale = Vector3.one;
         thing.gameObject.SetActive(true);
         Invoke(nameof(HideReward), 5);
     }

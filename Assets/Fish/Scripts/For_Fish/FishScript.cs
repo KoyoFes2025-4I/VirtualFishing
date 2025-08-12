@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Fish1 : ThingsToFish
+public class FishScript : ThingsToFish
 {
 
     // フィールドの値はinspectorから設定

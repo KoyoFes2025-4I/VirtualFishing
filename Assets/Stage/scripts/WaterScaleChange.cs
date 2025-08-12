@@ -15,6 +15,9 @@ public class WaterScaleChange : MonoBehaviour
     [SerializeField] private GameObject wall3;
     [SerializeField] private float wallThickness = 0.5f;
 
+    public float width { get; private set; }
+    public float height { get; private set; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -45,7 +48,8 @@ public class WaterScaleChange : MonoBehaviour
         cam1.orthographicSize = cameraSize;
         cam2.orthographicSize = cameraSize;
 
-        StageWallSet(width, height*2, wall0, wall1, wall2, wall3);
+        StageWallSet(width, height * 2, wall0, wall1, wall2, wall3);
+        this.width = width; this.height = height*2;
     }
 
     void StageWallSet(float x, float z, GameObject w0, GameObject w1, GameObject w2, GameObject w3)

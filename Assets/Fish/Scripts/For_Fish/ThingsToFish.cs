@@ -36,7 +36,7 @@ public abstract class ThingsToFish : MonoBehaviour
     public int GetPoint => point;
 
     private float speed; // 魚の移動速度
-    public Vector3 destination;
+    private Vector3 destination;
     private BiteScript bite;
 
     // 特定オブジェクトとの接触時処理
@@ -160,10 +160,13 @@ public abstract class ThingsToFish : MonoBehaviour
                     waitTime = -1;
                 }
 
+                float minDistance = float.MaxValue;
                 foreach (BiteScript bite in rodsController.bites)
                 {
-                    if (bite.isAbleEat && (bite.transform.position - transform.position).magnitude <= searchDistance)
+                    float distance = (bite.transform.position - transform.position).magnitude;
+                    if (bite.isAbleEat && distance <= searchDistance && minDistance > distance)
                     {
+                        minDistance = Mathf.Min(minDistance, distance);
                         SetDestination(bite.transform.position.x, bite.transform.position.z);
                         moveState = MoveState.TURN;
                         waitTime = -1;

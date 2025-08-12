@@ -6,16 +6,16 @@ public class Fish1 : ThingsToFish
     // フィールドの値はinspectorから設定
     // 親クラスで定義したOnCollisionEnterやAwakeなどは自動で実行される
 
-    protected override void WinFishing()
+    public override void Lose()
     {
-        base.WinFishing();
+        base.Lose();
 
         // オーバーライド
     }
 
-    protected override void LoseFishing()
+    public override void Win()
     {
-        base.LoseFishing();
+        base.Win();
 
         // オーバーライド
     }

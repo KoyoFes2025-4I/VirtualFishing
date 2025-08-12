@@ -7,6 +7,9 @@ public class BiteScript : MonoBehaviour
     public float radius = 0.5f;           // 球の半径
     public float dragFactor = 2f;
     public bool isAbleEat { get; private set; } = false;
+    public bool isBattle { get; private set; } = false;
+    [SerializeField]
+    RodScript rod;
 
     private Rigidbody rb;
     void Start()
@@ -29,7 +32,19 @@ public class BiteScript : MonoBehaviour
             rb.AddForce(-rb.linearVelocity * dragFactor * submergedPortion);
         }
 
-        isAbleEat = rb.linearVelocity.magnitude <= 0.1 && gameObject.activeSelf;
+        isAbleEat = rb.linearVelocity.magnitude <= 0.1 && gameObject.activeSelf && !isBattle;
+    }
+
+    public void InBattle(ThingsToFish thing)
+    {
+        if (isBattle) return;
+        isBattle = true;
+        rod.InBattle(thing);
+    }
+
+    public void OutBattle()
+    {
+        isBattle = false;
     }
 
     // Update is called once per frame

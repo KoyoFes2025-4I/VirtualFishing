@@ -13,7 +13,7 @@ using UnityEngine.Rendering;
 
 public abstract class ThingsToFish : MonoBehaviour
 {
-    public enum MoveState {SWIM, TURN, IDLE};
+    public enum MoveState {SWIM, TURN, IDLE, BATTLE};
     private MoveState moveState = MoveState.IDLE;
     private Animator animator;
     private Rigidbody rb;
@@ -21,27 +21,23 @@ public abstract class ThingsToFish : MonoBehaviour
     [SerializeField] private RodsController rodsController;
     [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（画像ファイル）
     [SerializeField] private string objectName; // オブジェクト名
-    [SerializeField] private string creater; // 製作者（ID）
+    [SerializeField] private string creator; // 製作者（ID）
     [SerializeField] private int strength; // 体力パラメータ
     [SerializeField] private int power; // 力パラメータ
     [SerializeField] private int weight; // 重量パラメータ（移動速度の設定）
     [SerializeField] private int point; // 得点
     [SerializeField] private float searchDistance = 10f;
 
+    public string GetObjectName => objectName;
+    public string GetCreator => creator;
+    public int GetStrength => strength;
+    public int GetPower => power;
+    public int GetWeight => weight;
+    public int GetPoint => point;
+
     private float speed; // 魚の移動速度
     public Vector3 destination;
-
-    public bool wasCaught { get; private set; } = false; // 餌オブジェクトとの接触フラグ
-    public bool wasSuccessFishing { get; private set; } = false; // 釣り上げに成功したフラグ
-    public bool wasFinishFishing { get; private set; } = false; // 釣りバトル終了フラグ
-
-    // strengthとpowerのゲッター（バトル処理で使う）
-    public int Strength => strength;
-    public int Power => power;
-
-    // セッター
-    public void SetSuccessFishing() => wasSuccessFishing = true;
-    public void SetFinishFishing() => wasFinishFishing= true;
+    private BiteScript bite;
 
     // 特定オブジェクトとの接触時処理
     void OnCollisionEnter(Collision collision)
@@ -49,7 +45,8 @@ public abstract class ThingsToFish : MonoBehaviour
         // 魚が着水中にFeedオブジェクトに当たったら
         if (collision.gameObject.CompareTag("Feed"))
         {
-            Debug.Log("Feedに当たりました");
+            bite = collision.gameObject.GetComponent<BiteScript>();
+            bite.InBattle(this);
         }
         else
         {
@@ -72,6 +69,7 @@ public abstract class ThingsToFish : MonoBehaviour
         destination = transform.position;
         SetNewRandomDestination();
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -173,7 +171,19 @@ public abstract class ThingsToFish : MonoBehaviour
                     }
                 }
                 break;
+
+            case MoveState.BATTLE:
+                SetDestination(bite.transform.position.x, bite.transform.position.y);
+                animator.SetBool("wasCaught", true);
+                rb.MovePosition(transform.position + bite.transform.position - transform.TransformPoint(Vector3.right * -2.5f));
+                rb.AddForce(-transform.forward * speed * Time.fixedDeltaTime * 2f, ForceMode.Acceleration);
+                break;
         }
+    }
+
+    public void InBattle()
+    {
+        moveState = MoveState.BATTLE;
     }
 
     public void SetNewRandomDestination()
@@ -191,75 +201,27 @@ public abstract class ThingsToFish : MonoBehaviour
     // 物理演算以外のUpdate処理
     void Update()
     {
-        HandleFishing();
-
     }
 
-    // 魚が捕まってからの処理
-    void HandleFishing()
+    // 魚が負けた時に呼ばれる処理
+    public virtual void Lose()
     {
-        if (wasCaught)
-        {
-            animator.SetBool("wasCaught", true);// wasCaughtパラメータをtrueにしてバトル中のアニメーションへ遷移
-
-            // バトル処理が終了した時
-            if (wasFinishFishing)
-            {
-
-                // 魚の釣り上げに成功していた時
-                if (wasSuccessFishing)
-                {
-                    WinFishing();
-                }
-
-                // 魚の釣り上げに失敗していた時
-                else
-                {
-                    LoseFishing();
-                }
-                ResetCatchState(); // フラグの状態のリセット
-                Destroy(gameObject); // オブジェクトの消去（勝っても負けても）
-
-            }
-
-        }
-
-    }
-
-    // バトルに勝った時に呼ばれる処理
-    protected virtual void WinFishing()
-    {
-
-        animator.SetBool("win", true);// winパラメータをtrueにして勝利アニメーションへ遷移
-
         Debug.Log("勝ちました");
-        Debug.Log($"{creater}作成「{objectName}」を獲得。ポイントは{point}点。");
+        Debug.Log($"{creator}作成「{objectName}」を獲得。ポイントは{point}点。");
 
         // 必要なデータはデータベースへ格納するようにしたい
 
-        animator.SetBool("toExit", true);// toExitパラメータをtrueにしてアニメーション遷移
-
+        animator.SetBool("wasCaught", false);// toExitパラメータをtrueにしてアニメーション遷移
+        gameObject.SetActive(false);
     }
 
-    // バトルに負けた時に呼ばれる処理
-    protected virtual void LoseFishing()
+    // 魚が勝った時に呼ばれる処理
+    public virtual void Win()
     {
-
-        animator.SetBool("lose", true);// loseパラメータをtrueにして敗北アニメーションへ遷移
-
-        // 負けた時の後の魚オブジェクトに関する処理を書く
         Debug.Log("負けました");
 
-        animator.SetBool("toExit", true);// toExitパラメータをtrueにしてアニメーション遷移
-
-    }
-
-    // 各フラグの状態リセット
-    void ResetCatchState()
-    {
-        wasCaught = false;
-        wasSuccessFishing = false;
-        wasFinishFishing = false;
+        animator.SetBool("wasCaught", false);// toExitパラメータをtrueにしてアニメーション遷移
+        moveState = MoveState.IDLE;
     }
 
 }

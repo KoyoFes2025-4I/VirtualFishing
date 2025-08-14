@@ -27,6 +27,11 @@ public class StageManager : MonoBehaviour
     void Start()
     {
         UpdateFloorScaleChange();
+
+        for (int i = 1; i < Display.displays.Length; i++)
+        {
+            Display.displays[i].Activate();
+        }
     }
 
     // Update is called once per frame

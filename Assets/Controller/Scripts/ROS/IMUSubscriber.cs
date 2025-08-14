@@ -2,7 +2,10 @@ using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
+
+#pragma warning disable CS0436 // 型がインポートされた型と競合しています
 /// <summary>
 /// IMUの入力を取得するためのクラス
 /// </summary>
@@ -53,3 +56,5 @@ public class IMUSubscriber : UnitySubscriber<Imu>
         return imus;
     }
 }
+
+#pragma warning restore CS0436 // 型がインポートされた型と競合しています

@@ -5,6 +5,7 @@ using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
 
+#pragma warning disable CS0436 // 型がインポートされた型と競合しています
 public class RodScript : MonoBehaviour
 {
     private Dictionary<string, Imu> imus;
@@ -252,3 +253,5 @@ public class RodScript : MonoBehaviour
         line.SetPosition(0, tip.transform.position);
     }
 }
+
+#pragma warning restore CS0436 // 型がインポートされた型と競合しています

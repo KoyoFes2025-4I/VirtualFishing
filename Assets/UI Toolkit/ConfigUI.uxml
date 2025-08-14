@@ -4,12 +4,8 @@
         <ui:Label text="Escを押すことでカメラの移動をすることができます" class="center-text" />
         <ui:Label text="コンフィグ&#10;" class="center-text big-text" />
         <ui:TabView name="TabView">
-            <ui:Tab label="コンフィグカメラ" name="ConfigTab">
-                <ui:ScrollView>
-                    <ui:FloatField label="スピード" value="5" name="ConfigCameraSpeedField" placeholder-text="初期値：5" class="center-text" />
-                    <ui:FloatField label="ダッシュスピード" value="15" name="ConfigCameraDashSpeedField" placeholder-text="初期値：15" class="center-text" />
-                    <ui:FloatField label="カメラ感度" value="500" name="CameraSensitivityField" placeholder-text="初期値：500" class="center-text" />
-                </ui:ScrollView>
+            <ui:Tab label="ゲームマネージャー" name="GameManagerTab">
+                <ui:ScrollView />
             </ui:Tab>
             <ui:Tab label="コントローラー" name="ControllerTab" enabled="true">
                 <ui:ScrollView>
@@ -22,13 +18,22 @@
                     <ui:FloatField label="UIのスケール" value="1" placeholder-text="初期値：1" name="RodUIScale" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
-            <ui:Tab label="魚" name="FishTab">
-                <ui:ScrollView />
-            </ui:Tab>
             <ui:Tab label="ステージ" name="StageTab">
                 <ui:ScrollView>
                     <ui:UnsignedIntegerField label="ステージサイズ" value="10" name="StageSizeField" placeholder-text="初期値：10" class="center-text" />
                     <ui:UnsignedIntegerField label="カメラの高さ" value="200" placeholder-text="初期値：200" name="CameraYField" class="center-text" />
+                    <ui:FloatField label="カメラ1の回転" value="0" name="Cam1Rotation" class="center-text" />
+                    <ui:FloatField label="カメラ2の回転" value="0" name="Cam2Rotation" class="center-text" />
+                </ui:ScrollView>
+            </ui:Tab>
+            <ui:Tab label="魚" name="FishTab">
+                <ui:ScrollView />
+            </ui:Tab>
+            <ui:Tab label="コンフィグカメラ" name="ConfigTab">
+                <ui:ScrollView>
+                    <ui:FloatField label="スピード" value="5" name="ConfigCameraSpeedField" placeholder-text="初期値：5" class="center-text" />
+                    <ui:FloatField label="ダッシュスピード" value="15" name="ConfigCameraDashSpeedField" placeholder-text="初期値：15" class="center-text" />
+                    <ui:FloatField label="カメラ感度" value="500" name="CameraSensitivityField" placeholder-text="初期値：500" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
         </ui:TabView>

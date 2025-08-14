@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using RosSharp;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using UnityEngine;
 

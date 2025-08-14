@@ -20,6 +20,8 @@ public class StageManager : MonoBehaviour
     public static List<List<Vector3>> rodPlaceHolder = new List<List<Vector3>>(); 
     public float width { get; private set; }
     public float height { get; private set; }
+    private float cam1Rotation = 0f;
+    private float cam2Rotation = 180f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -48,6 +50,8 @@ public class StageManager : MonoBehaviour
         water.transform.localScale = new Vector3(scaleX, 1f, scaleZ);
         camera1.transform.position = new Vector3(0, cameraY, height / 2);
         camera2.transform.position = new Vector3(0, cameraY, -height / 2);
+        camera1.transform.eulerAngles = new Vector3(90f, 0, cam1Rotation);
+        camera2.transform.eulerAngles = new Vector3(90f, 0, cam2Rotation);
         cam1.orthographicSize = cameraSize;
         cam2.orthographicSize = cameraSize;
 
@@ -73,10 +77,12 @@ public class StageManager : MonoBehaviour
         w3.transform.localScale = new Vector3(x, 100f, wallThickness);
     }
 
-    public void ChangeParams(float cameraY, float cameraSize)
+    public void ChangeParams(float cameraY, float cameraSize, float cam1Rotation, float cam2Rotation)
     {
         this.cameraY = cameraY;
         this.cameraSize = cameraSize;
+        this.cam1Rotation = cam1Rotation;
+        this.cam2Rotation = cam2Rotation;
         UpdateFloorScaleChange();
     }
 }

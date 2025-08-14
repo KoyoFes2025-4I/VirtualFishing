@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 public class Config : MonoBehaviour
@@ -33,8 +31,11 @@ public class Config : MonoBehaviour
 
     private UnsignedIntegerField stageSizeField;
     private UnsignedIntegerField cameraYField;
+    private FloatField cam1Rotation;
+    private FloatField cam2Rotation;
 
     private Button applyButton;
+    private TabView tabView;
 
 
     private void FieldInit()
@@ -53,9 +54,13 @@ public class Config : MonoBehaviour
 
         stageSizeField = ui.rootVisualElement.Q<UnsignedIntegerField>("StageSizeField");
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
+        cam1Rotation = ui.rootVisualElement.Q<FloatField>("Cam1Rotation");
+        cam2Rotation = ui.rootVisualElement.Q<FloatField>("Cam2Rotation");
 
         applyButton = ui.rootVisualElement.Q<Button>("ApplyButton");
         applyButton.clicked += Apply;
+
+        tabView = ui.rootVisualElement.Q<TabView>("TabView");
 
 
         ConfigSaveData config = new ConfigSaveData();
@@ -75,12 +80,14 @@ public class Config : MonoBehaviour
 
         stageSizeField.value = (uint)config.stageSize;
         cameraYField.value = (uint)config.cameraY;
+        cam1Rotation.value = config.cam1Rotation;
+        cam2Rotation.value = config.cam2Rotation;
     }
 
     private void Apply()
     {
         configCamera.ChangeParams(configCameraSpeedField.value, configCameraDashSpeedField.value, cameraSensitivityField.value);
-        stageManager.ChangeParams(cameraYField.value, stageSizeField.value);
+        stageManager.ChangeParams(cameraYField.value, stageSizeField.value, cam1Rotation.value, cam2Rotation.value);
         rodsController.ChangeParams(rodDropDown.index, controllerRotationYField.value, throwPowerField.value, rodPowerField.value, maxRodStrengthField.value, rodIDDropDown.index, rodUIScale.value);
 
         thingGenerator.Regenerate();
@@ -102,6 +109,8 @@ public class Config : MonoBehaviour
 
         config.stageSize = (int)stageSizeField.value;
         config.cameraY = (int)cameraYField.value;
+        config.cam1Rotation = cam1Rotation.value;
+        config.cam2Rotation = cam2Rotation.value;
 
         config.Save();
     }
@@ -122,6 +131,8 @@ public class Config : MonoBehaviour
         bool prev = ui.enabled;
         ui.enabled = !configCamera.locked;
         if (!prev && ui.enabled) FieldInit();
+
+        applyButton.SetEnabled(tabView.selectedTabIndex != 0);
     }
 }
 
@@ -147,6 +158,8 @@ public class ConfigSaveData
 
     public int stageSize = 10;
     public int cameraY = 200;
+    public float cam1Rotation = 0f;
+    public float cam2Rotation = 0f;
 
     public void Save()
     {
@@ -176,6 +189,8 @@ public class ConfigSaveData
 
         stageSize = tmp.stageSize;
         cameraY = tmp.cameraY;
+        cam1Rotation = tmp.cam1Rotation;
+        cam2Rotation = tmp.cam2Rotation;
         return true;
     }
 }

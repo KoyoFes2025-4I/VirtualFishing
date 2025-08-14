@@ -1,9 +1,7 @@
 using RosSharp.RosBridgeClient;
-using UnityEngine;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using System.Collections.Generic;
 using System;
-using System.IO;
 
 /// <summary>
 /// IMUの入力を取得するためのクラス

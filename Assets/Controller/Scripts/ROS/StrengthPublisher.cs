@@ -1,4 +1,3 @@
-using System.Threading;
 using RosSharp.RosBridgeClient;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 

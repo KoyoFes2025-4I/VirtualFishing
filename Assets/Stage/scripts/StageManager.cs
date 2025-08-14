@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class WaterScaleChange : MonoBehaviour
+public class StageManager : MonoBehaviour
 {
     const float PLANE_SIZE = 50f;
     [SerializeField] private float cameraY = 1000f;
@@ -14,7 +15,9 @@ public class WaterScaleChange : MonoBehaviour
     [SerializeField] private GameObject wall2;
     [SerializeField] private GameObject wall3;
     [SerializeField] private float wallThickness = 0.5f;
+    private float padding = 1.5f;
 
+    public static List<List<Vector3>> rodPlaceHolder = new List<List<Vector3>>(); 
     public float width { get; private set; }
     public float height { get; private set; }
 
@@ -49,7 +52,13 @@ public class WaterScaleChange : MonoBehaviour
         cam2.orthographicSize = cameraSize;
 
         StageWallSet(width, height * 2, wall0, wall1, wall2, wall3);
-        this.width = width; this.height = height*2;
+        this.width = width; this.height = height * 2;
+
+        rodPlaceHolder.Clear();
+        rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 2 - padding, 3, height / 4 * 3), new Vector3(width / 2 - padding, 3, height / 4), new Vector3(width / 2 - padding, 3, -height / 4), new Vector3(width / 2 - padding, 3, -height / 4 * 3), new Vector3(-width / 2 + padding, 3, -height / 4 * 3), new Vector3(-width / 2 + padding, 3, -height / 4), new Vector3(-width / 2 + padding, 3, height / 4), new Vector3(-width / 2 + padding, 3, height / 4 * 3) });
+        rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 2 - padding, 3, height / 2), new Vector3(width / 2 - padding, 3, -height / 2), new Vector3(-width / 2 + padding, 3, -height / 2), new Vector3(-width / 2 + padding, 3, height / 2) });
+        rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 2 - padding, 3, height / 4 * 3), new Vector3(width / 2 - padding, 3, height / 4), new Vector3(width / 2 - padding, 3, -height / 4), new Vector3(width / 2 - padding, 3, -height / 4 * 3) });
+        rodPlaceHolder.Add(new List<Vector3>() { new Vector3(-width / 2 + padding, 3, -height / 4 * 3), new Vector3(-width / 2 + padding, 3, -height / 4), new Vector3(-width / 2 + padding, 3, height / 4), new Vector3(-width / 2 + padding, 3, height / 4 * 3) });
     }
 
     void StageWallSet(float x, float z, GameObject w0, GameObject w1, GameObject w2, GameObject w3)
@@ -62,5 +71,12 @@ public class WaterScaleChange : MonoBehaviour
         w2.transform.localScale = new Vector3(x, 100f, wallThickness);
         w3.transform.position = new Vector3(0f, 0f, -z / 2);
         w3.transform.localScale = new Vector3(x, 100f, wallThickness);
+    }
+
+    public void ChangeParams(float cameraY, float cameraSize)
+    {
+        this.cameraY = cameraY;
+        this.cameraSize = cameraSize;
+        UpdateFloorScaleChange();
     }
 }

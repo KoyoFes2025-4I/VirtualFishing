@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Numerics;
-using RosSharp;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
-using Unity.VisualScripting;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
@@ -38,6 +34,7 @@ public class RodScript : MonoBehaviour
     [SerializeField]
     private BiteScript biteScript;
     private UIScript uiScript;
+    private float uiScale = 1f;
     private float baseRotationY = 0;
     private string id = "";
     private float maxMagnitude = -1;
@@ -52,18 +49,40 @@ public class RodScript : MonoBehaviour
 
     public BiteScript GetBiteScript => biteScript;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         imus = imuSubscriber.GetImus();
         rotations = rotationSubscriber.GetRotations();
-        uiScript = UI.GetComponent<UIScript>();
+        uiScript = UI.transform.GetChild(0).GetComponent<UIScript>();
         uiScript.SetID(id);
+        uiScript.SetScale(uiScale);
     }
 
     public void SetId(string id)
     {
         this.id = id;
+        try { uiScript.SetID(id); }
+        catch (NullReferenceException) { }
+    }
+    public void SetUIScale(float scale)
+    {
+        uiScale = scale;
+        try { uiScript.SetScale(scale); }
+        catch (NullReferenceException) { }
+    }
+    public void SetThrowPower(float throwPower)
+    {
+        this.throwPower = throwPower;
+    }
+
+    public void SetPower(float power)
+    {
+        this.power = power;
+    }
+
+    public void SetMaxRodStrength(float maxRodStrength)
+    {
+        this.maxRodStrength = maxRodStrength;
     }
 
     public void SetBaseRotationY(float y)
@@ -211,7 +230,8 @@ public class RodScript : MonoBehaviour
                     uiScript.ShowSimpleMessage("逃げられた...", 5);
                 }
             }
-        } catch (KeyNotFoundException) {}
+        }
+        catch (KeyNotFoundException) { }
     }
 
     // Update is called once per frame

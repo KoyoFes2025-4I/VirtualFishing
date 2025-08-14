@@ -1,0 +1,54 @@
+.window {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.38);
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.center-text {
+    -unity-text-align: upper-center;
+}
+
+.big-text {
+    font-size: 28px;
+}
+
+.apply-button {
+    align-self: center;
+}
+
+.unity-scroll-view {
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    bottom: auto;
+}
+
+.unity-tab-view__header-container {
+    min-height: 25px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.unity-tab-view {
+    height: 2000px;
+}
+
+.unity-tab-view__header-container > .unity-tab__header {
+    margin-left: 0;
+    margin-right: 1px;
+}

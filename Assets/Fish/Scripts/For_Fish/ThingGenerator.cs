@@ -9,7 +9,7 @@ public class ThingGenerator : MonoBehaviour
     [SerializeField]
     private int generateDataIndex;
     [SerializeField]
-    WaterScaleChange waterScale;
+    StageManager waterScale;
 
     private List<GameObject> things = new List<GameObject>();
 
@@ -54,7 +54,11 @@ public class ThingGenerator : MonoBehaviour
         thing.name = thing.GetObjectName;
         thing.gameObject.SetActive(true);
         things.Add(thing.gameObject);
-        Debug.Log(spawnPos);
-        Debug.Log($"{waterScale.width},{waterScale.height}");
+    }
+
+    public void Regenerate()
+    {
+        foreach (GameObject thing in things) Destroy(thing);
+        things.Clear();
     }
 }

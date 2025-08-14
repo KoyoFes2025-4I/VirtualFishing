@@ -5,35 +5,67 @@ using UnityEngine;
 
 public class RodsController : MonoBehaviour
 {
-    //Rods��D&D
     [SerializeField]
     private GameObject Rod;
-    [SerializeField]
-    private List<RodData> rodsData;
-    [SerializeField]
-    private float baseRotationY;
+    private float baseRotationY = 0;
+    private int rodCountIndex = 0;
+    private float throwPower = 0.3f;
+    private float power = 0.3f;
+    private float maxRodStrength = 100;
+    private int idGenerateIndex = 0;
+    private float rodUIScale = 1f;
     private List<GameObject> rodInstances = new List<GameObject>();
     public List<BiteScript> bites { get; private set; } = new List<BiteScript>();
 
     void Start()
     {
+        UpdateRods();
+    }
 
-        for (int i = 0; i < rodsData.Count; i++)
+    void Update()
+    {
+
+    }
+    
+    private void UpdateRods() {
+        foreach (GameObject instance in rodInstances) Destroy(instance);
+        rodInstances.Clear();
+        bites.Clear();
+
+        List<Vector3> poss = StageManager.rodPlaceHolder[rodCountIndex];
+
+        for (int i = 0; i < poss.Count; i++)
         {
-            GameObject instance = Instantiate(Rod, rodsData[i].position, Quaternion.identity, transform);
-            instance.GetComponent<RodScript>().SetId(rodsData[i].id);
-            instance.GetComponent<RodScript>().SetBaseRotationY(baseRotationY);
-            instance.name = $"Rod(id:{rodsData[i].id})";
+            string id = "";
+            if (idGenerateIndex == 0) id = i.ToString();
+            else if (idGenerateIndex == 1) id = Guid.NewGuid().ToString();
+
+            GameObject instance = Instantiate(Rod, poss[i], Quaternion.identity, transform);
             instance.SetActive(true);
+            RodScript rodScript = instance.GetComponent<RodScript>();
+            rodScript.SetId(id);
+            rodScript.SetBaseRotationY(baseRotationY);
+            rodScript.SetUIScale(rodUIScale);
+            rodScript.SetThrowPower(throwPower);
+            rodScript.SetPower(power);
+            rodScript.SetMaxRodStrength(maxRodStrength);
+            instance.name = $"Rod(id:{id})";
             rodInstances.Add(instance);
 
             bites.Add(instance.GetComponent<RodScript>().GetBiteScript);
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ChangeParams(int rodCountIndex, float baseRotationY, float throwPower, float power, float maxRodStrength, int idGenerateIndex, float rodUIScale)
     {
-        
+        this.rodCountIndex = rodCountIndex;
+        this.baseRotationY = baseRotationY;
+        this.throwPower = throwPower;
+        this.maxRodStrength = maxRodStrength;
+        this.power = power;
+        this.idGenerateIndex = idGenerateIndex;
+        this.rodUIScale = rodUIScale;
+
+        UpdateRods();
     }
 }

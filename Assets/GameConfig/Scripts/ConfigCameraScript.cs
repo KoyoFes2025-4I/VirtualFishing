@@ -11,7 +11,7 @@ public class ConfigCameraScript : MonoBehaviour
     private float dashSpeed = 15f;
     [SerializeField]
     private float mouseSensitivity = 500f;
-    private bool locked = false;
+    public bool locked = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,10 +20,6 @@ public class ConfigCameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) locked = !locked;
-        if (locked) Cursor.lockState = CursorLockMode.Locked;
-        else Cursor.lockState = CursorLockMode.None;
-
         if (locked) Move();
     }
 
@@ -54,5 +50,12 @@ public class ConfigCameraScript : MonoBehaviour
 
         configCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
+    }
+
+    public void ChangeParams(float speed, float dashSpeed, float mouseSensitivity)
+    {
+        this.speed = speed;
+        this.dashSpeed = dashSpeed;
+        this.mouseSensitivity = mouseSensitivity;
     }
 }

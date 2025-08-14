@@ -55,7 +55,7 @@ public class UIScript : MonoBehaviour
         rewardThing = thing;
         thing.transform.position = this.thing.transform.position;
         thing.transform.eulerAngles = new Vector3(90, -90, 0);
-        thing.transform.localScale = Vector3.one;
+        thing.transform.localScale = transform.localScale;
         thing.gameObject.SetActive(true);
         Invoke(nameof(HideReward), 5);
     }
@@ -72,6 +72,11 @@ public class UIScript : MonoBehaviour
         simpleMessageDuration = duration;
         simpleMessage.text = msg;
         simpleMessage.gameObject.SetActive(true);
+    }
+
+    public void SetScale(float scale)
+    {
+        transform.localScale = Vector3.one * scale;
     }
 
     void Awake()

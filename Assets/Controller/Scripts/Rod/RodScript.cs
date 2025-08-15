@@ -40,10 +40,10 @@ public class RodScript : MonoBehaviour
     private string id = "";
     private float maxMagnitude = -1;
     private DateTime rodTime = DateTime.Now;
-    private float coolTime = 6;
+    private float maxCoolTime = 6;
     private bool isThrowing = false;
     private bool isThrown = false;
-    private bool coolDown = false;
+    private float coolTime = 0f;
     private float thresholdMagnitude = 5;
     private float throwingTime = 1;
     private bool isBattle = false;
@@ -109,11 +109,6 @@ public class RodScript : MonoBehaviour
         throwingTime = time;
     }
 
-    void ClearCoolDown()
-    {
-        coolDown = false;
-        uiScript.SetVisibleCTText(false);
-    }
 
     void SetOrientation()
     {
@@ -135,7 +130,7 @@ public class RodScript : MonoBehaviour
         try
         {
             Vector3 accel = new Vector3((float)imus[id].linear_acceleration.x, (float)imus[id].linear_acceleration.y, (float)imus[id].linear_acceleration.z);
-            if (accel.magnitude > thresholdMagnitude && !coolDown)
+            if (accel.magnitude > thresholdMagnitude && coolTime <= 0f)
             {
                 if (!isThrowing)
                 {
@@ -144,7 +139,7 @@ public class RodScript : MonoBehaviour
                 }
                 maxMagnitude = Math.Max(maxMagnitude, accel.magnitude);
             }
-            if (((DateTime.Now - rodTime).TotalSeconds > throwingTime) && isThrowing && !coolDown)
+            if (((DateTime.Now - rodTime).TotalSeconds > throwingTime) && isThrowing && coolTime <= 0f)
             {
                 if (!isThrown)
                 {
@@ -166,9 +161,7 @@ public class RodScript : MonoBehaviour
                     isThrown = false;
                     isThrowing = false;
                 }
-                coolDown = true;
-                uiScript.SetVisibleCTText(true);
-                Invoke("ClearCoolDown", coolTime);
+                coolTime = maxCoolTime;
             }
         }
         catch (KeyNotFoundException) { }
@@ -214,9 +207,7 @@ public class RodScript : MonoBehaviour
                     thing.Lose();
                     strengthPublisher.PublishStrength(id, 0);
 
-                    coolDown = true;
-                    uiScript.SetVisibleCTText(true);
-                    Invoke("ClearCoolDown", coolTime);
+                    coolTime = maxCoolTime;
                     uiScript.ShowReward(thing);
 
                     if (user != null)
@@ -239,9 +230,7 @@ public class RodScript : MonoBehaviour
                     thing.Win();
                     strengthPublisher.PublishStrength(id, 0);
 
-                    coolDown = true;
-                    uiScript.SetVisibleCTText(true);
-                    Invoke("ClearCoolDown", coolTime);
+                    coolTime = maxCoolTime;
                     uiScript.ShowSimpleMessage("逃げられた...", 5);
                 }
             }
@@ -265,6 +254,9 @@ public class RodScript : MonoBehaviour
             line.SetPosition(1, bite.transform.position);
         }
         line.SetPosition(0, tip.transform.position);
+
+        uiScript.SetVisibleCTText(coolTime > 0f);
+        if (coolTime > 0f) coolTime -= Time.deltaTime;
     }
 }
 

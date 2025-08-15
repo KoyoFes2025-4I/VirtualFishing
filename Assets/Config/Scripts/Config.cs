@@ -16,6 +16,8 @@ public class Config : MonoBehaviour
     StageManager stageManager;
     [SerializeField]
     ThingGenerator thingGenerator;
+    [SerializeField]
+    GameManager gameManager;
 
     private FloatField configCameraSpeedField;
     private FloatField configCameraDashSpeedField;
@@ -37,6 +39,20 @@ public class Config : MonoBehaviour
     private Button applyButton;
     private TabView tabView;
 
+    private ListView gamingUsersListView;
+    private ListView nextUsersListView;
+    private ListView waitUsersListView;
+    private Button userUpButton;
+    private Button userDownButton;
+    private Button userRemoveButton;
+    private TextField userAddField;
+    private Button userAddButton;
+    private Button prepareButton;
+    private Button startButton;
+    private Button finishButton;
+
+    private ConfigSaveData config = new ConfigSaveData();
+    public ConfigSaveData GetConfig => config;
 
     private void FieldInit()
     {
@@ -57,13 +73,134 @@ public class Config : MonoBehaviour
         cam1Rotation = ui.rootVisualElement.Q<FloatField>("Cam1Rotation");
         cam2Rotation = ui.rootVisualElement.Q<FloatField>("Cam2Rotation");
 
+        gamingUsersListView = ui.rootVisualElement.Q<ListView>("GamingUsersListView");
+        gamingUsersListView.makeItem = () =>
+        {
+            Label label = new Label();
+            label.style.unityTextAlign = TextAnchor.MiddleLeft;
+            return label;
+        };
+        gamingUsersListView.bindItem = (element, index) =>
+        {
+            (element as Label).text = gameManager.gamingUsers[index].name;
+        };
+        gamingUsersListView.itemsSource = gameManager.gamingUsers;
+
+        nextUsersListView = ui.rootVisualElement.Q<ListView>("NextUsersListView");
+        nextUsersListView.makeItem = () =>
+        {
+            Label label = new Label();
+            label.style.unityTextAlign = TextAnchor.MiddleLeft;
+            return label;
+        };
+        nextUsersListView.bindItem = (element, index) =>
+        {
+            (element as Label).text = gameManager.nextUsers[index].name;
+        };
+        nextUsersListView.itemsSource = gameManager.nextUsers;
+
+        waitUsersListView = ui.rootVisualElement.Q<ListView>("WaitUsersListView");
+        waitUsersListView.makeItem = () =>
+        {
+            Label label = new Label();
+            label.style.unityTextAlign = TextAnchor.MiddleLeft;
+            return label;
+        };
+        waitUsersListView.bindItem = (element, index) =>
+        {
+            (element as Label).text = gameManager.waitUsers[index].name;
+        };
+        waitUsersListView.itemsSource = gameManager.waitUsers;
+
+        waitUsersListView.selectionChanged += (element) => nextUsersListView.selectedIndex = -1;
+        nextUsersListView.selectionChanged += (element) => waitUsersListView.selectedIndex = -1;
+
+        userUpButton = ui.rootVisualElement.Q<Button>("UserUpButton");
+        userDownButton = ui.rootVisualElement.Q<Button>("UserDownButton");
+        userRemoveButton = ui.rootVisualElement.Q<Button>("UserRemoveButton");
+        userAddField = ui.rootVisualElement.Q<TextField>("UserAddField");
+        userAddButton = ui.rootVisualElement.Q<Button>("UserAddButton");
+        userAddButton.clicked += () =>
+        {
+            gameManager.waitUsers.Add(new User(userAddField.value));
+            waitUsersListView.RefreshItems();
+        };
+        userRemoveButton.clicked += () =>
+        {
+            if (waitUsersListView.selectedIndex != -1)
+            {
+                gameManager.waitUsers.RemoveAt(waitUsersListView.selectedIndex);
+                waitUsersListView.RefreshItems();
+            }
+            else if (nextUsersListView.selectedIndex != -1)
+            {
+                gameManager.nextUsers.RemoveAt(nextUsersListView.selectedIndex);
+                nextUsersListView.RefreshItems();
+            }
+        };
+        userUpButton.clicked += () =>
+        {
+            if (waitUsersListView.selectedIndex != -1)
+            {
+                if (waitUsersListView.selectedIndex == 0 && (gameManager.nextUsers.Count == 8 || gameManager.nextUsers.Count == 4 && config.rodCountIndex != 0)) return;
+                User user = gameManager.waitUsers[waitUsersListView.selectedIndex];
+                gameManager.waitUsers.RemoveAt(waitUsersListView.selectedIndex);
+                if (waitUsersListView.selectedIndex != 0) gameManager.waitUsers.Insert(waitUsersListView.selectedIndex-1, user);
+                else gameManager.nextUsers.Add(user);
+                waitUsersListView.selectedIndex--;
+                if (waitUsersListView.selectedIndex == -1) nextUsersListView.selectedIndex = gameManager.nextUsers.Count - 1;
+                waitUsersListView.RefreshItems();
+                nextUsersListView.RefreshItems();
+            }
+            else if (nextUsersListView.selectedIndex > 0)
+            {
+                User user = gameManager.nextUsers[nextUsersListView.selectedIndex];
+                gameManager.nextUsers.RemoveAt(nextUsersListView.selectedIndex);
+                gameManager.nextUsers.Insert(--nextUsersListView.selectedIndex, user);
+                nextUsersListView.RefreshItems();
+            }
+        };
+        userDownButton.clicked += () =>
+        {
+            if (waitUsersListView.selectedIndex < gameManager.waitUsers.Count - 1 && waitUsersListView.selectedIndex >= 0)
+            {
+                User user = gameManager.waitUsers[waitUsersListView.selectedIndex];
+                gameManager.waitUsers.RemoveAt(waitUsersListView.selectedIndex);
+                gameManager.waitUsers.Insert(waitUsersListView.selectedIndex + 1, user);
+                waitUsersListView.selectedIndex++;
+                waitUsersListView.RefreshItems();
+            }
+            else if (nextUsersListView.selectedIndex < gameManager.nextUsers.Count && nextUsersListView.selectedIndex >= 0)
+            {
+                User user = gameManager.nextUsers[nextUsersListView.selectedIndex];
+                gameManager.nextUsers.RemoveAt(nextUsersListView.selectedIndex);
+                if (nextUsersListView.selectedIndex != gameManager.nextUsers.Count - 1) gameManager.waitUsers.Insert(0, user);
+                else gameManager.nextUsers.Insert(nextUsersListView.selectedIndex + 1, user);
+                nextUsersListView.selectedIndex++;
+                if (nextUsersListView.selectedIndex == gameManager.nextUsers.Count)
+                {
+                    nextUsersListView.selectedIndex = -1;
+                    waitUsersListView.selectedIndex = 0;
+                }
+                nextUsersListView.RefreshItems();
+                waitUsersListView.RefreshItems();
+            }
+        };
+
+        prepareButton = ui.rootVisualElement.Q<Button>("PrepareButton");
+        startButton = ui.rootVisualElement.Q<Button>("StartButton");
+        finishButton = ui.rootVisualElement.Q<Button>("FinishButton");
+        prepareButton.clicked += () => gameManager.Prepare();
+        startButton.clicked += () => gameManager.StartGame();
+        finishButton.clicked += () => gameManager.FinishGame();
+
+
         applyButton = ui.rootVisualElement.Q<Button>("ApplyButton");
         applyButton.clicked += Apply;
 
         tabView = ui.rootVisualElement.Q<TabView>("TabView");
 
 
-        ConfigSaveData config = new ConfigSaveData();
         config.Load();
 
         configCameraSpeedField.value = config.configCameraSpeed;
@@ -93,7 +230,6 @@ public class Config : MonoBehaviour
         thingGenerator.Regenerate();
 
 
-        ConfigSaveData config = new ConfigSaveData();
 
         config.configCameraSpeed = configCameraSpeedField.value;
         config.configCameraDashSpeed = configCameraDashSpeedField.value;
@@ -115,6 +251,13 @@ public class Config : MonoBehaviour
         config.Save();
     }
 
+    public void ListViewRefresh()
+    {
+        gamingUsersListView.RefreshItems();
+        nextUsersListView.RefreshItems();
+        waitUsersListView.RefreshItems();
+    }
+
     void Start()
     {
         FieldInit();
@@ -132,7 +275,10 @@ public class Config : MonoBehaviour
         ui.enabled = !configCamera.locked;
         if (!prev && ui.enabled) FieldInit();
 
-        applyButton.SetEnabled(tabView.selectedTabIndex != 0);
+        applyButton.SetEnabled(tabView.selectedTabIndex != 0 && !gameManager.isGaming);
+        prepareButton.SetEnabled(!gameManager.isGaming);
+        startButton.SetEnabled(!gameManager.isGaming);
+        finishButton.SetEnabled(gameManager.isGaming);
     }
 }
 
@@ -142,7 +288,8 @@ public class Config : MonoBehaviour
 [Serializable]
 public class ConfigSaveData
 {
-    public static string path = Path.Combine(Application.persistentDataPath, "config.vf");
+    public static string fileName = "config.vf";
+    public static string path = "";
 
     public float configCameraSpeed = 5f;
     public float configCameraDashSpeed = 15f;
@@ -163,12 +310,15 @@ public class ConfigSaveData
 
     public void Save()
     {
+        path = Path.Combine(Application.persistentDataPath, fileName);
+
         BinaryFormatter bf = new BinaryFormatter();
         using (FileStream fs = File.Create(path)) bf.Serialize(fs, this);
     }
 
     public bool Load()
     {
+        path = Path.Combine(Application.persistentDataPath, fileName);
         if (!File.Exists(path)) return false;
 
         BinaryFormatter bf = new BinaryFormatter();

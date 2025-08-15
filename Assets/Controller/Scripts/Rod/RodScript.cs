@@ -49,13 +49,15 @@ public class RodScript : MonoBehaviour
     private bool isBattle = false;
 
     public BiteScript GetBiteScript => biteScript;
+    private User user;
 
     void Start()
     {
         imus = imuSubscriber.GetImus();
         rotations = rotationSubscriber.GetRotations();
         uiScript = UI.transform.GetChild(0).GetComponent<UIScript>();
-        uiScript.SetID(id);
+        if (user != null) uiScript.SetID(id, user.name);
+        else uiScript.SetID(id);
         uiScript.SetScale(uiScale);
     }
 
@@ -84,6 +86,12 @@ public class RodScript : MonoBehaviour
     public void SetMaxRodStrength(float maxRodStrength)
     {
         this.maxRodStrength = maxRodStrength;
+    }
+    public void SetUser(User user)
+    {
+        this.user = user;
+        try { uiScript.SetID(id, user.name); }
+        catch (NullReferenceException) { }
     }
 
     public void SetBaseRotationY(float y)
@@ -189,7 +197,7 @@ public class RodScript : MonoBehaviour
         {
             if (isBattle)
             {
-                thingStrength -= rotations[id] * power * Time.fixedDeltaTime;
+                thingStrength -= Mathf.Abs(rotations[id]) * power * Time.fixedDeltaTime;
                 rodStrength -= thing.GetPower * Time.fixedDeltaTime;
 
                 if (thingStrength <= 0)
@@ -210,6 +218,12 @@ public class RodScript : MonoBehaviour
                     uiScript.SetVisibleCTText(true);
                     Invoke("ClearCoolDown", coolTime);
                     uiScript.ShowReward(thing);
+
+                    if (user != null)
+                    {
+                        user.point += thing.GetPoint;
+                        user.fishedThingNames.Add(thing.GetObjectName);
+                    }
                 }
                 else if (rodStrength <= 0)
                 {

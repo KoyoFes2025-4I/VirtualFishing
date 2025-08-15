@@ -15,6 +15,8 @@ public class RodsController : MonoBehaviour
     private float rodUIScale = 1f;
     private List<GameObject> rodInstances = new List<GameObject>();
     public List<BiteScript> bites { get; private set; } = new List<BiteScript>();
+    public List<User> users { get; private set; } = new List<User>();
+    public int RodsCount => rodInstances.Count;
 
     void Start()
     {
@@ -25,8 +27,9 @@ public class RodsController : MonoBehaviour
     {
 
     }
-    
-    private void UpdateRods() {
+
+    public void UpdateRods()
+    {
         foreach (GameObject instance in rodInstances) Destroy(instance);
         rodInstances.Clear();
         bites.Clear();
@@ -48,6 +51,7 @@ public class RodsController : MonoBehaviour
             rodScript.SetThrowPower(throwPower);
             rodScript.SetPower(power);
             rodScript.SetMaxRodStrength(maxRodStrength);
+            if (users.Count > i) rodScript.SetUser(users[i]);
             instance.name = $"Rod(id:{id})";
             rodInstances.Add(instance);
 
@@ -66,5 +70,10 @@ public class RodsController : MonoBehaviour
         this.rodUIScale = rodUIScale;
 
         UpdateRods();
+    }
+
+    public void SetUsers(List<User> users)
+    {
+        this.users = users;
     }
 }

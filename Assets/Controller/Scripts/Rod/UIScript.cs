@@ -27,9 +27,10 @@ public class UIScript : MonoBehaviour
         ct.SetActive(visible);
     }
 
-    public void SetID(string id)
+    public void SetID(string id, string name = null)
     {
         idText.text = "id: " + id;
+        if (name != null) idText.text += ", name: " + name;
     }
 
     private float idItalicDuration = 0f;

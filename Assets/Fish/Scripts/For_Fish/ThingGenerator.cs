@@ -12,6 +12,7 @@ public class ThingGenerator : MonoBehaviour
     StageManager waterScale;
 
     private List<GameObject> things = new List<GameObject>();
+    public bool isGenerate = false;
 
     void Start()
     {
@@ -26,7 +27,7 @@ public class ThingGenerator : MonoBehaviour
             if (tmp[i].IsDestroyed()) things.RemoveAt(i);
         }
 
-        if (generateDatas[generateDataIndex].keepThingCount > things.Count) Generate();
+        if (generateDatas[generateDataIndex].keepThingCount > things.Count && isGenerate) Generate();
     }
 
     public void Generate()

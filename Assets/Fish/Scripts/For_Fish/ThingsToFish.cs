@@ -74,6 +74,8 @@ public abstract class ThingsToFish : MonoBehaviour
         ApplyTextureToModel();
     }
 
+    public abstract void Init();
+
     // 設定した2Dテクスチャを作ったモデルのUV展開図に張り付ける処理
     private void ApplyTextureToModel()
     {

@@ -5,7 +5,32 @@
         <ui:Label text="コンフィグ&#10;" class="center-text big-text" />
         <ui:TabView name="TabView">
             <ui:Tab label="ゲームマネージャー" name="GameManagerTab">
-                <ui:ScrollView />
+                <ui:ScrollView>
+                    <ui:VisualElement style="flex-direction: row;">
+                        <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 50%;">
+                            <ui:ScrollView vertical-scroller-visibility="AlwaysVisible" style="height: 300px;">
+                                <ui:Label text="ゲーム中のユーザー" />
+                                <ui:ListView name="GamingUsersListView" />
+                                <ui:Label text="次のゲームに参加するユーザー" />
+                                <ui:ListView name="NextUsersListView" />
+                                <ui:Label text="待っているユーザー" />
+                                <ui:ListView name="WaitUsersListView" />
+                            </ui:ScrollView>
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 50%;">
+                            <ui:Button text="上" name="UserUpButton" />
+                            <ui:Button text="下" name="UserDownButton" />
+                            <ui:Button text="削除" name="UserRemoveButton" />
+                            <ui:TextField label="名前" placeholder-text="追加するユーザーの名前" name="UserAddField" class="center-text" />
+                            <ui:Button text="追加" name="UserAddButton" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-direction: row; align-items: center; justify-content: center;">
+                        <ui:Button text="準備" name="PrepareButton" />
+                        <ui:Button text="スタート" name="StartButton" />
+                        <ui:Button text="終了" name="FinishButton" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="コントローラー" name="ControllerTab" enabled="true">
                 <ui:ScrollView>

@@ -19,4 +19,8 @@ public class FishScript : ThingsToFish
         // オーバーライド
     }
 
+    public override void Init()
+    {
+    }
+
 }

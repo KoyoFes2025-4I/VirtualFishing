@@ -76,4 +76,28 @@ public class RodsController : MonoBehaviour
     {
         this.users = users;
     }
+
+    public void Reset()
+    {
+        foreach (GameObject rod in rodInstances)
+        {
+            rod.GetComponent<RodScript>().Reset();
+        }
+    }
+
+    public void ShowMessage(string message, float duration)
+    {
+        foreach (GameObject rod in rodInstances)
+        {
+            rod.GetComponent<RodScript>().ShowMessage(message, duration);
+        }
+    }
+
+    public void ShowResult()
+    {
+        foreach (GameObject rod in rodInstances)
+        {
+            rod.GetComponent<RodScript>().ShowResult();
+        }
+    }
 }

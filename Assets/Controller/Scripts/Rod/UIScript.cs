@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -19,6 +20,8 @@ public class UIScript : MonoBehaviour
     GameObject thing;
     [SerializeField]
     TMP_Text simpleMessage;
+    [SerializeField]
+    TMP_Text resultMessage;
 
     private TMP_Text idText;
 
@@ -45,6 +48,14 @@ public class UIScript : MonoBehaviour
         id.SetActive(visible);
     }
 
+    public void ShowResult(User user)
+    {
+        HideReward();
+        simpleMessageDuration = 0f;
+        resultMessage.text = $"なまえ：{user.name}\nポイント：{user.point}\n釣った魚の種類：{user.fishedThingNames.Count}";
+        resultMessage.gameObject.SetActive(true);
+    }
+
     private ThingsToFish rewardThing;
     public void ShowReward(ThingsToFish thing)
     {
@@ -63,7 +74,8 @@ public class UIScript : MonoBehaviour
     public void HideReward()
     {
         reward.SetActive(false);
-        Destroy(rewardThing.gameObject);
+        try { Destroy(rewardThing.gameObject); }
+        catch (MissingReferenceException) {} catch (NullReferenceException) {}
     }
 
     private float simpleMessageDuration = 0f;

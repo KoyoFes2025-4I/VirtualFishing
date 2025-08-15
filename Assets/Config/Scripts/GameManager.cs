@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         }
 
         thingGenerator.isGenerate = true;
+        rodsController.ShowMessage("スタート！", 3);
 
         config.ListViewRefresh();
     }
@@ -65,12 +66,13 @@ public class GameManager : MonoBehaviour
     public void FinishGame()
     {
         isGaming = false;
-        foreach (User user in gamingUsers)
-        {
-            Debug.Log($"{user.name}: {user.point}pt, [{string.Join(", ", user.fishedThingNames)}]");
-        }
+        foreach (User user in gamingUsers) user.Save();
 
-        Prepare();
+        rodsController.Reset();
+        rodsController.ShowResult();
+
+        thingGenerator.isGenerate = false;
+        thingGenerator.Regenerate();
     }
 }
 
@@ -84,4 +86,9 @@ public class User
     public string name = "";
     public int point = 0;
     public HashSet<string> fishedThingNames = new HashSet<string>();
+
+    public void Save()
+    {
+        Debug.Log($"{name}: {point}pt, [{string.Join(", ", fishedThingNames)}]");
+    }
 }

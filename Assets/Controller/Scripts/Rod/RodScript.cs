@@ -184,6 +184,30 @@ public class RodScript : MonoBehaviour
         strengthPublisher.PublishStrength(id, thing.GetPower);
     }
 
+    public void Reset()
+    {
+        isBattle = false;
+        biteScript.OutBattle();
+        bite.SetActive(false);
+        bite.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        bite.transform.position = transform.position + new Vector3(0, 5, 0);
+        maxMagnitude = -1;
+        isThrown = false;
+        isThrowing = false;
+        coolTime = maxCoolTime;
+    }
+
+    public void ShowMessage(string message, float duration)
+    {
+        uiScript.ShowSimpleMessage(message, duration);
+    }
+
+    public void ShowResult()
+    {
+        if (user == null) return;
+        uiScript.ShowResult(user);
+    }
+
     void FixedUpdate()
     {
         try
@@ -195,19 +219,10 @@ public class RodScript : MonoBehaviour
 
                 if (thingStrength <= 0)
                 {
-                    isBattle = false;
-                    biteScript.OutBattle();
-                    bite.SetActive(false);
-                    bite.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-                    bite.transform.position = transform.position + new Vector3(0, 5, 0);
-                    maxMagnitude = -1;
-                    isThrown = false;
-                    isThrowing = false;
+                    Reset();
 
                     thing.Lose();
                     strengthPublisher.PublishStrength(id, 0);
-
-                    coolTime = maxCoolTime;
                     uiScript.ShowReward(thing);
 
                     if (user != null)
@@ -218,19 +233,10 @@ public class RodScript : MonoBehaviour
                 }
                 else if (rodStrength <= 0)
                 {
-                    isBattle = false;
-                    biteScript.OutBattle();
-                    bite.SetActive(false);
-                    bite.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-                    bite.transform.position = transform.position + new Vector3(0, 5, 0);
-                    maxMagnitude = -1;
-                    isThrown = false;
-                    isThrowing = false;
+                    Reset();
 
                     thing.Win();
                     strengthPublisher.PublishStrength(id, 0);
-
-                    coolTime = maxCoolTime;
                     uiScript.ShowSimpleMessage("逃げられた...", 5);
                 }
             }

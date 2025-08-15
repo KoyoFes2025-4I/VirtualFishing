@@ -235,6 +235,7 @@ public class RodScript : MonoBehaviour
                 {
                     Reset();
 
+                    thing.SetStrength((int)thingStrength);
                     thing.Win();
                     strengthPublisher.PublishStrength(id, 0);
                     uiScript.ShowSimpleMessage("逃げられた...", 5);

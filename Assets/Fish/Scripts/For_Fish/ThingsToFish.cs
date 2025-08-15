@@ -28,6 +28,7 @@ public abstract class ThingsToFish : MonoBehaviour
     public string GetObjectName => objectName;
     public string GetCreator => creator;
     public int GetStrength => strength;
+    public void SetStrength(int strength) {this.strength = strength;}
     public int GetPower => power;
     public int GetWeight => weight;
     public int GetPoint => point;

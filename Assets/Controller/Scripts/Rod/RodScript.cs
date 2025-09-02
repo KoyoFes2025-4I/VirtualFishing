@@ -47,6 +47,7 @@ public class RodScript : MonoBehaviour
     private float thresholdMagnitude = 5;
     private float throwingTime = 1;
     private bool isBattle = false;
+    private int stageStyle = 0;
 
     public BiteScript GetBiteScript => biteScript;
     private User user;
@@ -87,6 +88,12 @@ public class RodScript : MonoBehaviour
     {
         this.maxRodStrength = maxRodStrength;
     }
+
+    public void SetStageStyle(int stageStyle)
+    {
+        this.stageStyle = stageStyle;
+    }
+
     public void SetUser(User user)
     {
         this.user = user;
@@ -251,8 +258,16 @@ public class RodScript : MonoBehaviour
         SetOrientation();
         CheckFeed();
 
-        if (transform.position.x <= 0) UI.transform.eulerAngles = new Vector3(90, 90, 0);
-        else UI.transform.eulerAngles = new Vector3(90, -90, 0);
+        if (stageStyle == 0)
+        {
+            if (transform.position.x <= 0) UI.transform.eulerAngles = new Vector3(90, 90, 0);
+            else UI.transform.eulerAngles = new Vector3(90, -90, 0);
+        }
+        else
+        {
+            if (transform.position.z <= 0) UI.transform.eulerAngles = new Vector3(90, 0, 0);
+            else UI.transform.eulerAngles = new Vector3(90, 180, 0);
+        }
 
         line.positionCount = 1;
         if (bite.activeSelf)

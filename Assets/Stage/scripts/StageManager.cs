@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class StageManager : MonoBehaviour
@@ -22,6 +24,7 @@ public class StageManager : MonoBehaviour
     public float height { get; private set; }
     private float cam1Rotation = 0f;
     private float cam2Rotation = 180f;
+    public static int stageStyle { get; private set; } = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -48,26 +51,44 @@ public class StageManager : MonoBehaviour
         float height = cameraSize * 2.0f;
         float width = height * cam1.aspect;
 
-        float scaleX = width / PLANE_SIZE;
-        float scaleZ = (height * 2) / PLANE_SIZE;
+        if (stageStyle == 0)
+        {
+            StageWallSet(width, height * 2, wall0, wall1, wall2, wall3);
+            this.width = width; this.height = height * 2;
+        }
+        else
+        {
+            StageWallSet(width * 2, height, wall0, wall1, wall2, wall3);
+            this.width = width * 2; this.height = height;
+        }
+
+        float scaleX = this.width / PLANE_SIZE;
+        float scaleZ = this.height / PLANE_SIZE;
 
         //êÖÇÃëÂÇ´Ç≥ÇïœÇ¶ÇƒÉJÉÅÉâÇ‡ÇªÇÍÇ…çáÇÌÇπÇƒìÆÇ©Ç∑
-        water.transform.localScale = new Vector3(scaleX, 1f, scaleZ);
-        camera1.transform.position = new Vector3(0, cameraY, height / 2);
-        camera2.transform.position = new Vector3(0, cameraY, -height / 2);
+        water.transform.localScale = new Vector3(Mathf.Max(scaleX, scaleZ), Mathf.Max(scaleX, scaleZ), Mathf.Max(scaleX, scaleZ));
+        if (stageStyle == 0f)
+        {
+            camera1.transform.position = new Vector3(0, cameraY, this.height / 4);
+            camera2.transform.position = new Vector3(0, cameraY, -this.height / 4);
+        }
+        else
+        {
+            camera1.transform.position = new Vector3(this.width / 4, cameraY, 0);
+            camera2.transform.position = new Vector3(-this.width / 4, cameraY, 0);
+        }
         camera1.transform.eulerAngles = new Vector3(90f, 0, cam1Rotation);
         camera2.transform.eulerAngles = new Vector3(90f, 0, cam2Rotation);
         cam1.orthographicSize = cameraSize;
         cam2.orthographicSize = cameraSize;
-
-        StageWallSet(width, height * 2, wall0, wall1, wall2, wall3);
-        this.width = width; this.height = height * 2;
 
         rodPlaceHolder.Clear();
         rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 2 - padding, 3, height / 4 * 3), new Vector3(width / 2 - padding, 3, height / 4), new Vector3(width / 2 - padding, 3, -height / 4), new Vector3(width / 2 - padding, 3, -height / 4 * 3), new Vector3(-width / 2 + padding, 3, -height / 4 * 3), new Vector3(-width / 2 + padding, 3, -height / 4), new Vector3(-width / 2 + padding, 3, height / 4), new Vector3(-width / 2 + padding, 3, height / 4 * 3) });
         rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 2 - padding, 3, height / 2), new Vector3(width / 2 - padding, 3, -height / 2), new Vector3(-width / 2 + padding, 3, -height / 2), new Vector3(-width / 2 + padding, 3, height / 2) });
         rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 2 - padding, 3, height / 4 * 3), new Vector3(width / 2 - padding, 3, height / 4), new Vector3(width / 2 - padding, 3, -height / 4), new Vector3(width / 2 - padding, 3, -height / 4 * 3) });
         rodPlaceHolder.Add(new List<Vector3>() { new Vector3(-width / 2 + padding, 3, -height / 4 * 3), new Vector3(-width / 2 + padding, 3, -height / 4), new Vector3(-width / 2 + padding, 3, height / 4), new Vector3(-width / 2 + padding, 3, height / 4 * 3) });
+        rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 8 * 7, 3, -height / 2 + padding), new Vector3(width / 8 * 5, 3, -height / 2 + padding), new Vector3(width / 8 * 3, 3, -height / 2 + padding), new Vector3(width / 8 * 1, 3, -height / 2 + padding), new Vector3(width / 8 * -1, 3, -height / 2 + padding), new Vector3(width / 8 * -3, 3, -height / 2 + padding), new Vector3(width / 8 * -5, 3, -height / 2 + padding), new Vector3(width / 8 * -7, 3, -height / 2 + padding) });
+        rodPlaceHolder.Add(new List<Vector3>() { new Vector3(width / 6 * 5, 3, -height / 2 + padding), new Vector3(width / 6 * 3, 3, -height / 2 + padding), new Vector3(width / 6 * 1, 3, -height / 2 + padding), new Vector3(width / 6 * -1, 3, -height / 2 + padding), new Vector3(width / 6 * -3, 3, -height / 2 + padding), new Vector3(width / 6 * -5, 3, -height / 2 + padding) });
     }
 
     void StageWallSet(float x, float z, GameObject w0, GameObject w1, GameObject w2, GameObject w3)
@@ -82,12 +103,13 @@ public class StageManager : MonoBehaviour
         w3.transform.localScale = new Vector3(x, 100f, wallThickness);
     }
 
-    public void ChangeParams(float cameraY, float cameraSize, float cam1Rotation, float cam2Rotation)
+    public void ChangeParams(float cameraY, float cameraSize, float cam1Rotation, float cam2Rotation, int stageStyle)
     {
         this.cameraY = cameraY;
         this.cameraSize = cameraSize;
         this.cam1Rotation = cam1Rotation;
         this.cam2Rotation = cam2Rotation;
+        StageManager.stageStyle = stageStyle;
         UpdateFloorScaleChange();
     }
 }

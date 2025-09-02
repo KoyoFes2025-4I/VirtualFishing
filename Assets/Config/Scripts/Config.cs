@@ -35,6 +35,7 @@ public class Config : MonoBehaviour
     private UnsignedIntegerField cameraYField;
     private FloatField cam1Rotation;
     private FloatField cam2Rotation;
+    private DropdownField stageStyleDropDown;
 
     private Button applyButton;
     private TabView tabView;
@@ -72,6 +73,7 @@ public class Config : MonoBehaviour
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
         cam1Rotation = ui.rootVisualElement.Q<FloatField>("Cam1Rotation");
         cam2Rotation = ui.rootVisualElement.Q<FloatField>("Cam2Rotation");
+        stageStyleDropDown = ui.rootVisualElement.Q<DropdownField>("StageStyleDropDown");
 
         gamingUsersListView = ui.rootVisualElement.Q<ListView>("GamingUsersListView");
         gamingUsersListView.makeItem = () =>
@@ -145,7 +147,7 @@ public class Config : MonoBehaviour
                 if (waitUsersListView.selectedIndex == 0 && (gameManager.nextUsers.Count == 8 || gameManager.nextUsers.Count == 4 && config.rodCountIndex != 0)) return;
                 User user = gameManager.waitUsers[waitUsersListView.selectedIndex];
                 gameManager.waitUsers.RemoveAt(waitUsersListView.selectedIndex);
-                if (waitUsersListView.selectedIndex != 0) gameManager.waitUsers.Insert(waitUsersListView.selectedIndex-1, user);
+                if (waitUsersListView.selectedIndex != 0) gameManager.waitUsers.Insert(waitUsersListView.selectedIndex - 1, user);
                 else gameManager.nextUsers.Add(user);
                 waitUsersListView.selectedIndex--;
                 if (waitUsersListView.selectedIndex == -1) nextUsersListView.selectedIndex = gameManager.nextUsers.Count - 1;
@@ -219,12 +221,13 @@ public class Config : MonoBehaviour
         cameraYField.value = (uint)config.cameraY;
         cam1Rotation.value = config.cam1Rotation;
         cam2Rotation.value = config.cam2Rotation;
+        stageStyleDropDown.index = config.stageStyle;
     }
 
     private void Apply()
     {
         configCamera.ChangeParams(configCameraSpeedField.value, configCameraDashSpeedField.value, cameraSensitivityField.value);
-        stageManager.ChangeParams(cameraYField.value, stageSizeField.value, cam1Rotation.value, cam2Rotation.value);
+        stageManager.ChangeParams(cameraYField.value, stageSizeField.value, cam1Rotation.value, cam2Rotation.value, stageStyleDropDown.index);
         rodsController.ChangeParams(rodDropDown.index, controllerRotationYField.value, throwPowerField.value, rodPowerField.value, maxRodStrengthField.value, rodIDDropDown.index, rodUIScale.value);
 
         thingGenerator.Regenerate();
@@ -247,6 +250,7 @@ public class Config : MonoBehaviour
         config.cameraY = (int)cameraYField.value;
         config.cam1Rotation = cam1Rotation.value;
         config.cam2Rotation = cam2Rotation.value;
+        config.stageStyle = stageStyleDropDown.index;
 
         config.Save();
     }
@@ -307,6 +311,7 @@ public class ConfigSaveData
     public int cameraY = 200;
     public float cam1Rotation = 0f;
     public float cam2Rotation = 0f;
+    public int stageStyle = 0;
 
     public void Save()
     {
@@ -341,6 +346,7 @@ public class ConfigSaveData
         cameraY = tmp.cameraY;
         cam1Rotation = tmp.cam1Rotation;
         cam2Rotation = tmp.cam2Rotation;
+        stageStyle = tmp.stageStyle;
         return true;
     }
 }

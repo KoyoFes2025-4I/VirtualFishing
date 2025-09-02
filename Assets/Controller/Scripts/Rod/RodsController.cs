@@ -51,6 +51,7 @@ public class RodsController : MonoBehaviour
             rodScript.SetThrowPower(throwPower);
             rodScript.SetPower(power);
             rodScript.SetMaxRodStrength(maxRodStrength);
+            rodScript.SetStageStyle(StageManager.stageStyle);
             if (users.Count > i) rodScript.SetUser(users[i]);
             instance.name = $"Rod(id:{id})";
             rodInstances.Add(instance);

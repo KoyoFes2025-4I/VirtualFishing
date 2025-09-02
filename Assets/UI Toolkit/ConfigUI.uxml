@@ -34,7 +34,7 @@
             </ui:Tab>
             <ui:Tab label="コントローラー" name="ControllerTab" enabled="true">
                 <ui:ScrollView>
-                    <ui:DropdownField label="釣り竿の本数" index="0" choices="8,4,4-left,4-right" name="RodDropdown" class="center-text" />
+                    <ui:DropdownField label="釣り竿の本数" index="0" choices="8,4,4-left,4-right,8-横画面,6-横画面" name="RodDropdown" class="center-text" />
                     <ui:FloatField label="コントローラー方角補正" value="0" name="ControllerRotationYField" class="center-text" />
                     <ui:FloatField label="投擲力" value="0.3" placeholder-text="初期値：0.3" name="ThrowPowerField" class="center-text" />
                     <ui:FloatField label="魚を引く力" value="0.3" placeholder-text="初期値：0.3" name="RodPowerField" class="center-text" />
@@ -49,6 +49,7 @@
                     <ui:UnsignedIntegerField label="カメラの高さ" value="200" placeholder-text="初期値：200" name="CameraYField" class="center-text" />
                     <ui:FloatField label="カメラ1の回転" value="0" name="Cam1Rotation" class="center-text" />
                     <ui:FloatField label="カメラ2の回転" value="0" name="Cam2Rotation" class="center-text" />
+                    <ui:DropdownField label="ステージスタイル" name="StageStyleDropDown" index="0" choices="ほぼ正方形,横長" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="魚" name="FishTab">

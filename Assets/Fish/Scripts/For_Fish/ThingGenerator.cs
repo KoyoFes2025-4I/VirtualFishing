@@ -9,7 +9,7 @@ public class ThingGenerator : MonoBehaviour
     [SerializeField]
     private int generateDataIndex;
     [SerializeField]
-    StageManager waterScale;
+    StageManager stageManager;
 
     private List<GameObject> things = new List<GameObject>();
     public bool isGenerate = false;
@@ -48,8 +48,8 @@ public class ThingGenerator : MonoBehaviour
             weight -= data.weight;
         }
 
-        spawnPos.x = Random.Range(-waterScale.width / 2f + generateDatas[generateDataIndex].spawnMargin, waterScale.width / 2f - generateDatas[generateDataIndex].spawnMargin);
-        spawnPos.z = Random.Range(-waterScale.height / 2f + generateDatas[generateDataIndex].spawnMargin, waterScale.height / 2f - generateDatas[generateDataIndex].spawnMargin);
+        spawnPos.x = Random.Range(-stageManager.width / 2f + generateDatas[generateDataIndex].spawnMargin, stageManager.width / 2f - generateDatas[generateDataIndex].spawnMargin);
+        spawnPos.z = Random.Range(-stageManager.height / 2f + generateDatas[generateDataIndex].spawnMargin, stageManager.height / 2f - generateDatas[generateDataIndex].spawnMargin);
 
         ThingsToFish thing = Instantiate(prefab, spawnPos, Quaternion.identity, transform).GetComponent<ThingsToFish>();
         thing.name = thing.GetObjectName;

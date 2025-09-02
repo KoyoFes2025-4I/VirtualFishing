@@ -212,8 +212,6 @@ public abstract class ThingsToFish : MonoBehaviour
     // 魚が負けた時に呼ばれる処理
     public virtual void Lose()
     {
-        // 必要なデータはデータベースへ格納するようにしたい
-
         gameObject.SetActive(false);
         moveState = MoveState.SHOW;
     }

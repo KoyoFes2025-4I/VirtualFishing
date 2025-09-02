@@ -2318,7 +2318,7 @@ MonoBehaviour:
     keepThingCount: 8
     spawnMargin: 3
   generateDataIndex: 0
-  waterScale: {fileID: 649937252}
+  stageManager: {fileID: 649937252}
   isGenerate: 0
 --- !u!1 &1013117414
 GameObject:

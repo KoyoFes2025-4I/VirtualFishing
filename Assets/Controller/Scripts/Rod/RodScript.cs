@@ -221,31 +221,38 @@ public class RodScript : MonoBehaviour
         {
             if (isBattle)
             {
+                // プレイヤーの操作によって魚の体力を削る処理
                 thingStrength -= Mathf.Abs(rotations[id]) * power * Time.fixedDeltaTime;
+
+                // 魚の力によって釣り竿の耐久力を削る処理
                 rodStrength -= thing.GetPower * Time.fixedDeltaTime;
 
+                // 釣りバトル勝利時
                 if (thingStrength <= 0)
                 {
-                    Reset();
+                    Reset(); // バトル状態のリセット
 
-                    thing.Lose();
-                    strengthPublisher.PublishStrength(id, 0);
-                    uiScript.ShowReward(thing);
+                    thing.Lose(); // 魚側のLose関数を呼び出す
+                    strengthPublisher.PublishStrength(id, 0); // ROSへの通知
+                    uiScript.ShowReward(thing); // 画面上のUIに釣果を表示させる
 
                     if (user != null)
                     {
-                        user.point += thing.GetPoint;
-                        user.fishedThingNames.Add(thing.GetObjectName);
+                        // 釣り上げに成功したユーザーのデータコンテナを更新する
+                        user.point += thing.GetPoint; // 魚のポイントを加算
+                        user.fishedThingNames.Add(thing.GetObjectName); // 魚の名前をリストに追加して記録
                     }
                 }
+
+                // 釣りバトル敗北時
                 else if (rodStrength <= 0)
                 {
-                    Reset();
+                    Reset(); // バトル状態のリセット
 
-                    thing.SetStrength((int)thingStrength);
-                    thing.Win();
-                    strengthPublisher.PublishStrength(id, 0);
-                    uiScript.ShowSimpleMessage("逃げられた...", 5);
+                    thing.SetStrength((int)thingStrength); // 魚の残り体力は減った状態で保存して継続する
+                    thing.Win(); // 魚側のWin関数を呼び出す
+                    strengthPublisher.PublishStrength(id, 0); // ROSへの通知
+                    uiScript.ShowSimpleMessage("逃げられた...", 5); // // 画面上のUIにメッセージを表示
                 }
             }
         }

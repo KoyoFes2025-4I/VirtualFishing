@@ -1164,7 +1164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rodsController: {fileID: 767437728}
-  objectTexture: {fileID: 2800000, guid: 5af1f98d4abb853449675a95551aa55d, type: 3}
+  objectTexture: {fileID: 2800000, guid: 088e001ced3570b418252ac1a2858f32, type: 3}
   objectName: "\u30B5\u30F3\u30D7\u30EB\u306E\u9B5A(\u5927)"
   creator: "B\u3055\u3093"
   strength: 20
@@ -2318,7 +2318,7 @@ MonoBehaviour:
     keepThingCount: 8
     spawnMargin: 3
   generateDataIndex: 0
-  stageManager: {fileID: 649937252}
+  waterScale: {fileID: 649937252}
   isGenerate: 0
 --- !u!1 &1013117414
 GameObject:

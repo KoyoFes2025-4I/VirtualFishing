@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] ThingGenerator thingGenerator; // 魚オブジェクトの管理クラス
     [SerializeField] RodsController rodsController; // 釣り竿の管理クラス
     [SerializeField] Config config; // コンフィグUI画面の管理クラス
+    [SerializeField] NetworkManager networkManager; // FlaskのAPIサーバー接続用クラス
 
     // Userクラスのインスタンスが要素となるリストを用意
     public List<User> waitUsers { get; } = new List<User>(); // 待機中ユーザーリスト
@@ -33,7 +34,7 @@ public class GameManager : MonoBehaviour
             waitUsers.RemoveAt(0);
         }
 
-        // nextUsersはリセットされてwaitUsersから竿の本数だけwaitUsersから追加される
+        // nextUsersはリセットされてwaitUsersから竿の本数だけユーザーが追加される
         // waitUsersは先頭から竿の数だけnextUsersに渡されることで減る
 
         // オブジェクト生成を有効化してゲームをスタートさせる
@@ -87,7 +88,11 @@ public class GameManager : MonoBehaviour
 
         // 遊び終わったユーザー（gamingUsers）の各データコンテナを全てデータベースへ保存する
         // この時点でユーザー名・得点・釣った魚のリストは全てデータとしてUserクラスに入っている
-        foreach (User user in gamingUsers) user.Save();
+        foreach (User user in gamingUsers)
+        {
+            user.NetworkManager = networkManager;
+            user.Save();
+        }
 
         // 竿の状態をリセット
         rodsController.Reset();
@@ -103,21 +108,26 @@ public class GameManager : MonoBehaviour
 [Serializable]
 public class User
 {
+    public NetworkManager NetworkManager { get; set; } // Flask接続用
+
+    public string name = ""; // ユーザー名
+    public int point = 0; // 得点
+    public List<string> fishedThingNames = new List<string>(); // 釣り上げた魚の記録
+
+    // コンストラクタ（ユーザー名のセット）
     public User(string name)
     {
         this.name = name;
     }
 
-    public string name = ""; // ユーザー名
-    public int point = 0; // 得点
-    public HashSet<string> fishedThingNames = new HashSet<string>(); // 釣り上げた魚の記録
-
     // データベースへの保存関数
     public void Save()
     {
-        Debug.Log($"{name}: {point}pt, [{string.Join(", ", fishedThingNames)}]");
-
-        // MySQLデータベースへのUserデータ保存処理（ユーザー名、得点、釣り上げた魚のリスト、魚の製作者、何回目のプレイか）
-
+        if (NetworkManager != null)
+        {
+            // Userの中身をJSON化したものをFlaskのAPIへPOSTで送信する（ユーザー名、得点、釣り上げた魚の記録）
+            string json = JsonUtility.ToJson(this);
+            NetworkManager.PostUserData(json);
+        }
     }
 }

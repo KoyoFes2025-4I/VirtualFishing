@@ -2318,7 +2318,7 @@ MonoBehaviour:
     keepThingCount: 8
     spawnMargin: 3
   generateDataIndex: 0
-  stageManager: {fileID: 649937252}
+  waterScale: {fileID: 649937252}
   isGenerate: 0
 --- !u!1 &1013117414
 GameObject:
@@ -3446,6 +3446,7 @@ MonoBehaviour:
   thingGenerator: {fileID: 1012907309}
   rodsController: {fileID: 767437728}
   config: {fileID: 391543087}
+  networkManager: {fileID: 2069985049}
 --- !u!4 &1616789862
 Transform:
   m_ObjectHideFlags: 0
@@ -4405,6 +4406,50 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2069985048
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2069985050}
+  - component: {fileID: 2069985049}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2069985049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069985048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3cc501a9b61fc74bb7af2599a877389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2069985050
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069985048}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.007452011, y: -10.567583, z: -1.069479}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &248919082646387425
 GameObject:
   m_ObjectHideFlags: 0
@@ -5637,3 +5682,4 @@ SceneRoots:
   - {fileID: 1012907308}
   - {fileID: 391543086}
   - {fileID: 1616789862}
+  - {fileID: 2069985050}

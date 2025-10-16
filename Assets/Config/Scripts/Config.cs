@@ -1,8 +1,12 @@
 using System;
 using System.IO;
+using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Linq;
+using UnityEngine.Networking;
+using System.Collections.Generic;
 
 // ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
 // GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
@@ -19,6 +23,7 @@ public class Config : MonoBehaviour
     [SerializeField] StageManager stageManager; // ステージの管理クラス
     [SerializeField] ThingGenerator thingGenerator; // 魚オブジェクトの管理クラス
     [SerializeField] GameManager gameManager; // ゲームマネージャークラス
+    [SerializeField] NetworkManager networkManager; // Flaskとの接続用クラス
 
     // 以下各UI要素の参照のための変数を用意
 
@@ -142,6 +147,10 @@ public class Config : MonoBehaviour
         {
             // 入力されたユーザー名を登録したUsersインスタンスをwaitUsersリストに追加する
             gameManager.waitUsers.Add(new User(userAddField.value));
+
+            // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+            StartCoroutine(LoadUsers());
+
             waitUsersListView.RefreshItems();
         };
 
@@ -252,6 +261,63 @@ public class Config : MonoBehaviour
         cam1Rotation.value = config.cam1Rotation;
         cam2Rotation.value = config.cam2Rotation;
         stageStyleDropDown.index = config.stageStyle;
+    }
+
+    // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理
+    private IEnumerator LoadUsers()
+    {
+        // Flaskの /LoadUsers にアクセスしてレスポンスを受け取る
+        string url = "http://127.0.0.1:5000/LoadUsers";
+
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                try
+                {
+                    var json = request.downloadHandler.text;
+                    var data = JsonUtility.FromJson<UserListResponse>(json);
+
+                    if (data != null && data.usernames != null)
+                    {
+                        foreach (var name in data.usernames)
+                        {
+                            // 重複しないようにチェックしてからwaitUsersへ追加する
+                            if (!gameManager.waitUsers.Any(u => u.name == name))
+                            {
+                                gameManager.waitUsers.Add(new User(name));
+                                Debug.Log("ユーザー名をロード: " + name);
+                            }
+                        }
+
+                        waitUsersListView.RefreshItems();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("ユーザーリストが空か、パースに失敗しました。");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"JSONパースエラー: {e.Message}");
+                }
+            }
+            else
+            {
+                Debug.LogError("通信エラー: " + request.error);
+            }
+        }
+    }
+
+    // FlaskのJSONレスポンス受け取り用のクラス
+    [Serializable]
+    private class UserListResponse
+    {
+        public List<string> usernames; // ユーザー名の文字列型リスト
     }
 
     // 「適用」ボタンがクリックされた時の処理

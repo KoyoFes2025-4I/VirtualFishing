@@ -865,6 +865,7 @@ MonoBehaviour:
   stageManager: {fileID: 649937252}
   thingGenerator: {fileID: 1012907309}
   gameManager: {fileID: 1616789861}
+  networkManager: {fileID: 0}
 --- !u!1 &415594996
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,7 +960,7 @@ MonoBehaviour:
   SecondsTimeout: 10
   Serializer: 0
   protocol: 0
-  RosBridgeServerUrl: ws://192.168.10.10:9090
+  RosBridgeServerUrl: ws://katsumasa.mydns.jp:9090
 --- !u!1 &435884771
 GameObject:
   m_ObjectHideFlags: 0
@@ -2542,7 +2543,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
+  m_TargetDisplay: 1
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
@@ -2806,7 +2807,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 2
+  m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
@@ -3781,7 +3782,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 1
+  m_TargetDisplay: 2
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1

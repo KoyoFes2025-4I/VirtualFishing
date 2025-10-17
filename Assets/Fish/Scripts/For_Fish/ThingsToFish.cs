@@ -48,6 +48,7 @@ public abstract class ThingsToFish : MonoBehaviour
         if (collision.gameObject.CompareTag("Feed"))
         {
             // 衝突した餌オブジェクトのBiteScriptコンポーネントをbiteに取得する
+            if (moveState == MoveState.BATTLE) return; // すでにバトル中なら何もしない
             bite = collision.gameObject.GetComponent<BiteScript>();
             bite.InBattle(this); // 餌側に戦闘開始を通知する
         }

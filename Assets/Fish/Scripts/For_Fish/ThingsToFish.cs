@@ -214,6 +214,8 @@ public abstract class ThingsToFish : MonoBehaviour
 
             // 結果表示用
             case MoveState.SHOW:
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
                 break;
         }
     }

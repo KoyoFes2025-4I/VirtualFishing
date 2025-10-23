@@ -7,6 +7,10 @@ using UnityEngine.UIElements;
 using System.Linq;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using SFB;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using WebSocketSharp;
 
 // ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
 // GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
@@ -64,6 +68,13 @@ public class Config : MonoBehaviour
     private UnsignedIntegerField overfishingModeTimeField;
     private UnsignedIntegerField TreasureModeTimeField;
 
+    private TextField fishNameField;
+    private TextField fishCreatorField;
+    private Button loadTextureButton;
+    private Label TexturePreview;
+    private Label MessageLabel;
+    private Button addTextureButton;
+
     // 設定の保存用（ConfigSaveDataのインスタンス生成）
     private ConfigSaveData config = new ConfigSaveData();
     public ConfigSaveData GetConfig => config;
@@ -72,7 +83,7 @@ public class Config : MonoBehaviour
     private void FieldInit()
     {
         // 以下でUXML内の各要素の参照を取得して初期化
-        
+
         configCameraSpeedField = ui.rootVisualElement.Q<FloatField>("ConfigCameraSpeedField");
         configCameraDashSpeedField = ui.rootVisualElement.Q<FloatField>("ConfigCameraDashSpeedField");
         cameraSensitivityField = ui.rootVisualElement.Q<FloatField>("CameraSensitivityField");
@@ -94,6 +105,38 @@ public class Config : MonoBehaviour
         normalModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("NormalModeTime");
         overfishingModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("OverfishingModeTime");
         TreasureModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("TreasureModeTime");
+
+        fishNameField = ui.rootVisualElement.Q<TextField>("FishNameField");
+        fishCreatorField = ui.rootVisualElement.Q<TextField>("FishCreatorField");
+        loadTextureButton = ui.rootVisualElement.Q<Button>("LoadTextureButton");
+        TexturePreview = ui.rootVisualElement.Q<Label>("TexturePreview");
+        MessageLabel = ui.rootVisualElement.Q<Label>("MessageLabel");
+        addTextureButton = ui.rootVisualElement.Q<Button>("AddTextureButton");
+
+        loadTextureButton.clicked += () =>
+        {
+            var extensions = new[] { new ExtensionFilter("テクスチャファイル", "png", "jpg", "jpeg") };
+            var paths = StandaloneFileBrowser.OpenFilePanel("テクスチャを選択", "", extensions, false);
+            if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+            {
+                StartCoroutine(LoadImage(new Uri(paths[0]).AbsoluteUri));
+            }
+        };
+
+        addTextureButton.clicked += () =>
+        {
+            if (TexturePreview.style.backgroundImage.value.texture != null &&
+                !string.IsNullOrEmpty(fishNameField.value) &&
+                !string.IsNullOrEmpty(fishCreatorField.value))
+            {
+                Texture2D texture = TexturePreview.style.backgroundImage.value.texture;
+                MessageLabel.text = "テクスチャを追加しました。";
+            }
+            else
+            {
+                MessageLabel.text = "テクスチャ、魚の名前、作成者名を全て入力してください。";
+            }
+        };
 
         // ゲーム中のユーザーをListViewに表示する
         gamingUsersListView = ui.rootVisualElement.Q<ListView>("GamingUsersListView");
@@ -274,6 +317,23 @@ public class Config : MonoBehaviour
         normalModeTimeField.value = (uint)config.normalModeTime;
         overfishingModeTimeField.value = (uint)config.overfishingModeTime;
         TreasureModeTimeField.value = (uint)config.treasureModeTime;
+    }
+
+    private IEnumerator LoadImage(string path)
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(path);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            MessageLabel.text = "画像の読み込みに失敗しました。";
+        }
+        else
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(request);
+            TexturePreview.style.backgroundImage = texture;
+            MessageLabel.text = "画像を読み込みました。";
+        }
     }
 
     // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理

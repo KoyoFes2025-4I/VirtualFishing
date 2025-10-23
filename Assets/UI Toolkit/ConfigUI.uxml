@@ -56,7 +56,14 @@
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="魚" name="FishTab">
-                <ui:ScrollView />
+                <ui:ScrollView>
+                    <ui:TextField label="名前" placeholder-text="追加する魚の名前" name="FishNameField" class="center-text" />
+                    <ui:TextField label="作者" placeholder-text="追加する魚の作者" name="FishCreatorField" class="center-text" />
+                    <ui:Button text="テクスチャ読み込み" name="LoadTextureButton" class="center-text" />
+                    <ui:Label name="TexturePreview" class="center-text" style="width: 200px; height: 200px; -unity-background-scale-mode: scale-to-fit; background-position-x: center 0; background-position-y: center 0;" />
+                    <ui:Label name="MessageLabel" class="center-text" />
+                    <ui:Button text="テクスチャ追加" name="AddTextureButton" class="center-text" />
+                </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="コンフィグカメラ" name="ConfigTab">
                 <ui:ScrollView>

@@ -52,7 +52,7 @@ public class UIScript : MonoBehaviour
     {
         HideReward();
         simpleMessageDuration = 0f;
-        resultMessage.text = $"なまえ：{user.name}\nポイント：{user.point}\n釣った魚の種類：{user.fishedThingNames.Count}";
+        resultMessage.text = $"なまえ：{user.name}\nポイント：{user.point}\n釣った魚の数：{user.fishedThingNames.Count}";
         resultMessage.gameObject.SetActive(true);
     }
 

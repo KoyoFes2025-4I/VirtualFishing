@@ -182,7 +182,8 @@ public class Config : MonoBehaviour
         {
             if (waitUsersListView.selectedIndex != -1)
             {
-                if (waitUsersListView.selectedIndex == 0 && (gameManager.nextUsers.Count == 8 || gameManager.nextUsers.Count == 4 && config.rodCountIndex != 0)) return;
+                int[] limit = { 8, 4, 4, 4, 8, 6 };
+                if (waitUsersListView.selectedIndex == 0 && (gameManager.nextUsers.Count == limit[config.rodCountIndex])) return;
                 User user = gameManager.waitUsers[waitUsersListView.selectedIndex];
                 gameManager.waitUsers.RemoveAt(waitUsersListView.selectedIndex);
                 if (waitUsersListView.selectedIndex != 0) gameManager.waitUsers.Insert(waitUsersListView.selectedIndex - 1, user);

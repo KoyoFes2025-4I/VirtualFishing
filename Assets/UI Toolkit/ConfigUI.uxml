@@ -50,6 +50,9 @@
                     <ui:FloatField label="カメラ1の回転" value="0" name="Cam1Rotation" class="center-text" />
                     <ui:FloatField label="カメラ2の回転" value="0" name="Cam2Rotation" class="center-text" />
                     <ui:DropdownField label="ステージスタイル" name="StageStyleDropDown" index="0" choices="ほぼ正方形,横長" class="center-text" />
+                    <ui:UnsignedIntegerField label="ノーマルモードの時間（秒）" value="120" placeholder-text="初期値：120" name="NormalModeTime" class="center-text" />
+                    <ui:UnsignedIntegerField label="乱獲モードの時間（秒）" value="120" placeholder-text="初期値：120" name="OverfishingModeTime" class="center-text" />
+                    <ui:UnsignedIntegerField label="宝釣りモードの時間（秒）" value="120" placeholder-text="初期値：120" name="TreasureModeTime" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="魚" name="FishTab">

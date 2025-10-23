@@ -60,6 +60,10 @@ public class Config : MonoBehaviour
     private Button startButton;
     private Button finishButton;
 
+    private UnsignedIntegerField normalModeTimeField;
+    private UnsignedIntegerField overfishingModeTimeField;
+    private UnsignedIntegerField TreasureModeTimeField;
+
     // 設定の保存用（ConfigSaveDataのインスタンス生成）
     private ConfigSaveData config = new ConfigSaveData();
     public ConfigSaveData GetConfig => config;
@@ -86,6 +90,10 @@ public class Config : MonoBehaviour
         cam1Rotation = ui.rootVisualElement.Q<FloatField>("Cam1Rotation");
         cam2Rotation = ui.rootVisualElement.Q<FloatField>("Cam2Rotation");
         stageStyleDropDown = ui.rootVisualElement.Q<DropdownField>("StageStyleDropDown");
+
+        normalModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("NormalModeTime");
+        overfishingModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("OverfishingModeTime");
+        TreasureModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("TreasureModeTime");
 
         // ゲーム中のユーザーをListViewに表示する
         gamingUsersListView = ui.rootVisualElement.Q<ListView>("GamingUsersListView");
@@ -261,6 +269,10 @@ public class Config : MonoBehaviour
         cam1Rotation.value = config.cam1Rotation;
         cam2Rotation.value = config.cam2Rotation;
         stageStyleDropDown.index = config.stageStyle;
+
+        normalModeTimeField.value = (uint)config.normalModeTime;
+        overfishingModeTimeField.value = (uint)config.overfishingModeTime;
+        TreasureModeTimeField.value = (uint)config.treasureModeTime;
     }
 
     // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理
@@ -351,6 +363,10 @@ public class Config : MonoBehaviour
         config.cam2Rotation = cam2Rotation.value;
         config.stageStyle = stageStyleDropDown.index;
 
+        config.normalModeTime = (int)normalModeTimeField.value;
+        config.overfishingModeTime = (int)overfishingModeTimeField.value;
+        config.treasureModeTime = (int)TreasureModeTimeField.value;
+
         // コピーしたデータを設定データファイルへ保存する
         // ゲームを再起動しても設定を保持できる（Loadメソッドで初期化時に毎回ファイルを読み込む）
         config.Save();
@@ -425,6 +441,10 @@ public class ConfigSaveData
     public float cam2Rotation = 0f;
     public int stageStyle = 0;
 
+    public int normalModeTime = 120;
+    public int overfishingModeTime = 120;
+    public int treasureModeTime = 120;
+
     // 現在の各データの設定値を設定データファイルへ書き込むメソッド
     public void Save()
     {
@@ -461,6 +481,10 @@ public class ConfigSaveData
         cam1Rotation = tmp.cam1Rotation;
         cam2Rotation = tmp.cam2Rotation;
         stageStyle = tmp.stageStyle;
+
+        normalModeTime = tmp.normalModeTime;
+        overfishingModeTime = tmp.overfishingModeTime;
+        treasureModeTime = tmp.treasureModeTime;
         return true;
     }
 }

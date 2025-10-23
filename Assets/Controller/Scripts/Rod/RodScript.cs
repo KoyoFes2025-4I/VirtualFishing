@@ -4,6 +4,7 @@ using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using Unity.VisualScripting;
 
 #pragma warning disable CS0436 // 型がインポートされた型と競合しています
 public class RodScript : MonoBehaviour
@@ -221,6 +222,14 @@ public class RodScript : MonoBehaviour
         {
             if (isBattle)
             {
+                if (thing.IsDestroyed())
+                {
+                    isBattle = false;
+                    biteScript.OutBattle();
+                    maxMagnitude = -1;
+                    isThrowing = false;
+                    return;
+                }
                 // プレイヤーの操作によって魚の体力を削る処理
                 thingStrength -= Mathf.Abs(rotations[id]) * power * Time.fixedDeltaTime;
 

@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class GameManager : MonoBehaviour
 {
+    enum GameMode {Normal, Overfishing, Treasure};
     [SerializeField] ThingGenerator thingGenerator; // 魚オブジェクトの管理クラス
     [SerializeField] RodsController rodsController; // 釣り竿の管理クラス
     [SerializeField] Config config; // コンフィグUI画面の管理クラス
     [SerializeField] NetworkManager networkManager; // FlaskのAPIサーバー接続用クラス
+    [SerializeField] private GameObject sunLight; // シーンの太陽光源
 
     // Userクラスのインスタンスが要素となるリストを用意
     public List<User> waitUsers { get; } = new List<User>(); // 待機中ユーザーリスト
@@ -16,6 +20,11 @@ public class GameManager : MonoBehaviour
 
     public bool isGaming { get; private set; } = false; // ゲーム進行中フラグ
 
+    private float startTime = 0f; // ゲーム開始時間の記録用
+    private float finishTime = -1000f; // ゲーム終了時間の記録用
+    private GameMode gameMode = GameMode.Normal;
+    private float sunMoveDuration = 5f; // 太陽の動く時間
+
     // 「準備」→「スタート」→「終了」→「準備」...で進行する
 
     // ゲーム開始処理（スタートボタン押下時）
@@ -23,6 +32,10 @@ public class GameManager : MonoBehaviour
     {
         if (isGaming) return; // ゲーム進行中は開始処理を実行できない
         isGaming = true;
+
+        startTime = Time.time;
+        gameMode = GameMode.Normal;
+        thingGenerator.ChangeGenerateDataIndex(0);
 
         // 参加予定ユーザーリストをリセット
         nextUsers.Clear();
@@ -101,6 +114,52 @@ public class GameManager : MonoBehaviour
         // オブジェクト生成を無効化して全てのオブジェクトを破棄する
         thingGenerator.isGenerate = false;
         thingGenerator.Regenerate();
+    }
+
+    private void ChangeMode()
+    {
+        if (!isGaming)
+        {
+            sunLight.transform.rotation = Quaternion.Euler(Mathf.Lerp(-90f, 90f, (Time.time - finishTime) / sunMoveDuration), 0f, 0f);
+            return;
+        }
+        if (gameMode == GameMode.Normal)
+        {
+            if (Time.time - startTime >= config.GetConfig.normalModeTime)
+            {
+                // 通常モード時間経過でオーバーフィッシングモードへ移行
+                gameMode = GameMode.Overfishing;
+                rodsController.ShowMessage("乱獲モード！", 3);
+                thingGenerator.Regenerate();
+                thingGenerator.ChangeGenerateDataIndex(1);
+            }
+        }
+        else if (gameMode == GameMode.Overfishing)
+        {
+            if (Time.time - startTime >= config.GetConfig.normalModeTime + config.GetConfig.overfishingModeTime)
+            {
+                // オーバーフィッシングモード時間経過でトレジャーモードへ移行
+                gameMode = GameMode.Treasure;
+                rodsController.ShowMessage("宝釣りモード！", 3);
+                thingGenerator.Regenerate();
+                thingGenerator.ChangeGenerateDataIndex(2);
+            }
+        }
+        else if (gameMode == GameMode.Treasure)
+        {
+            sunLight.transform.rotation = Quaternion.Euler(Mathf.Lerp(90f, -90f, (Time.time - startTime - config.GetConfig.normalModeTime - config.GetConfig.overfishingModeTime) / sunMoveDuration), 0f, 0f);
+            if (Time.time - startTime >= config.GetConfig.normalModeTime + config.GetConfig.overfishingModeTime + config.GetConfig.treasureModeTime)
+            {
+                // トレジャーモード時間経過でゲーム終了
+                FinishGame();
+                finishTime = Time.time;
+            }
+        }
+    }
+
+    void Update()
+    {
+        ChangeMode();
     }
 }
 

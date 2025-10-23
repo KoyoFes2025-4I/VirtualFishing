@@ -5,9 +5,9 @@ using UnityEngine;
 public class ThingGenerator : MonoBehaviour
 {
     [SerializeField] private List<GenerateData> generateDatas; // 生成設定データのリスト
-    [SerializeField] private int generateDataIndex; // 現在使用する生成データのインデックス
     [SerializeField] StageManager waterScale; // 水域のサイズ情報
 
+    private int generateDataIndex = 0; // 現在使用する生成データのインデックス
     private List<GameObject> things = new List<GameObject>(); // 現在生成されているオブジェクト
     public bool isGenerate = false; // 生成を許可するフラグ
 
@@ -66,5 +66,10 @@ public class ThingGenerator : MonoBehaviour
     {
         foreach (GameObject thing in things) Destroy(thing);
         things.Clear();
+    }
+
+    public void ChangeGenerateDataIndex(int index)
+    {
+        if (generateDatas.Count > index) generateDataIndex = index;
     }
 }

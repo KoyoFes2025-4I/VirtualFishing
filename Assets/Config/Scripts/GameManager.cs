@@ -125,6 +125,11 @@ public class GameManager : MonoBehaviour
         }
         if (gameMode == GameMode.Normal)
         {
+            sunLight.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            if (Time.time - startTime >= config.GetConfig.normalModeTime - 5)
+            {
+                rodsController.ShowMessage("あと" + (int)(Time.time - startTime - config.GetConfig.normalModeTime - 1) * -1 + "秒で乱獲モード！", 1);
+            }
             if (Time.time - startTime >= config.GetConfig.normalModeTime)
             {
                 // 通常モード時間経過でオーバーフィッシングモードへ移行
@@ -136,6 +141,10 @@ public class GameManager : MonoBehaviour
         }
         else if (gameMode == GameMode.Overfishing)
         {
+            if (Time.time - startTime >= config.GetConfig.normalModeTime + config.GetConfig.overfishingModeTime - 5)
+            {
+                rodsController.ShowMessage("あと" + (int)(Time.time - startTime - config.GetConfig.normalModeTime - config.GetConfig.overfishingModeTime - 1) * -1 + "秒で宝釣りモード！", 1);
+            }
             if (Time.time - startTime >= config.GetConfig.normalModeTime + config.GetConfig.overfishingModeTime)
             {
                 // オーバーフィッシングモード時間経過でトレジャーモードへ移行
@@ -148,10 +157,15 @@ public class GameManager : MonoBehaviour
         else if (gameMode == GameMode.Treasure)
         {
             sunLight.transform.rotation = Quaternion.Euler(Mathf.Lerp(90f, -90f, (Time.time - startTime - config.GetConfig.normalModeTime - config.GetConfig.overfishingModeTime) / sunMoveDuration), 0f, 0f);
+            if (Time.time - startTime >= config.GetConfig.normalModeTime + config.GetConfig.overfishingModeTime + config.GetConfig.treasureModeTime - 5)
+            {
+                rodsController.ShowMessage("あと" + (int)(Time.time - startTime - config.GetConfig.normalModeTime - config.GetConfig.overfishingModeTime - config.GetConfig.treasureModeTime - 1) * -1 + "秒で終了！", 1);
+            }
             if (Time.time - startTime >= config.GetConfig.normalModeTime + config.GetConfig.overfishingModeTime + config.GetConfig.treasureModeTime)
             {
                 // トレジャーモード時間経過でゲーム終了
                 FinishGame();
+                rodsController.ShowMessage("", 0);
                 finishTime = Time.time;
             }
         }

@@ -40,6 +40,7 @@ public class RodScript : MonoBehaviour
     private AudioSource audioSource;
     private AudioClip hauledUpSound;
     private AudioClip biteWateringSound;
+    private AudioClip biteThrowSound;
     private float uiScale = 1f;
     private float baseRotationY = 0;
     private string id = "";
@@ -68,6 +69,7 @@ public class RodScript : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         hauledUpSound = Resources.Load<AudioClip>("Sounds/hauled_up");
         biteWateringSound = Resources.Load<AudioClip>("Sounds/bite_watering");
+        biteThrowSound = Resources.Load<AudioClip>("Sounds/bite_throw");
         audioSource.playOnAwake = false;
         audioSource.loop = false;
     }
@@ -168,6 +170,10 @@ public class RodScript : MonoBehaviour
                     bite.GetComponent<Rigidbody>().linearVelocity = biteVelocity;
                     maxMagnitude = -1;
                     isThrown = true;
+                    audioSource.Stop();
+                    audioSource.clip = biteThrowSound;
+                    audioSource.loop = false;
+                    audioSource.Play();
                 }
                 else
                 {

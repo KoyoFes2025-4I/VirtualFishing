@@ -14,6 +14,7 @@ using UnityEngine.Rendering;
 public abstract class ThingsToFish : MonoBehaviour
 {
     public enum MoveState {SWIM, TURN, IDLE, BATTLE, NONE, SHOW}; // 魚の行動状態のステート
+    public enum ModelType {FishType1, FishType2, FishType3, FishType4} // 魚のモデルタイプ
     private MoveState moveState = MoveState.IDLE; // 初期設定は待機状態
 
     private Animator animator; // Animation Controller操作のための参照
@@ -28,6 +29,7 @@ public abstract class ThingsToFish : MonoBehaviour
     [SerializeField] private int weight; // 重量パラメータ（移動速度の設定）
     [SerializeField] private int point; // 得点
     [SerializeField] private float searchDistance = 10f; // 魚が餌を探す範囲
+    [SerializeField] private ModelType modelType; // 魚のモデルタイプ
 
     public string GetObjectName => objectName;
     public string GetCreator => creator;
@@ -72,6 +74,8 @@ public abstract class ThingsToFish : MonoBehaviour
 
     void Awake()
     {
+        Init(); // 子クラスで実装する初期化処理を呼び出す
+
         speed = 1000 / weight; // weightの値を使って移動速度を決定
         destination = transform.position;
         SetNewRandomDestination(); // ランダムな目的地を設定

@@ -197,11 +197,8 @@ public class Config : MonoBehaviour
         userAddButton.clicked += () =>
         {
             // 入力されたユーザー名を登録したUsersインスタンスをwaitUsersリストに追加する
+            if (string.IsNullOrEmpty(userAddField.value)) return;
             gameManager.waitUsers.Add(new User(userAddField.value));
-
-            // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
-            StartCoroutine(LoadUsers());
-
             waitUsersListView.RefreshItems();
         };
 
@@ -447,6 +444,8 @@ public class Config : MonoBehaviour
         Apply(); // 各データの一番最初の適用処理
     }
 
+    private float previousLoadTime = 0f;
+    private float loadInterval = 5f;
     void Update()
     {
         // Escapeキーでカメラ固定とコンフィグ画面の表示・非表示を切り替える
@@ -470,6 +469,13 @@ public class Config : MonoBehaviour
         prepareButton.SetEnabled(!gameManager.isGaming);
         startButton.SetEnabled(!gameManager.isGaming);
         finishButton.SetEnabled(gameManager.isGaming);
+
+        // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+        if (Time.time - previousLoadTime > loadInterval)
+        {
+            previousLoadTime = Time.time;
+            StartCoroutine(LoadUsers());
+        }
     }
 }
 

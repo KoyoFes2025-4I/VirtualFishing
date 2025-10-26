@@ -201,7 +201,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d63aed7bad6dbe54483bd3c2f13a72bf, type: 3}
       propertyPath: m_Name
-      value: fish2_Normal
+      value: FishType3_Normal
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -251,6 +251,7 @@ MonoBehaviour:
   weight: 5
   point: 30
   searchDistance: 10
+  modelType: 2
 --- !u!136 &120716956
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -385,6 +386,7 @@ MonoBehaviour:
   weight: 5
   point: 50
   searchDistance: 10
+  modelType: 1
 --- !u!136 &204972648
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1332,7 +1334,7 @@ MonoBehaviour:
   stageManager: {fileID: 649937252}
   thingGenerator: {fileID: 1012907309}
   gameManager: {fileID: 1616789861}
-  networkManager: {fileID: 0}
+  networkManager: {fileID: 2069985049}
 --- !u!1 &415594996
 GameObject:
   m_ObjectHideFlags: 0
@@ -1692,7 +1694,7 @@ GameObject:
   - component: {fileID: 462339668}
   - component: {fileID: 462339667}
   m_Layer: 0
-  m_Name: FishBig_Normal
+  m_Name: FishType1Big_Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1736,6 +1738,7 @@ MonoBehaviour:
   weight: 10
   point: 50
   searchDistance: 10
+  modelType: 0
 --- !u!136 &462339668
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2170,7 +2173,7 @@ GameObject:
   - component: {fileID: 586099441}
   - component: {fileID: 586099440}
   m_Layer: 0
-  m_Name: FishNormal_Over
+  m_Name: FishType1_Over
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2214,6 +2217,7 @@ MonoBehaviour:
   weight: 3
   point: 20
   searchDistance: 10
+  modelType: 0
 --- !u!136 &586099441
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2516,6 +2520,7 @@ MonoBehaviour:
   weight: 5
   point: 30
   searchDistance: 10
+  modelType: 2
 --- !u!136 &659276206
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3998,7 +4003,7 @@ GameObject:
   - component: {fileID: 1059377797}
   - component: {fileID: 1059377796}
   m_Layer: 0
-  m_Name: FishBig_Treasure
+  m_Name: FishType1Big_Treasure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4042,6 +4047,7 @@ MonoBehaviour:
   weight: 5
   point: 30
   searchDistance: 10
+  modelType: 0
 --- !u!136 &1059377797
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4391,7 +4397,7 @@ GameObject:
   - component: {fileID: 1129241537}
   - component: {fileID: 1129241536}
   m_Layer: 0
-  m_Name: FishNormal_Treasure
+  m_Name: FishType1_Treasure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4435,6 +4441,7 @@ MonoBehaviour:
   weight: 5
   point: 30
   searchDistance: 10
+  modelType: 0
 --- !u!136 &1129241537
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5130,7 +5137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c6c972ae5c785b443ba716577be2b14f, type: 3}
       propertyPath: m_Name
-      value: fish1_Over
+      value: FishType2_Over
       objectReference: {fileID: 0}
     - target: {fileID: 5135869874800453263, guid: c6c972ae5c785b443ba716577be2b14f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5216,6 +5223,7 @@ MonoBehaviour:
   weight: 3
   point: 20
   searchDistance: 10
+  modelType: 1
 --- !u!136 &1374356838
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5399,7 +5407,7 @@ GameObject:
   - component: {fileID: 1447956651}
   - component: {fileID: 1447956650}
   m_Layer: 0
-  m_Name: FishBig_Over
+  m_Name: FishType1Big_Over
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5443,6 +5451,7 @@ MonoBehaviour:
   weight: 3
   point: 20
   searchDistance: 10
+  modelType: 0
 --- !u!136 &1447956651
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5821,7 +5830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d63aed7bad6dbe54483bd3c2f13a72bf, type: 3}
       propertyPath: m_Name
-      value: fish2_Over
+      value: FishType3_Over
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5871,6 +5880,7 @@ MonoBehaviour:
   weight: 3
   point: 20
   searchDistance: 10
+  modelType: 2
 --- !u!136 &1520649711
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6260,7 +6270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c6c972ae5c785b443ba716577be2b14f, type: 3}
       propertyPath: m_Name
-      value: fish1_Treasure
+      value: FishType2_Treasure
       objectReference: {fileID: 0}
     - target: {fileID: 5135869874800453263, guid: c6c972ae5c785b443ba716577be2b14f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6709,7 +6719,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c6c972ae5c785b443ba716577be2b14f, type: 3}
       propertyPath: m_Name
-      value: fish1_Normal
+      value: FishType2_Normal
       objectReference: {fileID: 0}
     - target: {fileID: 5135869874800453263, guid: c6c972ae5c785b443ba716577be2b14f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7623,6 +7633,7 @@ MonoBehaviour:
   weight: 5
   point: 30
   searchDistance: 10
+  modelType: 1
 --- !u!136 &1987426461
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8048,7 +8059,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d63aed7bad6dbe54483bd3c2f13a72bf, type: 3}
       propertyPath: m_Name
-      value: fish2_Treasure
+      value: FishType3_Treasure
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8450,7 +8461,7 @@ GameObject:
   - component: {fileID: 7902163599351486105}
   - component: {fileID: 5387652959213923524}
   m_Layer: 0
-  m_Name: FishNormal_Normal
+  m_Name: FishType1_Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8849,6 +8860,7 @@ MonoBehaviour:
   weight: 5
   point: 30
   searchDistance: 10
+  modelType: 0
 --- !u!1 &5521693584811283917
 GameObject:
   m_ObjectHideFlags: 0

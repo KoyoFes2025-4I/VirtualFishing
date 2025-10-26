@@ -1,7 +1,6 @@
 
 public class FishScript : ThingsToFish
 {
-
     // フィールドの値はinspectorから設定
     // 親クラスで定義したOnCollisionEnterやAwakeなどは自動で実行される
 
@@ -22,5 +21,4 @@ public class FishScript : ThingsToFish
     public override void Init()
     {
     }
-
 }

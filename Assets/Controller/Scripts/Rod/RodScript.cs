@@ -7,6 +7,7 @@ using Quaternion = UnityEngine.Quaternion;
 using Unity.VisualScripting;
 
 #pragma warning disable CS0436 // 型がインポートされた型と競合しています
+[RequireComponent(typeof(AudioSource))]
 public class RodScript : MonoBehaviour
 {
     private Dictionary<string, Imu> imus;
@@ -36,6 +37,9 @@ public class RodScript : MonoBehaviour
     [SerializeField]
     private BiteScript biteScript;
     private UIScript uiScript;
+    private AudioSource audioSource;
+    private AudioClip hauledUpSound;
+    private AudioClip biteWateringSound;
     private float uiScale = 1f;
     private float baseRotationY = 0;
     private string id = "";
@@ -61,6 +65,11 @@ public class RodScript : MonoBehaviour
         if (user != null) uiScript.SetID(id, user.name);
         else uiScript.SetID(id);
         uiScript.SetScale(uiScale);
+        audioSource = GetComponent<AudioSource>();
+        hauledUpSound = Resources.Load<AudioClip>("Sounds/hauled_up");
+        biteWateringSound = Resources.Load<AudioClip>("Sounds/bite_watering");
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
     }
 
     public void SetId(string id)
@@ -190,6 +199,9 @@ public class RodScript : MonoBehaviour
         this.thing = thing;
 
         strengthPublisher.PublishStrength(id, thing.GetPower);
+        audioSource.Stop();
+        audioSource.clip = biteWateringSound;
+        audioSource.Play();
     }
 
     public void Reset()
@@ -216,6 +228,7 @@ public class RodScript : MonoBehaviour
         uiScript.ShowResult(user);
     }
 
+    bool isBiteWatered = false;
     void FixedUpdate()
     {
         try
@@ -244,6 +257,9 @@ public class RodScript : MonoBehaviour
                     thing.Lose(); // 魚側のLose関数を呼び出す
                     strengthPublisher.PublishStrength(id, 0); // ROSへの通知
                     uiScript.ShowReward(thing); // 画面上のUIに釣果を表示させる
+                    audioSource.Stop();
+                    audioSource.clip = hauledUpSound;
+                    audioSource.Play();
 
                     if (user != null)
                     {
@@ -266,6 +282,17 @@ public class RodScript : MonoBehaviour
             }
         }
         catch (KeyNotFoundException) { }
+
+        if (bite.transform.position.y <= 1f && !isBiteWatered)
+        {
+            isBiteWatered = true;
+            audioSource.Stop();
+            audioSource.clip = biteWateringSound;
+            audioSource.Play();
+        } else if (bite.transform.position.y > 4f)
+        {
+            isBiteWatered = false;
+        }
     }
 
     // Update is called once per frame

@@ -9,6 +9,7 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(AudioSource))]
 
 // 「釣るもの」オブジェクトの共通の処理やフィールドを書いた親クラス
 // Prehabのオブジェクトモデルに子クラスをアタッチしてそのモデルのパラメータを各々設定する
@@ -23,6 +24,9 @@ public abstract class ThingsToFish : MonoBehaviour
 
     private Animator animator; // Animation Controller操作のための参照
     private Rigidbody rb; // Rigidbodyコンポーネントへの参照
+    private AudioSource audioSource; // AudioSourceコンポーネントへの参照
+    private AudioClip fishResistanceSound; // 魚が抵抗する音
+    private AudioClip fishEscapeSound; // 魚が逃げる音
 
     [SerializeField] private RodsController rodsController; // 釣り竿管理クラスへの参照
     [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（画像ファイル）
@@ -93,6 +97,12 @@ public abstract class ThingsToFish : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+        fishResistanceSound = Resources.Load<AudioClip>("Sounds/fish_resistance"); // 魚が抵抗する音
+        fishEscapeSound = Resources.Load<AudioClip>("Sounds/fish_escape"); // 魚が逃げる音
     }
 
     void Start()
@@ -254,6 +264,10 @@ public abstract class ThingsToFish : MonoBehaviour
     public void InBattle()
     {
         moveState = MoveState.BATTLE; // ステートをBATTLEにする
+        audioSource.Stop();
+        audioSource.clip = fishResistanceSound;
+        audioSource.loop = true;
+        audioSource.Play();
     }
 
     // ランダムな目的地設定関数
@@ -278,6 +292,7 @@ public abstract class ThingsToFish : MonoBehaviour
     // 魚が負けた時（プレイヤーが勝った時）に呼ばれる処理
     public virtual void Lose()
     {
+        audioSource.Stop();
         gameObject.SetActive(false); // オブジェクトを非表示化
         moveState = MoveState.SHOW; // SHOW状態に遷移
     }
@@ -285,6 +300,10 @@ public abstract class ThingsToFish : MonoBehaviour
     // 魚が勝った時（プレイヤーが負けた時）に呼ばれる処理
     public virtual void Win()
     {
+        audioSource.Stop();
+        audioSource.clip = fishEscapeSound;
+        audioSource.loop = false;
+        audioSource.Play();
         animator.SetBool("wasCaught", false); // swimmingアニメーションに戻す
         moveState = MoveState.IDLE; // IDLE状態に戻す
     }

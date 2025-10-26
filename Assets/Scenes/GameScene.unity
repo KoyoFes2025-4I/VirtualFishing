@@ -1427,7 +1427,7 @@ MonoBehaviour:
   SecondsTimeout: 10
   Serializer: 0
   protocol: 0
-  RosBridgeServerUrl: ws://katsumasa.mydns.jp:9090
+  RosBridgeServerUrl: ws://192.168.10.10:9090
 --- !u!1 &434720600
 GameObject:
   m_ObjectHideFlags: 0

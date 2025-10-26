@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Animator))]
@@ -75,7 +79,14 @@ public abstract class ThingsToFish : MonoBehaviour
     void Awake()
     {
         Init(); // 子クラスで実装する初期化処理を呼び出す
-
+        List<FishTextureData> fishTextures = Config.config.fishTextureDataList.FindAll(data => data.fishModelType == (int)modelType);
+        int index = UnityEngine.Random.Range(0, fishTextures.Count + 1);
+        if (index < fishTextures.Count)
+        {
+            StartCoroutine(LoadImage(fishTextures[index]));
+        }
+        
+        name = objectName;
         speed = 1000 / weight; // weightの値を使って移動速度を決定
         destination = transform.position;
         SetNewRandomDestination(); // ランダムな目的地を設定
@@ -135,6 +146,21 @@ public abstract class ThingsToFish : MonoBehaviour
             Debug.LogError("MeshRenderer が見つかりませんでした。");
         }
 
+    }
+
+    private IEnumerator LoadImage(FishTextureData data)
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(new Uri(Path.Combine(Application.persistentDataPath, FishTextureData.fishTextureFolder, data.fishTextureName)).AbsoluteUri);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            objectTexture = DownloadHandlerTexture.GetContent(request);
+            name = data.fishName;
+            objectName = data.fishName;
+            creator = data.fishCreator;
+            ApplyTextureToModel();
+        }
     }
 
     // 移動アルゴリズム関連のパラメータ

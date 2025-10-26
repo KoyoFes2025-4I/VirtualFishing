@@ -56,7 +56,6 @@ public class ThingGenerator : MonoBehaviour
 
         // Prefabを新規生成してThingsToFishコンポーネントを取得させる
         ThingsToFish thing = Instantiate(prefab, spawnPos, Quaternion.identity, transform).GetComponent<ThingsToFish>();
-        thing.name = thing.GetObjectName; // オブジェクトの名前の設定
         thing.gameObject.SetActive(true);
         things.Add(thing.gameObject);
     }

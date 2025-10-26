@@ -11,6 +11,7 @@ using SFB;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using WebSocketSharp;
+using System.Threading.Tasks;
 
 // ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
 // GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
@@ -70,18 +71,23 @@ public class Config : MonoBehaviour
 
     private TextField fishNameField;
     private TextField fishCreatorField;
+    private DropdownField fishModelType;
     private Button loadTextureButton;
     private Label TexturePreview;
     private Label MessageLabel;
     private Button addTextureButton;
+    private ListView textureListView;
 
     // 設定の保存用（ConfigSaveDataのインスタンス生成）
-    private ConfigSaveData config = new ConfigSaveData();
-    public ConfigSaveData GetConfig => config;
+    public static ConfigSaveData config = new ConfigSaveData();
 
     // UIの各要素の初期設定用メソッド
     private void FieldInit()
     {
+        // 設定データファイルに保存されている設定をConfigSaveDataへ読み込む
+        // ファイルが無ければデフォルト値のまま変わらない
+        config.Load();
+
         // 以下でUXML内の各要素の参照を取得して初期化
 
         configCameraSpeedField = ui.rootVisualElement.Q<FloatField>("ConfigCameraSpeedField");
@@ -108,10 +114,12 @@ public class Config : MonoBehaviour
 
         fishNameField = ui.rootVisualElement.Q<TextField>("FishNameField");
         fishCreatorField = ui.rootVisualElement.Q<TextField>("FishCreatorField");
+        fishModelType = ui.rootVisualElement.Q<DropdownField>("FishModelType");
         loadTextureButton = ui.rootVisualElement.Q<Button>("LoadTextureButton");
         TexturePreview = ui.rootVisualElement.Q<Label>("TexturePreview");
         MessageLabel = ui.rootVisualElement.Q<Label>("MessageLabel");
         addTextureButton = ui.rootVisualElement.Q<Button>("AddTextureButton");
+        textureListView = ui.rootVisualElement.Q<ListView>("TextureListView");
 
         loadTextureButton.clicked += () =>
         {
@@ -127,16 +135,66 @@ public class Config : MonoBehaviour
         {
             if (TexturePreview.style.backgroundImage.value.texture != null &&
                 !string.IsNullOrEmpty(fishNameField.value) &&
-                !string.IsNullOrEmpty(fishCreatorField.value))
+                !string.IsNullOrEmpty(fishCreatorField.value) &&
+                !fishModelType.index.Equals(-1))
             {
                 Texture2D texture = TexturePreview.style.backgroundImage.value.texture;
+                config.fishTextureDataList.Add(new FishTextureData(fishNameField.value, fishCreatorField.value, fishModelType.index, texture));
                 MessageLabel.text = "テクスチャを追加しました。";
+                config.Save();
+                ListViewRefresh();
+                fishNameField.value = "";
+                fishCreatorField.value = "";
+                fishModelType.index = -1;
+                TexturePreview.style.backgroundImage = null;
             }
             else
             {
-                MessageLabel.text = "テクスチャ、魚の名前、作成者名を全て入力してください。";
+                MessageLabel.text = "テクスチャ、魚の名前、モデルタイプ、作成者名を全て入力してください。";
             }
         };
+
+        textureListView.makeItem = () =>
+        {
+            VisualElement element = new VisualElement();
+            VisualElement nameElement = new VisualElement();
+            VisualElement buttonElement = new VisualElement();
+            element.style.flexDirection = FlexDirection.Row;
+            nameElement.style.flexDirection = FlexDirection.Column;
+            buttonElement.style.flexDirection = FlexDirection.Row;
+            buttonElement.style.marginLeft = new StyleLength(StyleKeyword.Auto);
+            element.Add(new Image() { name = "TextureImage", scaleMode = ScaleMode.ScaleToFit, style = { width = 100, height = 100 } });
+            nameElement.Add(new Label() { name = "TextureName", style = { unityTextAlign = TextAnchor.MiddleLeft, marginLeft = 10 } });
+            nameElement.Add(new Label() { name = "TextureCreator", style = { unityTextAlign = TextAnchor.MiddleLeft, marginLeft = 10 } });
+            element.Add(nameElement);
+            buttonElement.Add(new Button() { name = "RemoveButton", text = "削除", style = { marginLeft = new StyleLength(StyleKeyword.Auto), unityTextAlign = TextAnchor.MiddleCenter } });
+            element.Add(buttonElement);
+            return element;
+        };
+        textureListView.bindItem = (element, index) =>
+        {
+            element.Q<Image>("TextureImage").image = config.fishTextureDataList[index].texture;
+            element.Q<Label>("TextureName").text = "名前: " + config.fishTextureDataList[index].fishName + " (モデルタイプ: " + (ThingsToFish.ModelType)config.fishTextureDataList[index].fishModelType + ")";
+            element.Q<Label>("TextureCreator").text = "作成者: " + config.fishTextureDataList[index].fishCreator;
+            var button = element.Q<Button>("RemoveButton");
+
+            if (button.userData is Action oldAction) button.clicked -= oldAction;
+
+            Action clickAction = () =>
+            {
+                config.fishTextureDataList[index].DeleteImage();
+                config.fishTextureDataList.RemoveAt(index);
+                config.Save();
+                ListViewRefresh();
+            };
+            button.userData = clickAction;
+            button.clicked += clickAction;
+        };
+        foreach (FishTextureData data in config.fishTextureDataList)
+        {
+            StartCoroutine(data.LoadImage());
+        }
+        textureListView.itemsSource = config.fishTextureDataList; // 表示するデータはconfig.fishTextureDataListを参照
 
         // ゲーム中のユーザーをListViewに表示する
         gamingUsersListView = ui.rootVisualElement.Q<ListView>("GamingUsersListView");
@@ -287,10 +345,6 @@ public class Config : MonoBehaviour
         // tabViewに選択されているタブの参照を取得して初期化
         tabView = ui.rootVisualElement.Q<TabView>("TabView");
 
-        // 設定データファイルに保存されている設定をConfigSaveDataへ読み込む
-        // ファイルが無ければデフォルト値のまま変わらない
-        config.Load();
-
         // 以下でConfigSaveDataにある値を各UIフィールドやドロップダウンにセットする
 
         configCameraSpeedField.value = config.configCameraSpeed;
@@ -436,9 +490,10 @@ public class Config : MonoBehaviour
         gamingUsersListView.RefreshItems();
         nextUsersListView.RefreshItems();
         waitUsersListView.RefreshItems();
+        textureListView.RefreshItems();
     }
 
-    void Start()
+    void Awake()
     {
         FieldInit(); // 各要素の初期化
         Apply(); // 各データの一番最初の適用処理
@@ -512,6 +567,8 @@ public class ConfigSaveData
     public int overfishingModeTime = 120;
     public int treasureModeTime = 120;
 
+    public List<FishTextureData> fishTextureDataList = new List<FishTextureData>();
+
     // 現在の各データの設定値を設定データファイルへ書き込むメソッド
     public void Save()
     {
@@ -552,6 +609,63 @@ public class ConfigSaveData
         normalModeTime = tmp.normalModeTime;
         overfishingModeTime = tmp.overfishingModeTime;
         treasureModeTime = tmp.treasureModeTime;
+
+        fishTextureDataList = tmp.fishTextureDataList;
         return true;
+    }
+}
+
+[Serializable]
+public class FishTextureData
+{
+    [NonSerialized]
+    public const string fishTextureFolder = "FishTextures";
+    [NonSerialized]
+    public const string fishTextureExtension = ".png";
+    public string fishName;
+    public string fishCreator;
+    public int fishModelType;
+    public string fishTextureName;
+    [NonSerialized]
+    public Texture2D texture = null;
+
+    public FishTextureData(string name, string creator, int modelType, Texture2D texture)
+    {
+        fishName = name;
+        fishCreator = creator;
+        fishModelType = modelType;
+        this.texture = texture;
+
+        string path = Path.Combine(Application.persistentDataPath, fishTextureFolder); ;
+        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+        fishTextureName = fishName + "_" + Guid.NewGuid().ToString() + fishTextureExtension;
+        string fullPath = Path.Combine(path, fishTextureName);
+        while (File.Exists(fullPath))
+        {
+            fishTextureName = fishName + "_" + Guid.NewGuid().ToString() + fishTextureExtension;
+            fullPath = Path.Combine(path, fishTextureName);
+        }
+        byte[] pngData = texture.EncodeToPNG();
+        File.WriteAllBytes(fullPath, pngData);
+    }
+
+    public IEnumerator LoadImage()
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(new Uri(Path.Combine(Application.persistentDataPath, fishTextureFolder, fishTextureName)).AbsoluteUri);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            texture = DownloadHandlerTexture.GetContent(request);
+        }
+    }
+
+    public void DeleteImage()
+    {
+        string path = Path.Combine(Application.persistentDataPath, fishTextureFolder, fishTextureName);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
     }
 }

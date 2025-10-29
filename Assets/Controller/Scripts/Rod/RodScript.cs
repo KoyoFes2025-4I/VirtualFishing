@@ -1,5 +1,6 @@
 ﻿using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using UnityEngine;
 
 #pragma warning disable CS0436 // 型がインポートされた型と競合しています
 [RequireComponent(typeof(AudioSource))]

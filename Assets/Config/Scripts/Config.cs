@@ -1,23 +1,32 @@
 using System;
 using System.IO;
+using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Linq;
+using UnityEngine.Networking;
+using System.Collections.Generic;
+using SFB;
 
+// ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
+// GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
+// UI Toolkit/PanelSettings.assetでUI画面のTarget DisplayはDisplay3に表示される様に設定
+// GUI上に表示する実際の文字列はラベル名を経由してUXMLファイルで設定
+
+// UI画面のロジック処理を設定するクラス
 public class Config : MonoBehaviour
 {
-    [SerializeField]
-    UIDocument ui;
-    [SerializeField]
-    ConfigCameraScript configCamera;
-    [SerializeField]
-    RodsController rodsController;
-    [SerializeField]
-    StageManager stageManager;
-    [SerializeField]
-    ThingGenerator thingGenerator;
-    [SerializeField]
-    GameManager gameManager;
+    [SerializeField] UIDocument ui; // UI Toolkitのクラス（ConfigUI.uxmlとConfigUIStyle.uss）
+
+    [SerializeField] ConfigCameraScript configCamera; // カメラ設定クラス
+    [SerializeField] RodsController rodsController; // 釣り竿の制御クラス
+    [SerializeField] StageManager stageManager; // ステージの管理クラス
+    [SerializeField] ThingGenerator thingGenerator; // 魚オブジェクトの管理クラス
+    [SerializeField] GameManager gameManager; // ゲームマネージャークラス
+    [SerializeField] NetworkManager networkManager; // Flaskとの接続用クラス
+
+    // 以下各UI要素の参照のための変数を用意
 
     private FloatField configCameraSpeedField;
     private FloatField configCameraDashSpeedField;
@@ -30,6 +39,7 @@ public class Config : MonoBehaviour
     private FloatField maxRodStrengthField;
     private DropdownField rodIDDropDown;
     private FloatField rodUIScale;
+    private UnsignedIntegerField fishingRodControllerCount;
 
     private UnsignedIntegerField stageSizeField;
     private UnsignedIntegerField cameraYField;
@@ -52,11 +62,31 @@ public class Config : MonoBehaviour
     private Button startButton;
     private Button finishButton;
 
-    private ConfigSaveData config = new ConfigSaveData();
-    public ConfigSaveData GetConfig => config;
+    private UnsignedIntegerField normalModeTimeField;
+    private UnsignedIntegerField overfishingModeTimeField;
+    private UnsignedIntegerField TreasureModeTimeField;
 
+    private TextField fishNameField;
+    private TextField fishCreatorField;
+    private DropdownField fishModelType;
+    private Button loadTextureButton;
+    private Label TexturePreview;
+    private Label MessageLabel;
+    private Button addTextureButton;
+    private ListView textureListView;
+
+    // 設定の保存用（ConfigSaveDataのインスタンス生成）
+    public static ConfigSaveData config = new ConfigSaveData();
+
+    // UIの各要素の初期設定用メソッド
     private void FieldInit()
     {
+        // 設定データファイルに保存されている設定をConfigSaveDataへ読み込む
+        // ファイルが無ければデフォルト値のまま変わらない
+        config.Load();
+
+        // 以下でUXML内の各要素の参照を取得して初期化
+
         configCameraSpeedField = ui.rootVisualElement.Q<FloatField>("ConfigCameraSpeedField");
         configCameraDashSpeedField = ui.rootVisualElement.Q<FloatField>("ConfigCameraDashSpeedField");
         cameraSensitivityField = ui.rootVisualElement.Q<FloatField>("CameraSensitivityField");
@@ -68,6 +98,7 @@ public class Config : MonoBehaviour
         maxRodStrengthField = ui.rootVisualElement.Q<FloatField>("MaxRodStrengthField");
         rodIDDropDown = ui.rootVisualElement.Q<DropdownField>("RodIDDropDown");
         rodUIScale = ui.rootVisualElement.Q<FloatField>("RodUIScale");
+        fishingRodControllerCount = ui.rootVisualElement.Q<UnsignedIntegerField>("FishingRodControllerCount");
 
         stageSizeField = ui.rootVisualElement.Q<UnsignedIntegerField>("StageSizeField");
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
@@ -75,6 +106,95 @@ public class Config : MonoBehaviour
         cam2Rotation = ui.rootVisualElement.Q<FloatField>("Cam2Rotation");
         stageStyleDropDown = ui.rootVisualElement.Q<DropdownField>("StageStyleDropDown");
 
+        normalModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("NormalModeTime");
+        overfishingModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("OverfishingModeTime");
+        TreasureModeTimeField = ui.rootVisualElement.Q<UnsignedIntegerField>("TreasureModeTime");
+
+        fishNameField = ui.rootVisualElement.Q<TextField>("FishNameField");
+        fishCreatorField = ui.rootVisualElement.Q<TextField>("FishCreatorField");
+        fishModelType = ui.rootVisualElement.Q<DropdownField>("FishModelType");
+        loadTextureButton = ui.rootVisualElement.Q<Button>("LoadTextureButton");
+        TexturePreview = ui.rootVisualElement.Q<Label>("TexturePreview");
+        MessageLabel = ui.rootVisualElement.Q<Label>("MessageLabel");
+        addTextureButton = ui.rootVisualElement.Q<Button>("AddTextureButton");
+        textureListView = ui.rootVisualElement.Q<ListView>("TextureListView");
+
+        loadTextureButton.clicked += () =>
+        {
+            var extensions = new[] { new ExtensionFilter("テクスチャファイル", "png", "jpg", "jpeg") };
+            var paths = StandaloneFileBrowser.OpenFilePanel("テクスチャを選択", "", extensions, false);
+            if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+            {
+                StartCoroutine(LoadImage(new Uri(paths[0]).AbsoluteUri));
+            }
+        };
+
+        addTextureButton.clicked += () =>
+        {
+            if (TexturePreview.style.backgroundImage.value.texture != null &&
+                !string.IsNullOrEmpty(fishNameField.value) &&
+                !string.IsNullOrEmpty(fishCreatorField.value) &&
+                !fishModelType.index.Equals(-1))
+            {
+                Texture2D texture = TexturePreview.style.backgroundImage.value.texture;
+                config.fishTextureDataList.Add(new FishTextureData(fishNameField.value, fishCreatorField.value, fishModelType.index, texture));
+                MessageLabel.text = "テクスチャを追加しました。";
+                config.Save();
+                ListViewRefresh();
+                fishNameField.value = "";
+                fishCreatorField.value = "";
+                fishModelType.index = -1;
+                TexturePreview.style.backgroundImage = null;
+            }
+            else
+            {
+                MessageLabel.text = "テクスチャ、魚の名前、モデルタイプ、作成者名を全て入力してください。";
+            }
+        };
+
+        textureListView.makeItem = () =>
+        {
+            VisualElement element = new VisualElement();
+            VisualElement nameElement = new VisualElement();
+            VisualElement buttonElement = new VisualElement();
+            element.style.flexDirection = FlexDirection.Row;
+            nameElement.style.flexDirection = FlexDirection.Column;
+            buttonElement.style.flexDirection = FlexDirection.Row;
+            buttonElement.style.marginLeft = new StyleLength(StyleKeyword.Auto);
+            element.Add(new Image() { name = "TextureImage", scaleMode = ScaleMode.ScaleToFit, style = { width = 100, height = 100 } });
+            nameElement.Add(new Label() { name = "TextureName", style = { unityTextAlign = TextAnchor.MiddleLeft, marginLeft = 10 } });
+            nameElement.Add(new Label() { name = "TextureCreator", style = { unityTextAlign = TextAnchor.MiddleLeft, marginLeft = 10 } });
+            element.Add(nameElement);
+            buttonElement.Add(new Button() { name = "RemoveButton", text = "削除", style = { marginLeft = new StyleLength(StyleKeyword.Auto), unityTextAlign = TextAnchor.MiddleCenter } });
+            element.Add(buttonElement);
+            return element;
+        };
+        textureListView.bindItem = (element, index) =>
+        {
+            element.Q<Image>("TextureImage").image = config.fishTextureDataList[index].texture;
+            element.Q<Label>("TextureName").text = "名前: " + config.fishTextureDataList[index].fishName + " (モデルタイプ: " + (ThingsToFish.ModelType)config.fishTextureDataList[index].fishModelType + ")";
+            element.Q<Label>("TextureCreator").text = "作成者: " + config.fishTextureDataList[index].fishCreator;
+            var button = element.Q<Button>("RemoveButton");
+
+            if (button.userData is Action oldAction) button.clicked -= oldAction;
+
+            Action clickAction = () =>
+            {
+                config.fishTextureDataList[index].DeleteImage();
+                config.fishTextureDataList.RemoveAt(index);
+                config.Save();
+                ListViewRefresh();
+            };
+            button.userData = clickAction;
+            button.clicked += clickAction;
+        };
+        foreach (FishTextureData data in config.fishTextureDataList)
+        {
+            StartCoroutine(data.LoadImage());
+        }
+        textureListView.itemsSource = config.fishTextureDataList; // 表示するデータはconfig.fishTextureDataListを参照
+
+        // ゲーム中のユーザーをListViewに表示する
         gamingUsersListView = ui.rootVisualElement.Q<ListView>("GamingUsersListView");
         gamingUsersListView.makeItem = () =>
         {
@@ -86,8 +206,9 @@ public class Config : MonoBehaviour
         {
             (element as Label).text = gameManager.gamingUsers[index].name;
         };
-        gamingUsersListView.itemsSource = gameManager.gamingUsers;
+        gamingUsersListView.itemsSource = gameManager.gamingUsers; // 表示するデータはgameManager.gamingUsersを参照
 
+        // 次のゲームに参加するユーザーをListViewに表示する
         nextUsersListView = ui.rootVisualElement.Q<ListView>("NextUsersListView");
         nextUsersListView.makeItem = () =>
         {
@@ -99,8 +220,9 @@ public class Config : MonoBehaviour
         {
             (element as Label).text = gameManager.nextUsers[index].name;
         };
-        nextUsersListView.itemsSource = gameManager.nextUsers;
+        nextUsersListView.itemsSource = gameManager.nextUsers; // 表示するデータはgameManager.nextUsersを参照
 
+        // 待っているユーザーをListViewに表示する
         waitUsersListView = ui.rootVisualElement.Q<ListView>("WaitUsersListView");
         waitUsersListView.makeItem = () =>
         {
@@ -112,21 +234,31 @@ public class Config : MonoBehaviour
         {
             (element as Label).text = gameManager.waitUsers[index].name;
         };
-        waitUsersListView.itemsSource = gameManager.waitUsers;
+        waitUsersListView.itemsSource = gameManager.waitUsers; // 表示するデータはgameManager.waitUsersを参照
 
+        // 「次にゲームするユーザー」と「待機中ユーザー」のどちらかしか一度に選べないようにする
         waitUsersListView.selectionChanged += (element) => nextUsersListView.selectedIndex = -1;
         nextUsersListView.selectionChanged += (element) => waitUsersListView.selectedIndex = -1;
 
+        // ユーザーの状態管理ボタンの参照を取得して初期化
         userUpButton = ui.rootVisualElement.Q<Button>("UserUpButton");
         userDownButton = ui.rootVisualElement.Q<Button>("UserDownButton");
         userRemoveButton = ui.rootVisualElement.Q<Button>("UserRemoveButton");
         userAddField = ui.rootVisualElement.Q<TextField>("UserAddField");
         userAddButton = ui.rootVisualElement.Q<Button>("UserAddButton");
+
+        // UserAddField（名前）はTextFieldなので文字入力が可能
+
+        // 「追加」がクリックされた時の処理を設定
         userAddButton.clicked += () =>
         {
+            // 入力されたユーザー名を登録したUsersインスタンスをwaitUsersリストに追加する
+            if (string.IsNullOrEmpty(userAddField.value)) return;
             gameManager.waitUsers.Add(new User(userAddField.value));
             waitUsersListView.RefreshItems();
         };
+
+        // 「削除」がクリックされた時の処理を設定
         userRemoveButton.clicked += () =>
         {
             if (waitUsersListView.selectedIndex != -1)
@@ -140,11 +272,14 @@ public class Config : MonoBehaviour
                 nextUsersListView.RefreshItems();
             }
         };
+
+        // 「上」がクリックされた時の処理を設定
         userUpButton.clicked += () =>
         {
             if (waitUsersListView.selectedIndex != -1)
             {
-                if (waitUsersListView.selectedIndex == 0 && (gameManager.nextUsers.Count == 8 || gameManager.nextUsers.Count == 4 && config.rodCountIndex != 0)) return;
+                int[] limit = { 8, 4, 4, 4, 8, 6 };
+                if (waitUsersListView.selectedIndex == 0 && (gameManager.nextUsers.Count == limit[config.rodCountIndex])) return;
                 User user = gameManager.waitUsers[waitUsersListView.selectedIndex];
                 gameManager.waitUsers.RemoveAt(waitUsersListView.selectedIndex);
                 if (waitUsersListView.selectedIndex != 0) gameManager.waitUsers.Insert(waitUsersListView.selectedIndex - 1, user);
@@ -162,6 +297,8 @@ public class Config : MonoBehaviour
                 nextUsersListView.RefreshItems();
             }
         };
+
+        // 「下」がクリックされた時の処理を設定
         userDownButton.clicked += () =>
         {
             if (waitUsersListView.selectedIndex < gameManager.waitUsers.Count - 1 && waitUsersListView.selectedIndex >= 0)
@@ -189,21 +326,24 @@ public class Config : MonoBehaviour
             }
         };
 
+        // 「準備」、「スタート」、「終了」ボタンの参照を取得して初期化
         prepareButton = ui.rootVisualElement.Q<Button>("PrepareButton");
         startButton = ui.rootVisualElement.Q<Button>("StartButton");
         finishButton = ui.rootVisualElement.Q<Button>("FinishButton");
+
+        // 「準備」、「スタート」、「終了」ボタンがクリックされた時に呼び出す関数を設定
         prepareButton.clicked += () => gameManager.Prepare();
         startButton.clicked += () => gameManager.StartGame();
         finishButton.clicked += () => gameManager.FinishGame();
 
-
+        // 「適用」ボタンの参照の取得とそのクリック時処理の設定
         applyButton = ui.rootVisualElement.Q<Button>("ApplyButton");
         applyButton.clicked += Apply;
 
+        // tabViewに選択されているタブの参照を取得して初期化
         tabView = ui.rootVisualElement.Q<TabView>("TabView");
 
-
-        config.Load();
+        // 以下でConfigSaveDataにある値を各UIフィールドやドロップダウンにセットする
 
         configCameraSpeedField.value = config.configCameraSpeed;
         configCameraDashSpeedField.value = config.configCameraDashSpeed;
@@ -216,24 +356,106 @@ public class Config : MonoBehaviour
         maxRodStrengthField.value = config.maxRodStrength;
         rodIDDropDown.index = config.rodIDGenerateIndex;
         rodUIScale.value = config.rodUIScale;
+        fishingRodControllerCount.value = (uint)config.fishingRodControllerCount;
 
         stageSizeField.value = (uint)config.stageSize;
         cameraYField.value = (uint)config.cameraY;
         cam1Rotation.value = config.cam1Rotation;
         cam2Rotation.value = config.cam2Rotation;
         stageStyleDropDown.index = config.stageStyle;
+
+        normalModeTimeField.value = (uint)config.normalModeTime;
+        overfishingModeTimeField.value = (uint)config.overfishingModeTime;
+        TreasureModeTimeField.value = (uint)config.treasureModeTime;
     }
 
+    private IEnumerator LoadImage(string path)
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(path);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            MessageLabel.text = "画像の読み込みに失敗しました。";
+        }
+        else
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(request);
+            TexturePreview.style.backgroundImage = texture;
+            MessageLabel.text = "画像を読み込みました。";
+        }
+    }
+
+    // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理
+    private IEnumerator LoadUsers()
+    {
+        // Flaskの /LoadUsers にアクセスしてレスポンスを受け取る
+        string url = "http://127.0.0.1:5000/LoadUsers";
+
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                try
+                {
+                    var json = request.downloadHandler.text;
+                    var data = JsonUtility.FromJson<UserListResponse>(json);
+
+                    if (data != null && data.usernames != null)
+                    {
+                        foreach (var name in data.usernames)
+                        {
+                            // 重複しないようにチェックしてからwaitUsersへ追加する
+                            if (!gameManager.waitUsers.Any(u => u.name == name))
+                            {
+                                gameManager.waitUsers.Add(new User(name));
+                                Debug.Log("ユーザー名をロード: " + name);
+                            }
+                        }
+
+                        waitUsersListView.RefreshItems();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("ユーザーリストが空か、パースに失敗しました。");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"JSONパースエラー: {e.Message}");
+                }
+            }
+            else
+            {
+                Debug.LogError("通信エラー: " + request.error);
+            }
+        }
+    }
+
+    // FlaskのJSONレスポンス受け取り用のクラス
+    [Serializable]
+    private class UserListResponse
+    {
+        public List<string> usernames; // ユーザー名の文字列型リスト
+    }
+
+    // 「適用」ボタンがクリックされた時の処理
     private void Apply()
     {
+        // コンフィグ画面で変更した設定を実際に反映させて更新する
         configCamera.ChangeParams(configCameraSpeedField.value, configCameraDashSpeedField.value, cameraSensitivityField.value);
         stageManager.ChangeParams(cameraYField.value, stageSizeField.value, cam1Rotation.value, cam2Rotation.value, stageStyleDropDown.index);
         rodsController.ChangeParams(rodDropDown.index, controllerRotationYField.value, throwPowerField.value, rodPowerField.value, maxRodStrengthField.value, rodIDDropDown.index, rodUIScale.value);
 
+        // 魚オブジェクトを一旦全て破棄する
         thingGenerator.Regenerate();
 
-
-
+        // 以下でUIで設定したデータををConfigSaveDataへコピー
+        
         config.configCameraSpeed = configCameraSpeedField.value;
         config.configCameraDashSpeed = configCameraDashSpeedField.value;
         config.configCameraSensitivity = cameraSensitivityField.value;
@@ -245,6 +467,7 @@ public class Config : MonoBehaviour
         config.maxRodStrength = maxRodStrengthField.value;
         config.rodIDGenerateIndex = rodIDDropDown.index;
         config.rodUIScale = rodUIScale.value;
+        config.fishingRodControllerCount = (int)fishingRodControllerCount.value;
 
         config.stageSize = (int)stageSizeField.value;
         config.cameraY = (int)cameraYField.value;
@@ -252,48 +475,75 @@ public class Config : MonoBehaviour
         config.cam2Rotation = cam2Rotation.value;
         config.stageStyle = stageStyleDropDown.index;
 
+        config.normalModeTime = (int)normalModeTimeField.value;
+        config.overfishingModeTime = (int)overfishingModeTimeField.value;
+        config.treasureModeTime = (int)TreasureModeTimeField.value;
+
+        // コピーしたデータを設定データファイルへ保存する
+        // ゲームを再起動しても設定を保持できる（Loadメソッドで初期化時に毎回ファイルを読み込む）
         config.Save();
     }
 
+    // gamingUsers, nextUsers, waitUsersが変更された時にこれを呼ぶことでUIのListViewが最新の状態になる
     public void ListViewRefresh()
     {
         gamingUsersListView.RefreshItems();
         nextUsersListView.RefreshItems();
         waitUsersListView.RefreshItems();
+        textureListView.RefreshItems();
     }
 
-    void Start()
+    void Awake()
     {
-        FieldInit();
-        Apply();
+        FieldInit(); // 各要素の初期化
+        Apply(); // 各データの一番最初の適用処理
     }
 
+    private float previousLoadTime = 0f;
+    private float loadInterval = 5f;
     void Update()
     {
+        // Escapeキーでカメラ固定とコンフィグ画面の表示・非表示を切り替える
         if (Input.GetKeyDown(KeyCode.Escape)) configCamera.locked = !configCamera.locked;
 
+        // カメラ操作中のマウスカーソルの固定処理
         if (configCamera.locked) UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         else UnityEngine.Cursor.lockState = CursorLockMode.None;
 
+        // ui.enabledでコンフィグ画面の表示・非表示を制御
         bool prev = ui.enabled;
         ui.enabled = !configCamera.locked;
+
+        // UI が非表示から表示に切り替わった場合は各要素を再取得
         if (!prev && ui.enabled) FieldInit();
 
+        // 「適用」ボタンはゲーム中でないかつ「ゲームマネージャー」タブでのみ有効
+        // 「準備」と「スタート」ボタンはゲーム中でない時に有効
+        // 「終了」ボタンはゲーム中のみ有効
         applyButton.SetEnabled(tabView.selectedTabIndex != 0 && !gameManager.isGaming);
         prepareButton.SetEnabled(!gameManager.isGaming);
         startButton.SetEnabled(!gameManager.isGaming);
         finishButton.SetEnabled(gameManager.isGaming);
+
+        // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+        if (Time.time - previousLoadTime > loadInterval)
+        {
+            previousLoadTime = Time.time;
+            StartCoroutine(LoadUsers());
+        }
     }
 }
 
-
-
-
+// 各設定データの保存・読み込み用のデータコンテナ
 [Serializable]
 public class ConfigSaveData
 {
+    // 保存用の設定データファイル名とそのパス用の変数
     public static string fileName = "config.vf";
     public static string path = "";
+
+    // 以下が各データのデフォルト設定値
+    // 設定変更時にはApply関数から書き変えられる
 
     public float configCameraSpeed = 5f;
     public float configCameraDashSpeed = 15f;
@@ -306,6 +556,7 @@ public class ConfigSaveData
     public float maxRodStrength = 100;
     public float rodUIScale = 1;
     public int rodIDGenerateIndex = 0;
+    public int fishingRodControllerCount = 8;
 
     public int stageSize = 10;
     public int cameraY = 200;
@@ -313,6 +564,13 @@ public class ConfigSaveData
     public float cam2Rotation = 0f;
     public int stageStyle = 0;
 
+    public int normalModeTime = 120;
+    public int overfishingModeTime = 120;
+    public int treasureModeTime = 120;
+
+    public List<FishTextureData> fishTextureDataList = new List<FishTextureData>();
+
+    // 現在の各データの設定値を設定データファイルへ書き込むメソッド
     public void Save()
     {
         path = Path.Combine(Application.persistentDataPath, fileName);
@@ -321,10 +579,11 @@ public class ConfigSaveData
         using (FileStream fs = File.Create(path)) bf.Serialize(fs, this);
     }
 
+    // 設定データファイルを読み込んで各データを書き変えるメソッド
     public bool Load()
     {
         path = Path.Combine(Application.persistentDataPath, fileName);
-        if (!File.Exists(path)) return false;
+        if (!File.Exists(path)) return false; // ファイルがない時は何もしない（デフォルトのまま）
 
         BinaryFormatter bf = new BinaryFormatter();
         ConfigSaveData tmp;
@@ -341,12 +600,74 @@ public class ConfigSaveData
         maxRodStrength = tmp.maxRodStrength;
         rodUIScale = tmp.rodUIScale;
         rodIDGenerateIndex = tmp.rodIDGenerateIndex;
+        fishingRodControllerCount = tmp.fishingRodControllerCount;
 
         stageSize = tmp.stageSize;
         cameraY = tmp.cameraY;
         cam1Rotation = tmp.cam1Rotation;
         cam2Rotation = tmp.cam2Rotation;
         stageStyle = tmp.stageStyle;
+
+        normalModeTime = tmp.normalModeTime;
+        overfishingModeTime = tmp.overfishingModeTime;
+        treasureModeTime = tmp.treasureModeTime;
+
+        fishTextureDataList = tmp.fishTextureDataList;
         return true;
+    }
+}
+
+[Serializable]
+public class FishTextureData
+{
+    [NonSerialized]
+    public const string fishTextureFolder = "FishTextures";
+    [NonSerialized]
+    public const string fishTextureExtension = ".png";
+    public string fishName;
+    public string fishCreator;
+    public int fishModelType;
+    public string fishTextureName;
+    [NonSerialized]
+    public Texture2D texture = null;
+
+    public FishTextureData(string name, string creator, int modelType, Texture2D texture)
+    {
+        fishName = name;
+        fishCreator = creator;
+        fishModelType = modelType;
+        this.texture = texture;
+
+        string path = Path.Combine(Application.persistentDataPath, fishTextureFolder); ;
+        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+        fishTextureName = fishName + "_" + Guid.NewGuid().ToString() + fishTextureExtension;
+        string fullPath = Path.Combine(path, fishTextureName);
+        while (File.Exists(fullPath))
+        {
+            fishTextureName = fishName + "_" + Guid.NewGuid().ToString() + fishTextureExtension;
+            fullPath = Path.Combine(path, fishTextureName);
+        }
+        byte[] pngData = texture.EncodeToPNG();
+        File.WriteAllBytes(fullPath, pngData);
+    }
+
+    public IEnumerator LoadImage()
+    {
+        using UnityWebRequest request = UnityWebRequestTexture.GetTexture(new Uri(Path.Combine(Application.persistentDataPath, fishTextureFolder, fishTextureName)).AbsoluteUri);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            texture = DownloadHandlerTexture.GetContent(request);
+        }
+    }
+
+    public void DeleteImage()
+    {
+        string path = Path.Combine(Application.persistentDataPath, fishTextureFolder, fishTextureName);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
     }
 }

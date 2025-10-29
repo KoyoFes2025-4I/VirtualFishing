@@ -41,6 +41,7 @@
                     <ui:FloatField label="釣り竿の耐久力" value="100" placeholder-text="初期値：100" name="MaxRodStrengthField" class="center-text" />
                     <ui:DropdownField label="IDの割り当て" index="0" choices="連番,UUID" name="RodIDDropDown" class="center-text" />
                     <ui:FloatField label="UIのスケール" value="1" placeholder-text="初期値：1" name="RodUIScale" class="center-text" />
+                    <ui:UnsignedIntegerField label="釣り竿コントローラーの本数" value="8" name="FishingRodControllerCount" placeholder-text="初期値：8" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="ステージ" name="StageTab">
@@ -50,10 +51,23 @@
                     <ui:FloatField label="カメラ1の回転" value="0" name="Cam1Rotation" class="center-text" />
                     <ui:FloatField label="カメラ2の回転" value="0" name="Cam2Rotation" class="center-text" />
                     <ui:DropdownField label="ステージスタイル" name="StageStyleDropDown" index="0" choices="ほぼ正方形,横長" class="center-text" />
+                    <ui:UnsignedIntegerField label="ノーマルモードの時間（秒）" value="120" placeholder-text="初期値：120" name="NormalModeTime" class="center-text" />
+                    <ui:UnsignedIntegerField label="乱獲モードの時間（秒）" value="120" placeholder-text="初期値：120" name="OverfishingModeTime" class="center-text" />
+                    <ui:UnsignedIntegerField label="宝釣りモードの時間（秒）" value="120" placeholder-text="初期値：120" name="TreasureModeTime" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="魚" name="FishTab">
-                <ui:ScrollView />
+                <ui:ScrollView>
+                    <ui:TextField label="名前" placeholder-text="追加する魚の名前" name="FishNameField" class="center-text" />
+                    <ui:TextField label="作者" placeholder-text="追加する魚の作者" name="FishCreatorField" class="center-text" />
+                    <ui:DropdownField label="モデルタイプ" name="FishModelType" choices="FishType1,FishType2,FishType3" class="center-text" />
+                    <ui:Button text="テクスチャ読み込み" name="LoadTextureButton" class="center-text" />
+                    <ui:Label name="TexturePreview" class="center-text" style="width: 200px; height: 200px; -unity-background-scale-mode: scale-to-fit; background-position-x: center 0; background-position-y: center 0;" />
+                    <ui:Label name="MessageLabel" class="center-text" />
+                    <ui:Button text="テクスチャ追加" name="AddTextureButton" class="center-text" />
+                    <ui:Label text="テクスチャリスト" class="center-text" />
+                    <ui:ListView name="TextureListView" focusable="true" fixed-item-height="100" class="center-text" />
+                </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="コンフィグカメラ" name="ConfigTab">
                 <ui:ScrollView>

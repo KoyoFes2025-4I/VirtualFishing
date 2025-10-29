@@ -129,6 +129,11 @@ public class RodScript : MonoBehaviour
         throwingTime = time;
     }
 
+    public void SetIsSmartPhone(bool isSmartPhone)
+    {
+        this.isSmartPhone = isSmartPhone;
+    }
+
 
     void SetOrientation()
     {

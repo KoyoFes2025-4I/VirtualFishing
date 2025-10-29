@@ -52,6 +52,7 @@ public class RodsController : MonoBehaviour
             rodScript.SetPower(power);
             rodScript.SetMaxRodStrength(maxRodStrength);
             rodScript.SetStageStyle(StageManager.stageStyle);
+            rodScript.SetIsSmartPhone(Config.config.fishingRodControllerCount <= i);
             if (users.Count > i) rodScript.SetUser(users[i]);
             instance.name = $"Rod(id:{id})";
             rodInstances.Add(instance);

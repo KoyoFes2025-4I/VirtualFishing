@@ -8,10 +8,6 @@ using System.Linq;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using SFB;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using WebSocketSharp;
-using System.Threading.Tasks;
 
 // ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
 // GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
@@ -43,6 +39,7 @@ public class Config : MonoBehaviour
     private FloatField maxRodStrengthField;
     private DropdownField rodIDDropDown;
     private FloatField rodUIScale;
+    private UnsignedIntegerField fishingRodControllerCount;
 
     private UnsignedIntegerField stageSizeField;
     private UnsignedIntegerField cameraYField;
@@ -101,6 +98,7 @@ public class Config : MonoBehaviour
         maxRodStrengthField = ui.rootVisualElement.Q<FloatField>("MaxRodStrengthField");
         rodIDDropDown = ui.rootVisualElement.Q<DropdownField>("RodIDDropDown");
         rodUIScale = ui.rootVisualElement.Q<FloatField>("RodUIScale");
+        fishingRodControllerCount = ui.rootVisualElement.Q<UnsignedIntegerField>("FishingRodControllerCount");
 
         stageSizeField = ui.rootVisualElement.Q<UnsignedIntegerField>("StageSizeField");
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
@@ -358,6 +356,7 @@ public class Config : MonoBehaviour
         maxRodStrengthField.value = config.maxRodStrength;
         rodIDDropDown.index = config.rodIDGenerateIndex;
         rodUIScale.value = config.rodUIScale;
+        fishingRodControllerCount.value = (uint)config.fishingRodControllerCount;
 
         stageSizeField.value = (uint)config.stageSize;
         cameraYField.value = (uint)config.cameraY;
@@ -468,6 +467,7 @@ public class Config : MonoBehaviour
         config.maxRodStrength = maxRodStrengthField.value;
         config.rodIDGenerateIndex = rodIDDropDown.index;
         config.rodUIScale = rodUIScale.value;
+        config.fishingRodControllerCount = (int)fishingRodControllerCount.value;
 
         config.stageSize = (int)stageSizeField.value;
         config.cameraY = (int)cameraYField.value;
@@ -556,6 +556,7 @@ public class ConfigSaveData
     public float maxRodStrength = 100;
     public float rodUIScale = 1;
     public int rodIDGenerateIndex = 0;
+    public int fishingRodControllerCount = 8;
 
     public int stageSize = 10;
     public int cameraY = 200;
@@ -599,6 +600,7 @@ public class ConfigSaveData
         maxRodStrength = tmp.maxRodStrength;
         rodUIScale = tmp.rodUIScale;
         rodIDGenerateIndex = tmp.rodIDGenerateIndex;
+        fishingRodControllerCount = tmp.fishingRodControllerCount;
 
         stageSize = tmp.stageSize;
         cameraY = tmp.cameraY;

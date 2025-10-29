@@ -3,6 +3,7 @@ using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using RosSharp.RosBridgeClient.MessageTypes.Rosapi;
 
 
 #pragma warning disable CS0436 // 型がインポートされた型と競合しています
@@ -13,6 +14,7 @@ public class IMUSubscriber : UnitySubscriber<Imu>
 {
     private Dictionary<string, Imu> imus = new Dictionary<string, Imu>();
     private Dictionary<string, DateTime> timestamp = new Dictionary<string, DateTime>();
+    private int version = 0;
     protected override void ReceiveMessage(Imu imu)
     {
         imus[imu.header.frame_id] = imu;
@@ -27,6 +29,11 @@ public class IMUSubscriber : UnitySubscriber<Imu>
     void Update()
     {
         CheckTimeout();
+        if (GetComponent<ReRosConnector>().version != version)
+        {
+            version = GetComponent<ReRosConnector>().version;
+            base.Start();
+        }
     }
 
     /// <summary>

@@ -7,6 +7,7 @@ using RosSharp.RosBridgeClient.MessageTypes.Std;
 /// </summary>
 public class StrengthPublisher : UnityPublisher<String>
 {
+    private int version = 0;
     protected override void Start()
     {
         if (GetComponent<RosConnector>().IsConnected.WaitOne(1000)) base.Start();
@@ -26,5 +27,14 @@ public class StrengthPublisher : UnityPublisher<String>
         String msg = new String();
         msg.data = $"{id},{strength}";
         Publish(msg);
+    }
+
+    void Update()
+    {
+        if (GetComponent<ReRosConnector>().version != version)
+        {
+            version = GetComponent<ReRosConnector>().version;
+            if (GetComponent<RosConnector>().IsConnected.WaitOne(1000)) base.Start();
+        }
     }
 }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using RosSharp.RosBridgeClient.MessageTypes.Sensor;
-using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
+﻿using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
-using Unity.VisualScripting;
 
 #pragma warning disable CS0436 // 型がインポートされた型と競合しています
 [RequireComponent(typeof(AudioSource))]

@@ -1532,6 +1532,7 @@ MonoBehaviour:
   thingGenerator: {fileID: 1012907309}
   gameManager: {fileID: 1616789861}
   networkManager: {fileID: 2069985049}
+  rosConnector: {fileID: 415595002}
 --- !u!1 &415594996
 GameObject:
   m_ObjectHideFlags: 0
@@ -1627,6 +1628,7 @@ MonoBehaviour:
   Serializer: 0
   protocol: 0
   RosBridgeServerUrl: ws://192.168.10.10:9090
+  version: 0
 --- !u!1 &434720600
 GameObject:
   m_ObjectHideFlags: 0

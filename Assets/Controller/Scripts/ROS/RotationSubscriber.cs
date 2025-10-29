@@ -11,6 +11,7 @@ public class RotationSubscriber : UnitySubscriber<String>
 {
     private Dictionary<string, float> rotations = new Dictionary<string, float>();
     private Dictionary<string, DateTime> timestamp = new Dictionary<string, DateTime>();
+    private int version = 0;
     protected override void Start()
     {
         base.Start();
@@ -32,6 +33,11 @@ public class RotationSubscriber : UnitySubscriber<String>
     void Update()
     {
         CheckTimeout();
+        if (GetComponent<ReRosConnector>().version != version)
+        {
+            version = GetComponent<ReRosConnector>().version;
+            base.Start();
+        }
     }
 
     /// <summary>

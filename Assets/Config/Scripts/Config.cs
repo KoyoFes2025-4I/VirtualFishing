@@ -25,6 +25,7 @@ public class Config : MonoBehaviour
     [SerializeField] ThingGenerator thingGenerator; // 魚オブジェクトの管理クラス
     [SerializeField] GameManager gameManager; // ゲームマネージャークラス
     [SerializeField] NetworkManager networkManager; // Flaskとの接続用クラス
+    [SerializeField] ReRosConnector rosConnector; // ROSとの接続用クラス
 
     // 以下各UI要素の参照のための変数を用意
 
@@ -40,6 +41,7 @@ public class Config : MonoBehaviour
     private DropdownField rodIDDropDown;
     private FloatField rodUIScale;
     private UnsignedIntegerField fishingRodControllerCount;
+    private TextField rosIP;
 
     private UnsignedIntegerField stageSizeField;
     private UnsignedIntegerField cameraYField;
@@ -99,6 +101,7 @@ public class Config : MonoBehaviour
         rodIDDropDown = ui.rootVisualElement.Q<DropdownField>("RodIDDropDown");
         rodUIScale = ui.rootVisualElement.Q<FloatField>("RodUIScale");
         fishingRodControllerCount = ui.rootVisualElement.Q<UnsignedIntegerField>("FishingRodControllerCount");
+        rosIP = ui.rootVisualElement.Q<TextField>("RosIP");
 
         stageSizeField = ui.rootVisualElement.Q<UnsignedIntegerField>("StageSizeField");
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
@@ -357,6 +360,7 @@ public class Config : MonoBehaviour
         rodIDDropDown.index = config.rodIDGenerateIndex;
         rodUIScale.value = config.rodUIScale;
         fishingRodControllerCount.value = (uint)config.fishingRodControllerCount;
+        rosIP.value = config.rosIP;
 
         stageSizeField.value = (uint)config.stageSize;
         cameraYField.value = (uint)config.cameraY;
@@ -454,6 +458,8 @@ public class Config : MonoBehaviour
         // 魚オブジェクトを一旦全て破棄する
         thingGenerator.Regenerate();
 
+        rosConnector.SetRosBridgeServerUrl(rosIP.value);
+
         // 以下でUIで設定したデータををConfigSaveDataへコピー
         
         config.configCameraSpeed = configCameraSpeedField.value;
@@ -468,6 +474,7 @@ public class Config : MonoBehaviour
         config.rodIDGenerateIndex = rodIDDropDown.index;
         config.rodUIScale = rodUIScale.value;
         config.fishingRodControllerCount = (int)fishingRodControllerCount.value;
+        config.rosIP = rosIP.value;
 
         config.stageSize = (int)stageSizeField.value;
         config.cameraY = (int)cameraYField.value;
@@ -557,6 +564,7 @@ public class ConfigSaveData
     public float rodUIScale = 1;
     public int rodIDGenerateIndex = 0;
     public int fishingRodControllerCount = 8;
+    public string rosIP = "ws://localhost:9090";
 
     public int stageSize = 10;
     public int cameraY = 200;
@@ -601,6 +609,7 @@ public class ConfigSaveData
         rodUIScale = tmp.rodUIScale;
         rodIDGenerateIndex = tmp.rodIDGenerateIndex;
         fishingRodControllerCount = tmp.fishingRodControllerCount;
+        rosIP = tmp.rosIP;
 
         stageSize = tmp.stageSize;
         cameraY = tmp.cameraY;

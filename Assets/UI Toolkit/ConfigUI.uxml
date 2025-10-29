@@ -42,6 +42,7 @@
                     <ui:DropdownField label="IDの割り当て" index="0" choices="連番,UUID" name="RodIDDropDown" class="center-text" />
                     <ui:FloatField label="UIのスケール" value="1" placeholder-text="初期値：1" name="RodUIScale" class="center-text" />
                     <ui:UnsignedIntegerField label="釣り竿コントローラーの本数" value="8" name="FishingRodControllerCount" placeholder-text="初期値：8" class="center-text" />
+                    <ui:TextField label="ROS IP" placeholder-text="初期値：ws://localhost:9090" name="RosIP" value="ws://localhost:9090" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="ステージ" name="StageTab">

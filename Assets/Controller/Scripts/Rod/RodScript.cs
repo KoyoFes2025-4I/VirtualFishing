@@ -54,6 +54,7 @@ public class RodScript : MonoBehaviour
     private float throwingTime = 1;
     private bool isBattle = false;
     private int stageStyle = 0;
+    private bool isSmartPhone = false;
 
     public BiteScript GetBiteScript => biteScript;
     private User user;
@@ -133,9 +134,18 @@ public class RodScript : MonoBehaviour
     {
         try
         {
-            Quaternion zRotation = Quaternion.AngleAxis(90f, Vector3.forward);
-            Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
-            rod.transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
+            if (isSmartPhone)
+            {
+                Quaternion zRotation = Quaternion.AngleAxis(90f, Vector3.forward);
+                Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
+                rod.transform.rotation = yRotation * zRotation * new Quaternion((float)imus[id].orientation.x, (float)-imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
+            } else
+            {
+                Quaternion rotation = Quaternion.AngleAxis(180f, Vector3.right);
+                Quaternion rotation1 = Quaternion.AngleAxis(90f, Vector3.left);
+                Quaternion yRotation = Quaternion.AngleAxis(baseRotationY, Vector3.up);
+                rod.transform.rotation = yRotation * rotation * rotation1 * new Quaternion((float)imus[id].orientation.x, (float)imus[id].orientation.y, (float)imus[id].orientation.z, (float)imus[id].orientation.w);
+            }
         }
         catch (KeyNotFoundException)
         {

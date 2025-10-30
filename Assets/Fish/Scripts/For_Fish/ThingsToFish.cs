@@ -13,13 +13,13 @@ using UnityEngine.Rendering;
 
 // 「釣るもの」オブジェクトの共通の処理やフィールドを書いた親クラス
 // Prehabのオブジェクトモデルに子クラスをアタッチしてそのモデルのパラメータを各々設定する
-// アニメーションはswwimmingとresistの2種類で、wasCaughtフラグのtrue/falseで切り替える
+// アニメーションはswimmingとresistの2種類で、wasCaughtフラグのtrue/falseで切り替える
 // ゲームが開始したら自動で初期状態はswimmingアニメーションになっている
 
 public abstract class ThingsToFish : MonoBehaviour
 {
     public enum MoveState {SWIM, TURN, IDLE, BATTLE, NONE, SHOW}; // 魚の行動状態のステート
-    public enum ModelType {FishType1, FishType2, FishType3, FishType4} // 魚のモデルタイプ
+    public enum ModelType {Fish1, Fish2, Sacabambaspis, Squid, Crab} // 魚のモデルタイプ
     private MoveState moveState = MoveState.IDLE; // 初期設定は待機状態
 
     private Animator animator; // Animation Controller操作のための参照

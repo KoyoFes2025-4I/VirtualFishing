@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Fish2AnimationController
+  m_Name: SquidAnimationController
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: wasCaught
@@ -74,7 +74,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -2509970052123107287, guid: e5c338f8d3270234cb49c3c27f2507a2, type: 3}
+  m_Motion: {fileID: -3504303308310582780, guid: 3f7dc1ec6369e144ba84d2e974b892e5, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -126,7 +126,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7014649210429908704, guid: e5c338f8d3270234cb49c3c27f2507a2, type: 3}
+  m_Motion: {fileID: 2143856235881189617, guid: 3f7dc1ec6369e144ba84d2e974b892e5, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

@@ -1627,7 +1627,7 @@ MonoBehaviour:
   SecondsTimeout: 10
   Serializer: 0
   protocol: 0
-  RosBridgeServerUrl: ws://192.168.10.10:9090
+  RosBridgeServerUrl: ws://localhost:9090
   version: 0
 --- !u!1 &434720600
 GameObject:
@@ -9243,6 +9243,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3cc501a9b61fc74bb7af2599a877389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadUsersApiUrl: http://127.0.0.1:5000/LoadUsers
+  setTextureApiUrl: http://127.0.0.1:5000/SetFishObjects
+  recordApiUrl: http://127.0.0.1:5000/RecordResult
 --- !u!4 &2069985050
 Transform:
   m_ObjectHideFlags: 0

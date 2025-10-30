@@ -198,7 +198,7 @@ public class User
         {
             // Userの中身をJSON化したものをFlaskのAPIへPOSTで送信する（ユーザー名、得点、釣り上げた魚の記録）
             string json = JsonUtility.ToJson(this);
-            NetworkManager.PostUserData(json);
+            NetworkManager.PostRecordData(json);
         }
     }
 }

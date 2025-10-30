@@ -4,21 +4,14 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Linq;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using SFB;
-
-// ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
-// GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
-// UI Toolkit/PanelSettings.assetでUI画面のTarget DisplayはDisplay3に表示される様に設定
-// GUI上に表示する実際の文字列はラベル名を経由してUXMLファイルで設定
 
 // UI画面のロジック処理を設定するクラス
 public class Config : MonoBehaviour
 {
     [SerializeField] UIDocument ui; // UI Toolkitのクラス（ConfigUI.uxmlとConfigUIStyle.uss）
-
     [SerializeField] ConfigCameraScript configCamera; // カメラ設定クラス
     [SerializeField] RodsController rodsController; // 釣り竿の制御クラス
     [SerializeField] StageManager stageManager; // ステージの管理クラス
@@ -142,8 +135,14 @@ public class Config : MonoBehaviour
                 Texture2D texture = TexturePreview.style.backgroundImage.value.texture;
                 config.fishTextureDataList.Add(new FishTextureData(fishNameField.value, fishCreatorField.value, fishModelType.index, texture));
                 MessageLabel.text = "テクスチャを追加しました。";
+
+                // テクスチャ登録時に入力したfishNameとfishCreatorをDBへ保存する
+                networkManager.PostTextureData(fishNameField.value, fishCreatorField.value);
+
                 config.Save();
                 ListViewRefresh();
+
+                // 入力した魚の名前と製作者名をリセット
                 fishNameField.value = "";
                 fishCreatorField.value = "";
                 fishModelType.index = -1;
@@ -390,63 +389,6 @@ public class Config : MonoBehaviour
         }
     }
 
-    // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理
-    private IEnumerator LoadUsers()
-    {
-        // Flaskの /LoadUsers にアクセスしてレスポンスを受け取る
-        string url = "http://127.0.0.1:5000/LoadUsers";
-
-        using (UnityWebRequest request = UnityWebRequest.Get(url))
-        {
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                try
-                {
-                    var json = request.downloadHandler.text;
-                    var data = JsonUtility.FromJson<UserListResponse>(json);
-
-                    if (data != null && data.usernames != null)
-                    {
-                        foreach (var name in data.usernames)
-                        {
-                            // 重複しないようにチェックしてからwaitUsersへ追加する
-                            if (!gameManager.waitUsers.Any(u => u.name == name))
-                            {
-                                gameManager.waitUsers.Add(new User(name));
-                                Debug.Log("ユーザー名をロード: " + name);
-                            }
-                        }
-
-                        waitUsersListView.RefreshItems();
-                    }
-                    else
-                    {
-                        Debug.LogWarning("ユーザーリストが空か、パースに失敗しました。");
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"JSONパースエラー: {e.Message}");
-                }
-            }
-            else
-            {
-                Debug.LogError("通信エラー: " + request.error);
-            }
-        }
-    }
-
-    // FlaskのJSONレスポンス受け取り用のクラス
-    [Serializable]
-    private class UserListResponse
-    {
-        public List<string> usernames; // ユーザー名の文字列型リスト
-    }
-
     // 「適用」ボタンがクリックされた時の処理
     private void Apply()
     {
@@ -507,7 +449,8 @@ public class Config : MonoBehaviour
     }
 
     private float previousLoadTime = 0f;
-    private float loadInterval = 5f;
+    private float loadInterval = 5f; // ユーザーロードのインターバル
+
     void Update()
     {
         // Escapeキーでカメラ固定とコンフィグ画面の表示・非表示を切り替える
@@ -532,11 +475,16 @@ public class Config : MonoBehaviour
         startButton.SetEnabled(!gameManager.isGaming);
         finishButton.SetEnabled(gameManager.isGaming);
 
-        // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+        // loadInterval（5秒に設定）置きにLoadUsersのコルーチンを呼び出すようにする
         if (Time.time - previousLoadTime > loadInterval)
         {
             previousLoadTime = Time.time;
-            StartCoroutine(LoadUsers());
+
+            // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+            StartCoroutine(networkManager.LoadUsersRequest(gameManager, () =>
+            {
+                waitUsersListView.RefreshItems(); // UI更新
+            }));   
         }
     }
 }

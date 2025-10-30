@@ -5,14 +5,25 @@ using WebSocketSharp;
 public class ReRosConnector : RosConnector
 {
     public int version = 0;
+
+    public override void Awake()
+    {
+    }
     public void SetRosBridgeServerUrl(string url)
     {
-        // ROS–¢Ú‘±‚ÌNullReferenceException‰ñ”ğ
-        if (RosBridgeServerUrl == url || url.IsNullOrEmpty() || IsConnected == null || RosSocket == null) return;
-
+        // ROSï¿½ï¿½ï¿½Ú‘ï¿½ï¿½ï¿½ï¿½ï¿½NullReferenceExceptionï¿½ï¿½ï¿½
+        if ((RosBridgeServerUrl == url && IsConnected != null) || url.IsNullOrEmpty()) return;
         RosBridgeServerUrl = url;
-        RosSocket.Close();
-        new Thread(ConnectAndWait).Start();
+
+        if (IsConnected == null)
+        {
+            base.Awake();
+        } else
+        {
+            if (RosSocket != null) RosSocket.Close();
+            new Thread(ConnectAndWait).Start();
+        }
+        
         version++;
     }
 }

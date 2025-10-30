@@ -215,7 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rodsController: {fileID: 767437728}
   objectTexture: {fileID: 2800000, guid: bef768d9c26d2bb459ce2648d552526e, type: 3}
-  objectName: 
+  objectName: "\u9B5A1"
   creator: "\u30B0\u30E9\u30D5\u30A3\u30C3\u30AF\u90E8"
   strength: 20
   power: 20
@@ -3114,7 +3114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rodsController: {fileID: 767437728}
   objectTexture: {fileID: 2800000, guid: 5c8886a3d23a86241b7baaabd3fc6e6a, type: 3}
-  objectName: 
+  objectName: "\u9B5A2"
   creator: "\u30B0\u30E9\u30D5\u30A3\u30C3\u30AF\u90E8"
   strength: 20
   power: 20
@@ -6348,7 +6348,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rodsController: {fileID: 767437728}
   objectTexture: {fileID: 2800000, guid: d56779e0af4734b4ea8bb72d78319986, type: 3}
-  objectName: 
+  objectName: "\u9B5A1"
   creator: "\u30B0\u30E9\u30D5\u30A3\u30C3\u30AF\u90E8"
   strength: 20
   power: 20
@@ -6976,7 +6976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rodsController: {fileID: 767437728}
   objectTexture: {fileID: 2800000, guid: 334d1b2db824ea4499296e843969538a, type: 3}
-  objectName: 
+  objectName: "\u9B5A2"
   creator: "\u30B0\u30E9\u30D5\u30A3\u30C3\u30AF\u90E8"
   strength: 20
   power: 20

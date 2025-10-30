@@ -7,7 +7,9 @@ public class ReRosConnector : RosConnector
     public int version = 0;
     public void SetRosBridgeServerUrl(string url)
     {
-        if (RosBridgeServerUrl == url || url.IsNullOrEmpty()) return;
+        // ROS–¢Ú‘±‚ÌNullReferenceException‰ñ”ğ
+        if (RosBridgeServerUrl == url || url.IsNullOrEmpty() || IsConnected == null || RosSocket == null) return;
+
         RosBridgeServerUrl = url;
         RosSocket.Close();
         new Thread(ConnectAndWait).Start();

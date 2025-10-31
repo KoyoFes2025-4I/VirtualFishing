@@ -12,7 +12,7 @@ public class ReRosConnector : RosConnector
     public void SetRosBridgeServerUrl(string url)
     {
         // ROS���ڑ�����NullReferenceException���
-        if ((RosBridgeServerUrl == url && IsConnected != null) || url.IsNullOrEmpty()) return;
+        if (url.IsNullOrEmpty()) return;
         RosBridgeServerUrl = url;
 
         if (IsConnected == null)

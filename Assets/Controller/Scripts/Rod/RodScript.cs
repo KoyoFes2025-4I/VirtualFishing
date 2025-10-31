@@ -50,7 +50,7 @@ public class RodScript : MonoBehaviour
     private bool isThrowing = false;
     private bool isThrown = false;
     private float coolTime = 0f;
-    private float thresholdMagnitude = 5;
+    private float thresholdMagnitude = 20;
     private float throwingTime = 1;
     private bool isBattle = false;
     private int stageStyle = 0;

@@ -19,7 +19,7 @@ using UnityEngine.Rendering;
 public abstract class ThingsToFish : MonoBehaviour
 {
     public enum MoveState {SWIM, TURN, IDLE, BATTLE, NONE, SHOW}; // 魚の行動状態のステート
-    public enum ModelType {Fish1, Fish2, Sacabambaspis, Squid, Crab} // 魚のモデルタイプ
+    public enum ModelType {Fish1, Fish2, Sacabambaspis, Squid, Crab, GoldenSacabambaspis} // 魚のモデルタイプ
     private MoveState moveState = MoveState.IDLE; // 初期設定は待機状態
 
     private Animator animator; // Animation Controller操作のための参照
@@ -30,6 +30,7 @@ public abstract class ThingsToFish : MonoBehaviour
 
     [SerializeField] private RodsController rodsController; // 釣り竿管理クラスへの参照
     [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（画像ファイル）
+    [SerializeField] private Material objectMaterial; // モデルに張り付けるマテリアル（シェーダー設定など）
     [SerializeField] private string objectName; // オブジェクト名
     [SerializeField] private string creator; // オブジェクトの製作者（ID）
     [SerializeField] private int strength; // 体力パラメータ
@@ -125,7 +126,7 @@ public abstract class ThingsToFish : MonoBehaviour
         }
 
         // シェーダーを使って新しいマテリアルを作成
-        Material newMaterial = new Material(shader);
+        Material newMaterial = objectMaterial == null ? new Material(shader) : objectMaterial;
 
         if (objectTexture == null)
         {

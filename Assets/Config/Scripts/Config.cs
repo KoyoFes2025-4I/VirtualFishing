@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using SFB;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 
 // UI画面のロジック処理を設定するクラス
 public class Config : MonoBehaviour
@@ -73,6 +75,8 @@ public class Config : MonoBehaviour
     // 設定の保存用（ConfigSaveDataのインスタンス生成）
     public static ConfigSaveData config = new ConfigSaveData();
 
+    private Queue<Action> mainThreadActions = new Queue<Action>();
+
     // UIの各要素の初期設定用メソッド
     private void FieldInit()
     {
@@ -117,12 +121,18 @@ public class Config : MonoBehaviour
 
         loadTextureButton.clicked += () =>
         {
-            var extensions = new[] { new ExtensionFilter("テクスチャファイル", "png", "jpg", "jpeg") };
-            var paths = StandaloneFileBrowser.OpenFilePanel("テクスチャを選択", "", extensions, false);
-            if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+            Task.Run(() =>
             {
-                StartCoroutine(LoadImage(new Uri(paths[0]).AbsoluteUri));
-            }
+                var extensions = new[] { new ExtensionFilter("テクスチャファイル", "png", "jpg", "jpeg") };
+                var paths = StandaloneFileBrowser.OpenFilePanel("テクスチャを選択", "", extensions, false);
+                if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+                {
+                    mainThreadActions.Enqueue(() =>
+                    {
+                        StartCoroutine(LoadImage(new Uri(paths[0]).AbsoluteUri));
+                    });
+                }
+            });
         };
 
         addTextureButton.clicked += () =>
@@ -374,6 +384,7 @@ public class Config : MonoBehaviour
 
     private IEnumerator LoadImage(string path)
     {
+        Debug.Log("Loading image from: " + path);
         using UnityWebRequest request = UnityWebRequestTexture.GetTexture(path);
         yield return request.SendWebRequest();
 
@@ -484,8 +495,11 @@ public class Config : MonoBehaviour
             StartCoroutine(networkManager.LoadUsersRequest(gameManager, () =>
             {
                 waitUsersListView.RefreshItems(); // UI更新
-            }));   
+            }));
         }
+        
+        while (mainThreadActions.Count > 0)
+            mainThreadActions.Dequeue()?.Invoke();
     }
 }
 

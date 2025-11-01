@@ -10,13 +10,13 @@ using UnityEngine.Networking;
 public class NetworkManager : MonoBehaviour
 {
     // Flaskの "/LoadUsers" のURL
-    [SerializeField] private string loadUsersApiUrl = "http://127.0.0.1:5000/LoadUsers";
+    [SerializeField] private string loadUsersApiUrl;
 
     // Flaskの "/SetFishObjects" のURL
-    [SerializeField] private string setTextureApiUrl = "http://127.0.0.1:5000/SetFishObjects";
+    [SerializeField] private string setTextureApiUrl;
 
     // Flaskの "/RecordResult" のURL
-    [SerializeField] private string recordApiUrl = "http://127.0.0.1:5000/RecordResult";
+    [SerializeField] private string recordApiUrl;
 
     // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理
     public IEnumerator LoadUsersRequest(GameManager gameManager, Action onComplete = null)

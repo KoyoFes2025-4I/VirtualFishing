@@ -79,6 +79,7 @@ public abstract class ThingsToFish : MonoBehaviour
     void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Wall") && moveState == MoveState.SWIM) moveState = MoveState.IDLE;
+        
     }
 
     void Awake()

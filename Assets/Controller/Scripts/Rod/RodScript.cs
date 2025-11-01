@@ -134,6 +134,11 @@ public class RodScript : MonoBehaviour
         this.isSmartPhone = isSmartPhone;
     }
 
+    public int GetPoint()
+    {
+        return user.point;
+    }
+
 
     void SetOrientation()
     {
@@ -247,6 +252,12 @@ public class RodScript : MonoBehaviour
     {
         if (user == null) return;
         uiScript.ShowResult(user);
+    }
+
+    public void ShowResult(int ranking)
+    {
+        if (user == null) return;
+        uiScript.ShowResult(user, ranking);
     }
 
     bool isBiteWatered = false;

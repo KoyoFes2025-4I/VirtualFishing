@@ -56,6 +56,14 @@ public class UIScript : MonoBehaviour
         resultMessage.gameObject.SetActive(true);
     }
 
+    public void ShowResult(User user, int ranking)
+    {
+        HideReward();
+        simpleMessageDuration = 0f;
+        resultMessage.text = $"{ranking}位\nなまえ：{user.name}\nポイント：{user.point}\n釣った魚の数：{user.fishedThingNames.Count}";
+        resultMessage.gameObject.SetActive(true);
+    }
+
     private ThingsToFish rewardThing;
     public void ShowReward(ThingsToFish thing)
     {

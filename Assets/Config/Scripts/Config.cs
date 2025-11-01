@@ -37,6 +37,7 @@ public class Config : MonoBehaviour
     private FloatField rodUIScale;
     private UnsignedIntegerField fishingRodControllerCount;
     private TextField rosIP;
+    private UnsignedIntegerField rankingShowCount;
 
     private UnsignedIntegerField stageSizeField;
     private UnsignedIntegerField cameraYField;
@@ -100,6 +101,7 @@ public class Config : MonoBehaviour
         rodUIScale = ui.rootVisualElement.Q<FloatField>("RodUIScale");
         fishingRodControllerCount = ui.rootVisualElement.Q<UnsignedIntegerField>("FishingRodControllerCount");
         rosIP = ui.rootVisualElement.Q<TextField>("RosIP");
+        rankingShowCount = ui.rootVisualElement.Q<UnsignedIntegerField>("RankingShowCount");
 
         stageSizeField = ui.rootVisualElement.Q<UnsignedIntegerField>("StageSizeField");
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
@@ -383,6 +385,7 @@ public class Config : MonoBehaviour
         rodUIScale.value = config.rodUIScale;
         fishingRodControllerCount.value = (uint)config.fishingRodControllerCount;
         rosIP.value = config.rosIP;
+        rankingShowCount.value = (uint)config.rankingShowCount;
 
         stageSizeField.value = (uint)config.stageSize;
         cameraYField.value = (uint)config.cameraY;
@@ -441,6 +444,7 @@ public class Config : MonoBehaviour
         config.rodUIScale = rodUIScale.value;
         config.fishingRodControllerCount = (int)fishingRodControllerCount.value;
         config.rosIP = rosIP.value;
+        config.rankingShowCount = (int)rankingShowCount.value;
 
         config.stageSize = (int)stageSizeField.value;
         config.cameraY = (int)cameraYField.value;
@@ -540,6 +544,7 @@ public class ConfigSaveData
     public int rodIDGenerateIndex = 0;
     public int fishingRodControllerCount = 8;
     public string rosIP = "ws://localhost:9090";
+    public int rankingShowCount = 3;
 
     public int stageSize = 10;
     public int cameraY = 200;
@@ -585,6 +590,7 @@ public class ConfigSaveData
         rodIDGenerateIndex = tmp.rodIDGenerateIndex;
         fishingRodControllerCount = tmp.fishingRodControllerCount;
         rosIP = tmp.rosIP;
+        rankingShowCount = tmp.rankingShowCount;
 
         stageSize = tmp.stageSize;
         cameraY = tmp.cameraY;

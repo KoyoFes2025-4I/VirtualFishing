@@ -88,7 +88,7 @@ public abstract class ThingsToFish : MonoBehaviour
         int index = UnityEngine.Random.Range(0, fishTextures.Count + 1);
         if (index < fishTextures.Count)
         {
-            StartCoroutine(LoadImage(fishTextures[index]));
+            if (fishTextures[index] == null) StartCoroutine(LoadImage(fishTextures[index]));
         }
         
         name = objectName;

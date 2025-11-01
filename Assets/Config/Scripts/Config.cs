@@ -202,7 +202,7 @@ public class Config : MonoBehaviour
         };
         foreach (FishTextureData data in config.fishTextureDataList)
         {
-            StartCoroutine(data.LoadImage());
+            if (data.texture == null) StartCoroutine(data.LoadImage());
         }
         textureListView.itemsSource = config.fishTextureDataList; // 表示するデータはconfig.fishTextureDataListを参照
 

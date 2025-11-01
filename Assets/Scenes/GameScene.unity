@@ -11510,9 +11510,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3cc501a9b61fc74bb7af2599a877389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadUsersApiUrl: https://koyofes2025.duckdns.or/LoadUsers
-  setTextureApiUrl: https://koyofes2025.duckdns.or/SetFishObjects
-  recordApiUrl: https://koyofes2025.duckdns.or/RecordResult
+  loadUsersApiUrl: https://koyofes2025.duckdns.org/LoadUsers
+  setTextureApiUrl: https://koyofes2025.duckdns.org/SetFishObjects
+  recordApiUrl: https://koyofes2025.duckdns.org/RecordResult
 --- !u!4 &2069985050
 Transform:
   m_ObjectHideFlags: 0

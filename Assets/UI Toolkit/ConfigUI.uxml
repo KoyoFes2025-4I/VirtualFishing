@@ -18,6 +18,7 @@
                             </ui:ScrollView>
                         </ui:VisualElement>
                         <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 50%;">
+                            <ui:Button text="一括で上" name="UserAllUpButton" />
                             <ui:Button text="上" name="UserUpButton" />
                             <ui:Button text="下" name="UserDownButton" />
                             <ui:Button text="削除" name="UserRemoveButton" />

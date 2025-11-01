@@ -50,6 +50,7 @@ public class Config : MonoBehaviour
     private ListView gamingUsersListView;
     private ListView nextUsersListView;
     private ListView waitUsersListView;
+    private Button userAllUpButton;
     private Button userUpButton;
     private Button userDownButton;
     private Button userRemoveButton;
@@ -253,6 +254,7 @@ public class Config : MonoBehaviour
         nextUsersListView.selectionChanged += (element) => waitUsersListView.selectedIndex = -1;
 
         // ユーザーの状態管理ボタンの参照を取得して初期化
+        userAllUpButton = ui.rootVisualElement.Q<Button>("UserAllUpButton");
         userUpButton = ui.rootVisualElement.Q<Button>("UserUpButton");
         userDownButton = ui.rootVisualElement.Q<Button>("UserDownButton");
         userRemoveButton = ui.rootVisualElement.Q<Button>("UserRemoveButton");
@@ -282,6 +284,17 @@ public class Config : MonoBehaviour
             {
                 gameManager.nextUsers.RemoveAt(nextUsersListView.selectedIndex);
                 nextUsersListView.RefreshItems();
+            }
+        };
+
+        userAllUpButton.clicked += () =>
+        {
+            int[] limit = { 8, 4, 4, 4, 8, 6 };
+            while (gameManager.nextUsers.Count < limit[config.rodCountIndex])
+            {
+                gameManager.nextUsers.Add(gameManager.waitUsers[0]);
+                gameManager.waitUsers.RemoveAt(0);
+                ListViewRefresh();
             }
         };
 

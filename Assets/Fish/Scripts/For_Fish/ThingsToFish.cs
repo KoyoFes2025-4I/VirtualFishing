@@ -89,6 +89,14 @@ public abstract class ThingsToFish : MonoBehaviour
         if (index < fishTextures.Count)
         {
             if (fishTextures[index] == null) StartCoroutine(LoadImage(fishTextures[index]));
+            else
+            {
+                objectTexture = fishTextures[index].texture;
+                name = fishTextures[index].fishName;
+                objectName = fishTextures[index].fishName;
+                creator = fishTextures[index].fishCreator;
+                ApplyTextureToModel();
+            }
         }
         
         name = objectName;

@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RodsController : MonoBehaviour
@@ -97,9 +100,37 @@ public class RodsController : MonoBehaviour
 
     public void ShowResult()
     {
-        foreach (GameObject rod in rodInstances)
+        var rodPoints = rodInstances
+            .Select(rod => new {
+                Rod = rod,
+                Point = rod.GetComponent<RodScript>().GetPoint()
+            })
+            .ToList();
+
+        // 2️⃣ ポイント順で並べ替え（高い順）
+        var sorted = rodPoints
+            .OrderByDescending(r => r.Point)
+            .ToList();
+
+        // 3️⃣ ランキングを計算（同率順位対応）
+        Dictionary<GameObject, int> rodRanks = new Dictionary<GameObject, int>();
+
+        int currentRank = 1;
+        for (int i = 0; i < sorted.Count; i++)
         {
-            rod.GetComponent<RodScript>().ShowResult();
+            if (i > 0 && sorted[i].Point < sorted[i - 1].Point)
+            {
+                // 前よりポイントが低ければ順位を更新（同点なら更新しない）
+                currentRank = i + 1;
+            }
+
+            rodRanks[sorted[i].Rod] = currentRank;
+        }
+
+        foreach (var pair in rodRanks)
+        {
+            if (pair.Value <= Config.config.rankingShowCount) pair.Key.GetComponent<RodScript>().ShowResult(pair.Value);
+            else pair.Key.GetComponent<RodScript>().ShowResult();
         }
     }
 }

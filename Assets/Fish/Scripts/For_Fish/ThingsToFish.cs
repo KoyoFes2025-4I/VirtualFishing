@@ -13,13 +13,13 @@ using UnityEngine.Rendering;
 
 // 「釣るもの」オブジェクトの共通の処理やフィールドを書いた親クラス
 // Prehabのオブジェクトモデルに子クラスをアタッチしてそのモデルのパラメータを各々設定する
-// アニメーションはswwimmingとresistの2種類で、wasCaughtフラグのtrue/falseで切り替える
+// アニメーションはswimmingとresistの2種類で、wasCaughtフラグのtrue/falseで切り替える
 // ゲームが開始したら自動で初期状態はswimmingアニメーションになっている
 
 public abstract class ThingsToFish : MonoBehaviour
 {
     public enum MoveState {SWIM, TURN, IDLE, BATTLE, NONE, SHOW}; // 魚の行動状態のステート
-    public enum ModelType {FishType1, FishType2, FishType3, FishType4} // 魚のモデルタイプ
+    public enum ModelType {Fish1, Fish2, Sacabambaspis, Squid, Crab, GoldenSacabambaspis} // 魚のモデルタイプ
     private MoveState moveState = MoveState.IDLE; // 初期設定は待機状態
 
     private Animator animator; // Animation Controller操作のための参照
@@ -30,6 +30,7 @@ public abstract class ThingsToFish : MonoBehaviour
 
     [SerializeField] private RodsController rodsController; // 釣り竿管理クラスへの参照
     [SerializeField] private Texture2D objectTexture; // モデルに張り付ける2Dテクスチャ（画像ファイル）
+    [SerializeField] private Material objectMaterial; // モデルに張り付けるマテリアル（シェーダー設定など）
     [SerializeField] private string objectName; // オブジェクト名
     [SerializeField] private string creator; // オブジェクトの製作者（ID）
     [SerializeField] private int strength; // 体力パラメータ
@@ -78,6 +79,7 @@ public abstract class ThingsToFish : MonoBehaviour
     void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Wall") && moveState == MoveState.SWIM) moveState = MoveState.IDLE;
+        
     }
 
     void Awake()
@@ -87,7 +89,15 @@ public abstract class ThingsToFish : MonoBehaviour
         int index = UnityEngine.Random.Range(0, fishTextures.Count + 1);
         if (index < fishTextures.Count)
         {
-            StartCoroutine(LoadImage(fishTextures[index]));
+            if (fishTextures[index] == null) StartCoroutine(LoadImage(fishTextures[index]));
+            else
+            {
+                objectTexture = fishTextures[index].texture;
+                name = fishTextures[index].fishName;
+                objectName = fishTextures[index].fishName;
+                creator = fishTextures[index].fishCreator;
+                ApplyTextureToModel();
+            }
         }
         
         name = objectName;
@@ -125,7 +135,7 @@ public abstract class ThingsToFish : MonoBehaviour
         }
 
         // シェーダーを使って新しいマテリアルを作成
-        Material newMaterial = new Material(shader);
+        Material newMaterial = objectMaterial == null ? new Material(shader) : objectMaterial;
 
         if (objectTexture == null)
         {

@@ -50,7 +50,7 @@ public class RodScript : MonoBehaviour
     private bool isThrowing = false;
     private bool isThrown = false;
     private float coolTime = 0f;
-    private float thresholdMagnitude = 5;
+    private float thresholdMagnitude = 20;
     private float throwingTime = 1;
     private bool isBattle = false;
     private int stageStyle = 0;
@@ -132,6 +132,12 @@ public class RodScript : MonoBehaviour
     public void SetIsSmartPhone(bool isSmartPhone)
     {
         this.isSmartPhone = isSmartPhone;
+    }
+
+    public int GetPoint()
+    {
+        if (user == null) return -1;
+        return user.point;
     }
 
 
@@ -247,6 +253,12 @@ public class RodScript : MonoBehaviour
     {
         if (user == null) return;
         uiScript.ShowResult(user);
+    }
+
+    public void ShowResult(int ranking)
+    {
+        if (user == null) return;
+        uiScript.ShowResult(user, ranking);
     }
 
     bool isBiteWatered = false;

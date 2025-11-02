@@ -14,7 +14,6 @@ public class RotationSubscriber : UnitySubscriber<String>
     private int version = 0;
     protected override void Start()
     {
-        base.Start();
     }
     protected override void ReceiveMessage(String message)
     {

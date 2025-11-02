@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Fish1AnimationController
+  m_Name: GoldenSacabambaspisAnimationController
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: wasCaught
@@ -74,7 +74,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 4339907387164636195, guid: 4d310f01335389f40b572c19db69e193, type: 3}
+  m_Motion: {fileID: 7350716103542355159, guid: 2206059132be4304fb74b040fc222b1c, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -126,7 +126,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 4854135838458450817, guid: 4d310f01335389f40b572c19db69e193, type: 3}
+  m_Motion: {fileID: -3172184851603581232, guid: 2206059132be4304fb74b040fc222b1c, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

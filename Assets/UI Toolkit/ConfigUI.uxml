@@ -18,6 +18,7 @@
                             </ui:ScrollView>
                         </ui:VisualElement>
                         <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 50%;">
+                            <ui:Button text="一括で上" name="UserAllUpButton" />
                             <ui:Button text="上" name="UserUpButton" />
                             <ui:Button text="下" name="UserDownButton" />
                             <ui:Button text="削除" name="UserRemoveButton" />
@@ -43,6 +44,7 @@
                     <ui:FloatField label="UIのスケール" value="1" placeholder-text="初期値：1" name="RodUIScale" class="center-text" />
                     <ui:UnsignedIntegerField label="釣り竿コントローラーの本数" value="8" name="FishingRodControllerCount" placeholder-text="初期値：8" class="center-text" />
                     <ui:TextField label="ROS IP" placeholder-text="初期値：ws://localhost:9090" name="RosIP" value="ws://localhost:9090" class="center-text" />
+                    <ui:UnsignedIntegerField label="表示するランキングの数" value="3" name="RankingShowCount" placeholder-text="初期値：3" class="center-text" />
                 </ui:ScrollView>
             </ui:Tab>
             <ui:Tab label="ステージ" name="StageTab">
@@ -61,7 +63,7 @@
                 <ui:ScrollView>
                     <ui:TextField label="名前" placeholder-text="追加する魚の名前" name="FishNameField" class="center-text" />
                     <ui:TextField label="作者" placeholder-text="追加する魚の作者" name="FishCreatorField" class="center-text" />
-                    <ui:DropdownField label="モデルタイプ" name="FishModelType" choices="FishType1,FishType2,FishType3" class="center-text" />
+                    <ui:DropdownField label="モデルタイプ" name="FishModelType" choices="Fish1,Fish2,Sacabambaspis,Squid,Crab" class="center-text" />
                     <ui:Button text="テクスチャ読み込み" name="LoadTextureButton" class="center-text" />
                     <ui:Label name="TexturePreview" class="center-text" style="width: 200px; height: 200px; -unity-background-scale-mode: scale-to-fit; background-position-x: center 0; background-position-y: center 0;" />
                     <ui:Label name="MessageLabel" class="center-text" />

@@ -23,7 +23,6 @@ public class IMUSubscriber : UnitySubscriber<Imu>
 
     protected override void Start()
     {
-        base.Start();
     }
 
     void Update()

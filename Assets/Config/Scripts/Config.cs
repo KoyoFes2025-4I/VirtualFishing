@@ -4,21 +4,16 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Linq;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using SFB;
-
-// ConfigオブジェクトにUI DocumentとこのConfig.csをアタッチする
-// GUIの見た目やタブの切り替え設定は UI Toolkitのuxmlファイルとussファイルによって設定
-// UI Toolkit/PanelSettings.assetでUI画面のTarget DisplayはDisplay3に表示される様に設定
-// GUI上に表示する実際の文字列はラベル名を経由してUXMLファイルで設定
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 
 // UI画面のロジック処理を設定するクラス
 public class Config : MonoBehaviour
 {
     [SerializeField] UIDocument ui; // UI Toolkitのクラス（ConfigUI.uxmlとConfigUIStyle.uss）
-
     [SerializeField] ConfigCameraScript configCamera; // カメラ設定クラス
     [SerializeField] RodsController rodsController; // 釣り竿の制御クラス
     [SerializeField] StageManager stageManager; // ステージの管理クラス
@@ -42,6 +37,7 @@ public class Config : MonoBehaviour
     private FloatField rodUIScale;
     private UnsignedIntegerField fishingRodControllerCount;
     private TextField rosIP;
+    private UnsignedIntegerField rankingShowCount;
 
     private UnsignedIntegerField stageSizeField;
     private UnsignedIntegerField cameraYField;
@@ -55,6 +51,7 @@ public class Config : MonoBehaviour
     private ListView gamingUsersListView;
     private ListView nextUsersListView;
     private ListView waitUsersListView;
+    private Button userAllUpButton;
     private Button userUpButton;
     private Button userDownButton;
     private Button userRemoveButton;
@@ -80,6 +77,8 @@ public class Config : MonoBehaviour
     // 設定の保存用（ConfigSaveDataのインスタンス生成）
     public static ConfigSaveData config = new ConfigSaveData();
 
+    private Queue<Action> mainThreadActions = new Queue<Action>();
+
     // UIの各要素の初期設定用メソッド
     private void FieldInit()
     {
@@ -102,6 +101,7 @@ public class Config : MonoBehaviour
         rodUIScale = ui.rootVisualElement.Q<FloatField>("RodUIScale");
         fishingRodControllerCount = ui.rootVisualElement.Q<UnsignedIntegerField>("FishingRodControllerCount");
         rosIP = ui.rootVisualElement.Q<TextField>("RosIP");
+        rankingShowCount = ui.rootVisualElement.Q<UnsignedIntegerField>("RankingShowCount");
 
         stageSizeField = ui.rootVisualElement.Q<UnsignedIntegerField>("StageSizeField");
         cameraYField = ui.rootVisualElement.Q<UnsignedIntegerField>("CameraYField");
@@ -124,12 +124,18 @@ public class Config : MonoBehaviour
 
         loadTextureButton.clicked += () =>
         {
-            var extensions = new[] { new ExtensionFilter("テクスチャファイル", "png", "jpg", "jpeg") };
-            var paths = StandaloneFileBrowser.OpenFilePanel("テクスチャを選択", "", extensions, false);
-            if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+            Task.Run(() =>
             {
-                StartCoroutine(LoadImage(new Uri(paths[0]).AbsoluteUri));
-            }
+                var extensions = new[] { new ExtensionFilter("テクスチャファイル", "png", "jpg", "jpeg") };
+                var paths = StandaloneFileBrowser.OpenFilePanel("テクスチャを選択", "", extensions, false);
+                if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+                {
+                    mainThreadActions.Enqueue(() =>
+                    {
+                        StartCoroutine(LoadImage(new Uri(paths[0]).AbsoluteUri));
+                    });
+                }
+            });
         };
 
         addTextureButton.clicked += () =>
@@ -142,8 +148,14 @@ public class Config : MonoBehaviour
                 Texture2D texture = TexturePreview.style.backgroundImage.value.texture;
                 config.fishTextureDataList.Add(new FishTextureData(fishNameField.value, fishCreatorField.value, fishModelType.index, texture));
                 MessageLabel.text = "テクスチャを追加しました。";
+
+                // テクスチャ登録時に入力したfishNameとfishCreatorをDBへ保存する
+                networkManager.PostTextureData(fishNameField.value, fishCreatorField.value);
+
                 config.Save();
                 ListViewRefresh();
+
+                // 入力した魚の名前と製作者名をリセット
                 fishNameField.value = "";
                 fishCreatorField.value = "";
                 fishModelType.index = -1;
@@ -193,7 +205,7 @@ public class Config : MonoBehaviour
         };
         foreach (FishTextureData data in config.fishTextureDataList)
         {
-            StartCoroutine(data.LoadImage());
+            if (data.texture == null) StartCoroutine(data.LoadImage());
         }
         textureListView.itemsSource = config.fishTextureDataList; // 表示するデータはconfig.fishTextureDataListを参照
 
@@ -244,6 +256,7 @@ public class Config : MonoBehaviour
         nextUsersListView.selectionChanged += (element) => waitUsersListView.selectedIndex = -1;
 
         // ユーザーの状態管理ボタンの参照を取得して初期化
+        userAllUpButton = ui.rootVisualElement.Q<Button>("UserAllUpButton");
         userUpButton = ui.rootVisualElement.Q<Button>("UserUpButton");
         userDownButton = ui.rootVisualElement.Q<Button>("UserDownButton");
         userRemoveButton = ui.rootVisualElement.Q<Button>("UserRemoveButton");
@@ -273,6 +286,17 @@ public class Config : MonoBehaviour
             {
                 gameManager.nextUsers.RemoveAt(nextUsersListView.selectedIndex);
                 nextUsersListView.RefreshItems();
+            }
+        };
+
+        userAllUpButton.clicked += () =>
+        {
+            int[] limit = { 8, 4, 4, 4, 8, 6 };
+            while (gameManager.nextUsers.Count < limit[config.rodCountIndex])
+            {
+                gameManager.nextUsers.Add(gameManager.waitUsers[0]);
+                gameManager.waitUsers.RemoveAt(0);
+                ListViewRefresh();
             }
         };
 
@@ -361,6 +385,7 @@ public class Config : MonoBehaviour
         rodUIScale.value = config.rodUIScale;
         fishingRodControllerCount.value = (uint)config.fishingRodControllerCount;
         rosIP.value = config.rosIP;
+        rankingShowCount.value = (uint)config.rankingShowCount;
 
         stageSizeField.value = (uint)config.stageSize;
         cameraYField.value = (uint)config.cameraY;
@@ -375,6 +400,7 @@ public class Config : MonoBehaviour
 
     private IEnumerator LoadImage(string path)
     {
+        Debug.Log("Loading image from: " + path);
         using UnityWebRequest request = UnityWebRequestTexture.GetTexture(path);
         yield return request.SendWebRequest();
 
@@ -388,63 +414,6 @@ public class Config : MonoBehaviour
             TexturePreview.style.backgroundImage = texture;
             MessageLabel.text = "画像を読み込みました。";
         }
-    }
-
-    // FlaskのAPIからユーザー情報を取得してwaitUsersに追加するコルーチン処理
-    private IEnumerator LoadUsers()
-    {
-        // Flaskの /LoadUsers にアクセスしてレスポンスを受け取る
-        string url = "http://127.0.0.1:5000/LoadUsers";
-
-        using (UnityWebRequest request = UnityWebRequest.Get(url))
-        {
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                try
-                {
-                    var json = request.downloadHandler.text;
-                    var data = JsonUtility.FromJson<UserListResponse>(json);
-
-                    if (data != null && data.usernames != null)
-                    {
-                        foreach (var name in data.usernames)
-                        {
-                            // 重複しないようにチェックしてからwaitUsersへ追加する
-                            if (!gameManager.waitUsers.Any(u => u.name == name))
-                            {
-                                gameManager.waitUsers.Add(new User(name));
-                                Debug.Log("ユーザー名をロード: " + name);
-                            }
-                        }
-
-                        waitUsersListView.RefreshItems();
-                    }
-                    else
-                    {
-                        Debug.LogWarning("ユーザーリストが空か、パースに失敗しました。");
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"JSONパースエラー: {e.Message}");
-                }
-            }
-            else
-            {
-                Debug.LogError("通信エラー: " + request.error);
-            }
-        }
-    }
-
-    // FlaskのJSONレスポンス受け取り用のクラス
-    [Serializable]
-    private class UserListResponse
-    {
-        public List<string> usernames; // ユーザー名の文字列型リスト
     }
 
     // 「適用」ボタンがクリックされた時の処理
@@ -475,6 +444,7 @@ public class Config : MonoBehaviour
         config.rodUIScale = rodUIScale.value;
         config.fishingRodControllerCount = (int)fishingRodControllerCount.value;
         config.rosIP = rosIP.value;
+        config.rankingShowCount = (int)rankingShowCount.value;
 
         config.stageSize = (int)stageSizeField.value;
         config.cameraY = (int)cameraYField.value;
@@ -507,7 +477,8 @@ public class Config : MonoBehaviour
     }
 
     private float previousLoadTime = 0f;
-    private float loadInterval = 5f;
+    private float loadInterval = 5f; // ユーザーロードのインターバル
+
     void Update()
     {
         // Escapeキーでカメラ固定とコンフィグ画面の表示・非表示を切り替える
@@ -532,12 +503,20 @@ public class Config : MonoBehaviour
         startButton.SetEnabled(!gameManager.isGaming);
         finishButton.SetEnabled(gameManager.isGaming);
 
-        // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+        // loadInterval（5秒に設定）置きにLoadUsersのコルーチンを呼び出すようにする
         if (Time.time - previousLoadTime > loadInterval)
         {
             previousLoadTime = Time.time;
-            StartCoroutine(LoadUsers());
+
+            // DBにあるユーザーデータを全てロードしてこれらもwaitUsersリストに追加する
+            StartCoroutine(networkManager.LoadUsersRequest(gameManager, () =>
+            {
+                waitUsersListView.RefreshItems(); // UI更新
+            }));
         }
+        
+        while (mainThreadActions.Count > 0)
+            mainThreadActions.Dequeue()?.Invoke();
     }
 }
 
@@ -565,6 +544,7 @@ public class ConfigSaveData
     public int rodIDGenerateIndex = 0;
     public int fishingRodControllerCount = 8;
     public string rosIP = "ws://localhost:9090";
+    public int rankingShowCount = 3;
 
     public int stageSize = 10;
     public int cameraY = 200;
@@ -610,6 +590,7 @@ public class ConfigSaveData
         rodIDGenerateIndex = tmp.rodIDGenerateIndex;
         fishingRodControllerCount = tmp.fishingRodControllerCount;
         rosIP = tmp.rosIP;
+        rankingShowCount = tmp.rankingShowCount;
 
         stageSize = tmp.stageSize;
         cameraY = tmp.cameraY;

@@ -10,7 +10,6 @@ public class StrengthPublisher : UnityPublisher<String>
     private int version = 0;
     protected override void Start()
     {
-        if (GetComponent<RosConnector>().IsConnected.WaitOne(1000)) base.Start();
     }
 
     /// <summary>

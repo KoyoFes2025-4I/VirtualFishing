@@ -136,6 +136,7 @@ public class RodScript : MonoBehaviour
 
     public int GetPoint()
     {
+        if (user == null) return -1;
         return user.point;
     }
 
